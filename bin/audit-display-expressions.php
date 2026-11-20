@@ -1,0 +1,3 @@
+<?php
+if(PHP_SAPI!=='cli')exit(1);
+foreach(glob(dirname(__DIR__).'/app/Views/*.php') as $file){$tokens=token_get_all(file_get_contents($file));$on=false;$expr='';foreach($tokens as $t){$text=is_array($t)?$t[1]:$t;if(is_array($t)&&$t[0]===T_OPEN_TAG_WITH_ECHO){$on=true;$expr='';}elseif(is_array($t)&&$t[0]===T_CLOSE_TAG&&$on){$on=false;if(!str_contains($expr,'I18n::')&&preg_match('/\$label|\$title|TYPES|ucfirst|strtolower|\$column|\$metric|\$s\b|\[.type.\]|\[.payment_status.\]|\[.validity.\]|\[.payment_type.\]|\?.*:/',$expr))echo basename($file).': '.trim($expr).PHP_EOL;}elseif($on)$expr.=$text;}}

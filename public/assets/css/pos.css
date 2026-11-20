@@ -1,0 +1,108 @@
+/* Product selection is presentation only; the existing review/posting services own totals. */
+.pos-page{background:#f5f8f9;color:#172e36}.pos-page .workspace-header,.pos-page>header{background:#004d53!important;color:white}.pos-page .workspace-header a,.pos-page .workspace-header button{color:white;border-color:#77a8a7}.pos-page main.container{max-width:1600px;padding-bottom:calc(2rem + env(safe-area-inset-bottom))}.pos-page .card,.pos-panel{border-radius:16px!important}.pos-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}.pos-layout>*{min-width:0}.pos-panel{background:white;border:1px solid #dbe5e9;padding:18px}.pos-heading{background:#006068;color:white;padding:14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:1.15rem}.pos-heading button{background:transparent;border:1px solid #c6e5e3;color:white;border-radius:8px;padding:8px}.pos-categories{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.pos-categories button{border:1px solid #d9e4e7;background:#f4f7fa;border-radius:10px;padding:10px 14px;min-height:44px}.pos-categories button[aria-pressed=true]{background:#00836c;color:white;border-color:#00836c}.pos-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.pos-product{border:1px solid #d6e3e7;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;box-shadow:0 2px 3px #153f4c0c}.pos-product h3{font-size:1rem;overflow-wrap:anywhere;margin:0}.pos-placeholder{background:linear-gradient(135deg,#ecf7f2,#f5f8fc);border-radius:10px;display:grid;place-items:center;color:#008068;font-size:2rem;height:72px;flex-shrink:0}.pos-product small{color:#47636d;overflow-wrap:anywhere}.pos-price{background:#d2f7eb;color:#005a45;border-radius:8px;padding:5px;font-weight:750}.pos-product button,.pos-pay{background:#008267;border:0;color:white;border-radius:9px;min-height:44px;padding:9px 14px;font-weight:700}.pos-product button{margin-top:auto}.pos-product button:disabled,.pos-pay:disabled{background:#627c77;opacity:.7}.pos-pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}.pos-cart-row{border:1px solid #dce6e9;border-radius:12px;padding:12px;margin:10px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info info" "quantity remove" "total total";gap:10px;align-items:center}.pos-cart-info{grid-area:info;min-width:0}.pos-cart-row strong,.pos-cart-row small{display:block;overflow-wrap:break-word;word-break:normal}.pos-stepper{grid-area:quantity;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0}.pos-stepper button{min-width:44px;min-height:44px;border:1px solid #b9d9d0;background:white;color:#006656;border-radius:8px;font-weight:700}.pos-stepper input{width:76px;min-height:44px;text-align:center;max-width:100%}.pos-remove{grid-area:remove;white-space:normal;overflow-wrap:normal;background:transparent;border:0;color:#9b2525;min-height:44px}.pos-cart-row .pos-line-total{grid-area:total;min-width:0;overflow-wrap:break-word;word-break:normal;color:#075b37;font-size:1.08rem;font-weight:750}.pos-totals{background:#f4fbf7;border:1px solid #d0e8df;border-radius:12px;padding:14px;margin:12px 0}.pos-totals dl{margin:0}.pos-totals dt,.pos-totals dd{padding:5px 0;overflow-wrap:anywhere}.pos-grand{background:#cbf3e8;border-radius:9px;padding:12px!important;font-size:1.45rem;font-weight:800;color:#004c4a}.pos-pay{width:100%;font-size:1.2rem;margin-top:14px;min-height:58px}.pos-message{min-height:24px;margin-top:10px}.pos-page .form-control,.pos-page .form-select{min-height:46px;border-radius:10px}.pos-cart-empty{padding:24px 8px;color:#53676d}.pos-sr-fields{display:none!important}.pos-page #invoice-live-summary{font-size:.9rem}.pos-page #invoice-form>div.card-body{padding:18px}.pos-page .invoice-line select{max-width:100%}.pos-page .pos-panel fieldset{min-width:0}.pos-page :focus-visible{outline:3px solid #197cb4;outline-offset:3px}.pos-customer{margin-bottom:18px}.pos-cart-caption{color:#546d75;font-size:.9rem}.pos-page .pos-layout .row{--bs-gutter-x:1rem}.pos-page #invoice-form{background:transparent;box-shadow:none!important}.pos-page .pos-review{margin-top:14px}.pos-page .pos-toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}.pos-page .pos-online{font-size:.85rem;color:#47636d}.pos-page [hidden]{display:none!important}
+.pos-categories{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:6px;scrollbar-width:thin}.pos-categories button{flex-shrink:0;max-width:220px;overflow-wrap:anywhere}.pos-product h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}.pos-message{overflow-wrap:anywhere}.pos-page .pos-customer .form-select{margin-bottom:10px}.pos-page .workspace-brand small{font-size:.75rem;font-weight:400}.pos-page #invoice-form>.card-body{padding:0!important}.pos-page .pos-cart-row strong{display:block;white-space:normal;overflow-wrap:break-word;word-break:normal}
+.pos-panel>.col-md-6{width:100%;margin-bottom:16px}
+@media(min-width:1400px){.pos-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1000px){.pos-layout{grid-template-columns:minmax(0,1fr)}.pos-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:575px){.pos-page main.container{padding:12px}.pos-panel,.pos-page #invoice-form>div.card-body{padding:12px}.pos-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pos-product{padding:10px}.pos-placeholder{height:60px}.pos-cart-row{grid-template-columns:minmax(0,1fr);grid-template-areas:"info" "quantity" "total" "remove"}.pos-remove{justify-self:start}.pos-heading{font-size:1.05rem}.pos-page .workspace-brand{font-size:.95rem}.pos-page .workspace-account span{display:none}.pos-categories{gap:6px}.pos-categories button{padding:8px 10px}.pos-grand{font-size:1.2rem}.pos-pagination{flex-wrap:wrap}}
+@media(max-width:340px){.pos-grid{grid-template-columns:minmax(0,1fr)}.pos-placeholder{height:50px}.pos-product{display:grid;grid-template-columns:52px minmax(0,1fr)}.pos-product .pos-placeholder{grid-row:span 3}.pos-product button{grid-column:1/-1}}
+
+/* Full-width information and total rows prevent localized messages from sizing a sibling column. */
+.pos-cart-meta{display:flex!important;flex-wrap:wrap;gap:4px 12px;color:#47636d}
+.pos-code,.pos-unit-price,.pos-price{white-space:nowrap;word-break:normal;overflow-wrap:normal}
+.pos-cart-info .pos-code{max-width:100%;overflow-x:auto}
+.pos-heading{flex-wrap:wrap}.pos-heading h2,.pos-heading button{min-width:0;max-width:100%;white-space:normal;word-break:normal;overflow-wrap:break-word}
+.pos-stepper input{flex:0 1 76px;min-width:56px}.pos-stepper button{flex:0 0 44px}
+.pos-totals dl{display:grid;grid-template-columns:minmax(0,1fr) max-content;gap:0 10px;margin:0}
+.pos-totals dt,.pos-totals dd{width:auto;max-width:100%;min-width:0;margin:0;white-space:normal;word-break:normal;overflow-wrap:break-word}
+.pos-totals dd{white-space:nowrap;text-align:right}.pos-totals .pos-grand{font-size:clamp(1rem,2vw,1.45rem)}
+.pos-panel>[data-invoice-confirmation]{min-width:0;max-width:100%;overflow-wrap:break-word}
+.pos-panel>[data-invoice-confirmation] .table-responsive{max-width:100%}
+.pos-panel>[data-invoice-confirmation] td:not(:first-child){white-space:nowrap}
+.pos-panel>[data-invoice-confirmation] td:first-child{min-width:150px;word-break:normal}
+.pos-panel>[data-invoice-confirmation] dd{overflow-wrap:break-word}
+.pos-pay{white-space:normal;word-break:normal;overflow-wrap:normal;line-height:1.6}
+@media(max-width:1199px){.pos-panel>.row>.col-sm-6{width:100%}}
+@media(max-width:575px){.pos-totals{padding:10px}.pos-totals .pos-grand{padding:8px!important}.pos-panel>[data-invoice-confirmation]{padding:12px!important}}
+
+/* Review values stay readable inside the checkout panel instead of a six-column squeeze. */
+.pos-panel>[data-invoice-confirmation] table,.pos-panel>[data-invoice-confirmation] tbody{display:block;width:100%}
+.pos-panel>[data-invoice-confirmation] thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.pos-panel>[data-invoice-confirmation] tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border-bottom:1px solid #dce6e9;padding:12px 0}
+.pos-panel>[data-invoice-confirmation] td{display:block;border:0;padding:4px;min-width:0!important;white-space:normal!important;overflow-wrap:break-word}
+.pos-panel>[data-invoice-confirmation] td:first-child{grid-column:1/-1}
+.pos-panel>[data-invoice-confirmation] td:before{content:attr(data-label);display:block;color:#47636d;font-size:.85rem;font-weight:600}
+.pos-panel>[data-invoice-confirmation]>dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 10px;margin:12px 0}
+.pos-panel>[data-invoice-confirmation]>dl>*{width:auto;min-width:0;margin:0;padding:4px}
+
+/* Desktop gets a compact product workspace and a distinct, readable cart. */
+.pos-page{background:#eff6f2;color:#183d34}.pos-page .workspace-header,.pos-page>header{background:#075b4d!important}.pos-page .workspace-header{border-color:#287d69}.pos-page .workspace-brand{color:#fff}.pos-page main.container{max-width:1680px}.pos-layout{grid-template-columns:minmax(0,1.5fr) minmax(360px,.9fr);gap:18px}.pos-panel{border-color:#d9e9df;box-shadow:0 8px 24px #1749370b;border-radius:16px!important}.pos-heading{background:#086e59;border-radius:12px}.pos-grid{gap:10px}.pos-product{border-color:#dceae2;border-radius:13px;padding:12px;box-shadow:none}.pos-product:hover{border-color:#96cbb1;box-shadow:0 5px 16px #087d6410}.pos-placeholder{height:64px;background:#eaf7ef;color:#078264}.pos-price{background:#e4f7ed;color:#075d48}.pos-product button,.pos-pay{background:#087d64}.pos-product button:hover:not(:disabled),.pos-pay:hover:not(:disabled){background:#075f4d}.pos-totals{background:#f2faf5;border-color:#d6ecdf}.pos-grand{background:#daf3e5;color:#075849}.pos-page #historical-return{background:#f4fbf6;border-color:#cee8d9!important;border-radius:14px!important}.pos-page #historical-return fieldset{background:#fff;border-color:#d7e9de!important}.pos-page #historical-return label{display:block;margin:.4rem 0;color:#31564a;font-weight:600}.pos-page #historical-return button{margin:.3rem .25rem .3rem 0}.pos-page #historical-return [data-return-status]{overflow-wrap:anywhere}
+@media(min-width:1001px) and (max-width:1199px){.navigation-open .pos-layout{grid-template-columns:minmax(0,1fr)}.navigation-open .pos-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1000px){.pos-layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:575px){.pos-page main.container{padding-bottom:calc(6rem + env(safe-area-inset-bottom))}.pos-pay{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom));z-index:5;box-shadow:0 6px 18px #07584935}.pos-page .pos-panel{padding:12px}.pos-placeholder{height:54px}.pos-product h3{font-size:.92rem}.pos-product{gap:6px}.pos-stepper button{min-width:44px;min-height:44px}}
+
+.pos-heading{background:linear-gradient(105deg,#005c59,#087d64)}
+.pos-product{background:#fff;box-shadow:0 3px 9px #183f3010}
+.pos-categories button{box-shadow:0 2px 5px #183f3010}
+.pos-pay{background:linear-gradient(180deg,#0ba563,#087647)}
+@media(max-width:767px){.pos-pay{bottom:calc(75px + env(safe-area-inset-bottom))}}
+
+/* Dense catalogue and cart keep the reference's hierarchy without hiding controls. */
+.pos-page main.container{max-width:1680px}
+.pos-panel{padding:14px;border-radius:14px!important}
+.pos-placeholder{position:relative;background:linear-gradient(140deg,#e7f6e9,#f7fbf9);font-size:0}
+.pos-placeholder:before{content:"";width:30px;height:36px;border:3px solid #078454;border-radius:5px 5px 9px 9px;background:#fff;box-shadow:inset 0 -12px #c6ecd1}
+.pos-placeholder:after{content:"";position:absolute;width:16px;height:5px;top:9px;border-radius:3px;background:#078454}
+.pos-product{gap:5px;padding:10px}.pos-product h3{font-size:.93rem;line-height:1.25}
+.pos-product .pos-price{font-size:.9rem}.pos-product button{min-height:40px}
+.pos-heading{padding:10px 14px}.pos-heading h2{font-weight:750}
+.pos-cart-row{padding:10px;gap:6px;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info info" "quantity total" "remove remove"}
+.pos-cart-row .pos-line-total{text-align:right;font-size:.95rem}.pos-remove{min-height:34px;justify-self:end}
+.pos-totals{padding:10px}.pos-grand{font-size:1.25rem}
+@media(max-width:575px){
+ .pos-page main.container{padding:10px!important}
+ .pos-page .pos-panel{padding:10px}.pos-customer{margin-bottom:10px}
+ .pos-page .pos-customer .form-select{margin-bottom:4px}
+ .pos-page .pos-grid{gap:8px}.pos-product{padding:8px}.pos-placeholder{height:48px}
+ .pos-placeholder:before{height:30px;width:25px}.pos-placeholder:after{top:6px}
+ .pos-product h3{font-size:.85rem}.pos-product small{font-size:.72rem}
+ .pos-cart-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info info" "quantity total" "remove remove"}
+ .pos-stepper input{width:54px;min-width:48px}.pos-stepper button{min-width:40px;min-height:40px}
+ .pos-page .pos-cart-row strong{font-size:.9rem}.pos-cart-meta{font-size:.75rem}
+}
+
+/* Product browser and invoice column remain distinct on large screens. */
+.pos-layout{grid-template-columns:minmax(0,1.55fr) minmax(340px,.85fr);grid-template-areas:"catalog customer" "catalog checkout";gap:12px 18px}
+.pos-layout>.pos-customer{grid-area:customer;margin:0}.pos-layout>.pos-panel:not(.pos-customer):nth-child(2){grid-area:catalog}.pos-layout>.pos-panel:last-child{grid-area:checkout}
+.pos-customer h2{font-size:1rem;margin:0 0 8px;font-weight:750}.pos-customer .pos-cart-caption{padding:8px 10px;margin:0 0 10px;background:#eef8f2;border-radius:8px}
+.pos-product{position:relative;padding:9px}.pos-product .pos-placeholder{height:80px;margin-bottom:3px}
+.pos-product button{position:absolute;right:14px;top:14px;width:38px;height:38px;min-height:38px;padding:0;border-radius:50%;font-size:0;box-shadow:0 2px 5px #004b3926}
+.pos-product button::before{content:"+";font-size:25px;line-height:1}
+.pos-product h3{min-height:2.5em}.pos-product .pos-price{margin-top:auto}
+.pos-categories button{border-radius:12px;font-weight:650}
+.pos-heading{min-height:56px}.pos-pay{min-height:55px}
+@media(min-width:1001px) and (max-width:1199px){.navigation-open .pos-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"customer" "catalog" "checkout"}}
+@media(max-width:1000px){.pos-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"customer" "catalog" "checkout"}}
+@media(max-width:575px){
+ .pos-layout{gap:8px}.pos-customer{display:grid;grid-template-columns:1fr 1fr;gap:5px 8px}
+ .pos-customer .pos-cart-caption{grid-column:1/-1;margin:0}.pos-customer h2,.pos-customer label,.pos-customer input,.pos-customer select,.pos-customer a{grid-column:1/-1}
+ .pos-product .pos-placeholder{height:65px}.pos-product button{width:34px;height:34px;min-height:34px;right:10px;top:10px}
+ .pos-product button::before{font-size:22px}.pos-product h3{min-height:2.5em}
+ .pos-page .pos-panel{border-radius:12px!important}.pos-cart-row{border-radius:10px}
+}
+
+/* Cart layout follows the checkout panel width. */
+.pos-layout>.pos-panel:last-child{container-type:inline-size;min-width:0}
+.pos-cart-row{grid-template-columns:minmax(0,1fr);grid-template-areas:"info" "quantity" "total" "remove";gap:8px;align-items:start}
+.pos-cart-info,.pos-stepper,.pos-line-total,.pos-remove{min-width:0;max-width:100%}
+.pos-page .pos-cart-row strong,.pos-cart-row small,.pos-line-total{line-height:1.6;overflow-wrap:anywhere}
+.pos-stepper{width:max-content;max-width:100%;gap:6px}
+.pos-stepper button{flex:0 0 44px;min-width:44px;min-height:44px}
+.pos-stepper input{flex:0 1 76px;width:76px;min-width:56px;min-height:44px}
+.pos-cart-row .pos-line-total{text-align:left;font-size:1rem;line-height:1.6;overflow-wrap:anywhere}
+.pos-line-amount,.pos-free-units{display:block;max-width:100%;overflow-wrap:anywhere}
+.pos-remove{justify-self:start;min-height:44px;padding:8px 10px;line-height:1.5}
+.pos-totals dl{grid-template-columns:minmax(0,1fr) minmax(0,auto)}
+.pos-totals dd{white-space:normal;overflow-wrap:anywhere}
+.pos-panel label,.pos-panel .alert,.pos-panel fieldset{min-width:0;max-width:100%;overflow-wrap:anywhere;line-height:1.6}
+@container (min-width:460px){.pos-cart-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info info" "quantity total" "remove remove"}.pos-cart-row .pos-line-total{text-align:right}.pos-remove{justify-self:end}}

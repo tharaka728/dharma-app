@@ -1,0 +1,13 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+function setup({online=true,sharing=true}={}){
+ const message={textContent:''},events={},print={addEventListener:(name,fn)=>{events.print=fn;}},button={dataset:{sharePdf:'/rep/invoices/id/pdf'},hidden:true,addEventListener:(name,fn)=>{events.share=fn;}};
+ const listeners={},calls={print:0,fetch:0,share:0,reload:0};
+ const context={document:{querySelector:()=>message,querySelectorAll:selector=>selector==='[data-print-document]'?[print]:[button]},navigator:{onLine:online,...(sharing?{share:async data=>{assert.ok(data.files[0]);assert.equal(data.url,undefined);calls.share++;},canShare:()=>true}:{})},window:{File:class File{constructor(parts,name,options){this.name=name;this.type=options.type;}},print:()=>{calls.print++;},addEventListener:(name,fn)=>{(listeners[name]??=[]).push(fn);}},location:{reload:()=>{calls.reload++;}},fetch:async()=>{calls.fetch++;return {ok:true,headers:{get:key=>key==='Content-Type'?'application/pdf':'attachment; filename="safe.pdf"'},blob:async()=>({})};}};context.File=context.window.File;
+ vm.runInNewContext(fs.readFileSync('public/assets/js/invoice-documents.js','utf8'),context);return {message,events,button,listeners,calls,context};
+}
+test('Print requires an explicit online user action',()=>{const s=setup();assert.equal(s.calls.print,0);s.events.print();assert.equal(s.calls.print,1);s.context.navigator.onLine=false;s.events.print();assert.equal(s.calls.print,1);assert.match(s.message.textContent,/Reconnect/);});
+test('Unsupported sharing preserves download fallback',()=>{const s=setup({sharing:false});assert.equal(s.button.hidden,true);assert.equal(s.events.share,undefined);});
+test('Sharing needs a second user gesture and shares a file without credentials or URL',async()=>{const s=setup();await s.events.share();assert.equal(s.calls.fetch,1);assert.equal(s.calls.share,0);assert.equal(s.button.textContent,'Share PDF now');await s.events.share();assert.equal(s.calls.share,1);assert.equal(s.calls.fetch,1);});
+test('Prepared PDF is forgotten on page exit and restored pages reauthorize',async()=>{const s=setup();await s.events.share();s.listeners.pagehide.forEach(fn=>fn({}));await s.events.share();assert.equal(s.calls.fetch,2);assert.equal(s.calls.share,0);s.listeners.pageshow.forEach(fn=>fn({persisted:true}));assert.equal(s.calls.reload,1);});
+test('Offline share cannot fetch or upload data',async()=>{const s=setup({online:false});await s.events.share();assert.equal(s.calls.fetch,0);assert.equal(s.calls.share,0);assert.match(s.message.textContent,/Reconnect/);});

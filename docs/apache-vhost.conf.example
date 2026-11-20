@@ -1,0 +1,20 @@
+# Add to C:/xampp/apache/conf/extra/httpd-vhosts.conf.
+# See README: protect the project in the default htdocs host as well.
+<VirtualHost *:80>
+    ServerName dharma-sales.local
+    DocumentRoot "C:/xampp/htdocs/dharma chemical sales app/public"
+    <Directory "C:/xampp/htdocs/dharma chemical sales app">
+        Require all denied
+        AllowOverride None
+    </Directory>
+    <Directory "C:/xampp/htdocs/dharma chemical sales app/public">
+        Require local
+        AllowOverride None
+        Options -Indexes
+        DirectoryIndex index.php
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^ index.php [QSA,L]
+    </Directory>
+</VirtualHost>

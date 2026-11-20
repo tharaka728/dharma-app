@@ -1,0 +1,16 @@
+<?php
+declare(strict_types=1);
+if(PHP_SAPI!=='cli')exit(1);
+$source='dharma_sales_phase1';$before='dharma_sales_phase12_restore_20261119084755';$tested='dharma_sales_phase12_restore_20261118154343';
+$ini=parse_ini_file('C:/mariadb-clean/private/admin.ini',true,INI_SCANNER_RAW);$auth=$ini['client']??$ini;
+$pdo=new PDO('mysql:host=127.0.0.1;port=3309;charset=utf8mb4',$auth['user'],$auth['password'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);unset($ini,$auth);
+if((int)$pdo->query('SELECT @@port')->fetchColumn()!==3309)throw new RuntimeException('Unexpected server');
+$old=$pdo->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA='$before' AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME")->fetchAll(PDO::FETCH_COLUMN);
+$changed=[];foreach($old as $table){if($table==='schema_migrations')continue;if(!preg_match('/^[a-zA-Z0-9_]+$/D',$table))throw new RuntimeException('Unexpected table');$hashes=[];foreach([$source,$before] as $schema){$rows=[];$q=$pdo->query("SELECT * FROM `$schema`.`$table`");while($row=$q->fetch())$rows[]=hash('sha256',json_encode($row,JSON_THROW_ON_ERROR));sort($rows,SORT_STRING);$hashes[]=hash('sha256',implode('',$rows));}if($hashes[0]!==$hashes[1])$changed[]=$table;}
+$names=['historical_return_price_revisions','historical_customer_returns','historical_customer_return_lines','historical_return_identities','historical_return_intents'];$new=[];
+foreach($names as $table){
+ $schemas=[];foreach([$source,$tested] as $schema){$q=$pdo->prepare("SELECT COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COLUMN_DEFAULT,EXTRA FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=? ORDER BY ORDINAL_POSITION");$q->execute([$schema,$table]);$columns=$q->fetchAll();$q=$pdo->prepare("SELECT INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=? AND TABLE_NAME=? ORDER BY INDEX_NAME,SEQ_IN_INDEX");$q->execute([$schema,$table]);$indexes=$q->fetchAll();$schemas[]=[$columns,$indexes];}
+ $count=(int)$pdo->query("SELECT COUNT(*) FROM `$source`.`$table`")->fetchColumn();$new[]=['table'=>$table,'columns_and_indexes_match_test'=>$schemas[0]===$schemas[1]&&count($schemas[0][0])>0,'rows'=>$count];
+}
+$triggers=[];foreach([$source,$tested] as $schema){$q=$pdo->prepare("SELECT TRIGGER_NAME,EVENT_MANIPULATION,EVENT_OBJECT_TABLE,ACTION_STATEMENT,ACTION_TIMING FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA=? AND TRIGGER_NAME LIKE 'historical_return%' ORDER BY TRIGGER_NAME");$q->execute([$schema]);$triggers[]=$q->fetchAll();}
+echo json_encode(['tables'=>(int)$pdo->query("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='$source' AND TABLE_TYPE='BASE TABLE'")->fetchColumn(),'triggers'=>(int)$pdo->query("SELECT COUNT(*) FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA='$source'")->fetchColumn(),'applied_migrations'=>(int)$pdo->query("SELECT COUNT(*) FROM `$source`.schema_migrations WHERE status='applied'")->fetchColumn(),'preexisting_tables_checked'=>count($old)-1,'preexisting_data_changed'=>$changed,'new_tables'=>$new,'return_triggers'=>count($triggers[0]),'return_triggers_match_test'=>$triggers[0]===$triggers[1]],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR).PHP_EOL;

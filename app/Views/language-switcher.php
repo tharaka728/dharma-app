@@ -1,0 +1,2 @@
+<?php $languageBase=\App\Controllers\AuthController::url(''); ?>
+<div class="language-switcher" role="group" aria-label="<?= \App\Support\I18n::html('Interface language') ?>"><a lang="si-LK" hreflang="si-LK" href="?language=si-LK" data-language="si-LK" <?= \App\Support\I18n::locale()==='si-LK'?'aria-current="true"':'' ?>>සිංහල</a><span aria-hidden="true"> / </span><a lang="en" hreflang="en" href="?language=en" data-language="en" <?= \App\Support\I18n::locale()==='en'?'aria-current="true"':'' ?>>English</a></div>

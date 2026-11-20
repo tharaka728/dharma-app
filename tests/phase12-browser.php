@@ -1,0 +1,6 @@
+<?php
+declare(strict_types=1);
+require __DIR__.'/phase12.php';
+$listener=stream_socket_server('tcp://127.0.0.1:0',$errno,$error);$address=stream_socket_get_name($listener,false);fclose($listener);$base='http://'.$address;$pipes=[];
+$server=proc_open([PHP_BINARY,'-S',$address,'-t',APP_ROOT.'/public',APP_ROOT.'/tests/http-router.php'],[0=>['pipe','r'],1=>['file',APP_ROOT.'/storage/phase12-test-server.log','a'],2=>['file',APP_ROOT.'/storage/phase12-test-server.log','a']],$pipes,APP_ROOT,null,['bypass_shell'=>true]);fclose($pipes[0]);
+try{usleep(500000);$pipes=[];$node=proc_open(['C:/nvm4w/nodejs/node.exe',APP_ROOT.'/tests/phase12-browser.js'],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes,APP_ROOT,null,['bypass_shell'=>true]);fwrite($pipes[0],json_encode(['base'=>$base,'actors'=>$f['actors'],'password'=>$f['password'],'product_sku'=>$product['sku'],'product_id'=>(string)$product['id'],'customer_id'=>(string)$customer['id'],'rep_id'=>(string)$rep['id'],'invoice_id'=>$invoice,'credit_id'=>$credit,'promotion_id'=>$f['promotion']],JSON_THROW_ON_ERROR));fclose($pipes[0]);echo stream_get_contents($pipes[1]);$error=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);if(proc_close($node)!==0)throw new RuntimeException('Phase12 browser failed: '.$error);}finally{proc_terminate($server);proc_close($server);}

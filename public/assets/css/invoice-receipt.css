@@ -1,0 +1,3 @@
+/* Roll length is supplied by the printer driver; 297mm gives predictable
+   pagination when a browser requires a finite custom paper size. */
+@page{size:80mm 297mm;margin:4mm}

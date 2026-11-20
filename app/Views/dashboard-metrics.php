@@ -10,7 +10,7 @@ $sales=$cards['Operational net sales after returns · LKR']??$cards['Period net 
 
 $metrics=[
     ['label'=>$si?'අද විකුණුම්':'Today’s net sales','value'=>$sales,'icon'=>'Invoices','destination'=>'/reports/sales?period=today','money'=>true,'chip'=>null],
-    ['label'=>$si?'හිඟ මුදල':'Outstanding','value'=>$cards['Current outstanding · LKR']??null,'icon'=>'Customers','destination'=>'/reports/outstanding','money'=>true,'chip'=>null],
+    ['label'=>$si?'අද ලබාදුන් වට්ටම්':'Total discounts given','value'=>$cards['Period discounts given · LKR']??null,'icon'=>'Promotions','destination'=>'/reports/sales?period=today','money'=>true,'chip'=>null],
     ['label'=>$si?'විසඳිය යුතු සමමුහුර්ත ඉල්ලීම්':'Unresolved server sync submissions','value'=>$cards['Period unresolved server submissions']??null,'icon'=>'Offline Sales','destination'=>'/reports/offline?period=today','money'=>false,'chip'=>'Offline'],
     ['label'=>$si?'නියෝජිත තොග ඒකක':'Representative stock units','value'=>$cards['Current representative units']??null,'icon'=>'Inventory','destination'=>'/reports/inventory','money'=>false,'chip'=>null],
 ];

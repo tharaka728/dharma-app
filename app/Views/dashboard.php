@@ -1,6 +1,61 @@
 <?php use App\Support\{Http,Workspace};use App\Controllers\AuthController;$admin=$role==='ADMIN';$links=Workspace::links($role); ?>
-<!doctype html><html lang="<?= \App\Support\I18n::locale() ?>"><head><?php require APP_ROOT.'/app/Views/localization-head.php'; ?><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?= $admin?\App\Support\I18n::html('Admin'):\App\Support\I18n::html('Sales representative') ?> <?= \App\Support\I18n::html('| Dharma Chemical') ?></title><link rel="stylesheet" href="<?= Http::escape(AuthController::url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>"><link rel="stylesheet" href="<?= Http::escape(AuthController::url('/assets/css/app.css')) ?>"><?php require APP_ROOT.'/app/Views/pwa-head.php'; ?></head><body class="workspace"><?php require APP_ROOT.'/app/Views/workspace-header.php'; ?>
-<main class="container-fluid px-md-5 py-4 dashboard-main"><section class="dashboard-welcome"><div><p class="dashboard-eyebrow"><?= \App\Support\I18n::html('Welcome,') ?> <?= Http::escape($user['name']) ?></p><h1><?= $admin?\App\Support\I18n::html('Admin dashboard'):\App\Support\I18n::html('Sales representative dashboard') ?></h1></div><a class="dashboard-primary-action" href="<?= Http::escape(AuthController::url($admin?'/admin/invoices/new':'/rep/invoices/new')) ?>"><?= Workspace::icon('Invoices') ?><span><?= \App\Support\I18n::html('New Invoice') ?></span><span aria-hidden="true">→</span></a></section><?php require APP_ROOT.'/app/Views/dashboard-metrics.php'; ?><div class="dashboard-section-heading"><div><p class="dashboard-eyebrow"><?= \App\Support\I18n::html('Navigation') ?></p><h2><?= \App\Support\I18n::locale()==='en'?'Your workspace':'ඔබගේ වැඩ අවකාශය' ?></h2></div></div><div class="row g-3 dashboard-grid"><?php foreach($links as $label=>$href): if($label==='Overview')continue; ?><section class="col-6 col-md-4 col-xl-3"><a class="module-card" href="<?= Http::escape(AuthController::url($href)) ?>"><span class="module-icon"><?= Workspace::icon($label) ?></span><h3 class="h6 mb-0"><?= \App\Support\I18n::html($label) ?></h3><span class="module-arrow" aria-hidden="true">↗</span></a></section><?php endforeach; ?></div>
-<?php if($admin): require APP_ROOT.'/app/Views/dashboard-trend.php'; endif; ?>
-<?php if(isset($assignedStock)): ?><div class="mt-4"><?php require APP_ROOT.'/app/Views/rep-stock-dashboard.php'; ?></div><?php endif; ?>
-<?php if(!$admin): ?><p class="small text-secondary mt-4"><?= \App\Support\I18n::html('Offline sales remain provisional until accepted. Register and refresh your device online before offline use.') ?></p><?php endif; ?></main><?php require APP_ROOT.'/app/Views/workspace-footer.php'; ?></body></html>
+<!doctype html>
+<html lang="<?= \App\Support\I18n::locale() ?>">
+<head>
+    <?php require APP_ROOT.'/app/Views/localization-head.php'; ?>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><?= $admin?\App\Support\I18n::html('Admin'):\App\Support\I18n::html('Sales representative') ?> <?= \App\Support\I18n::html('| Dharma Chemical') ?></title>
+    <link rel="stylesheet" href="<?= Http::escape(AuthController::url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
+    <link rel="stylesheet" href="<?= Http::escape(AuthController::url('/assets/css/app.css')) ?>">
+    <?php require APP_ROOT.'/app/Views/pwa-head.php'; ?>
+</head>
+<body class="workspace">
+<?php require APP_ROOT.'/app/Views/workspace-header.php'; ?>
+<main class="container-fluid px-md-5 py-4 dashboard-main">
+    <section class="dashboard-welcome">
+        <div>
+            <p class="dashboard-eyebrow"><?= \App\Support\I18n::html('Welcome,') ?> <?= Http::escape($user['name']) ?></p>
+            <h1><?= $admin?\App\Support\I18n::html('Admin dashboard'):\App\Support\I18n::html('Sales representative dashboard') ?></h1>
+        </div>
+        <a class="dashboard-primary-action" href="<?= Http::escape(AuthController::url($admin?'/admin/invoices/new':'/rep/invoices/new')) ?>">
+            <?= Workspace::icon('Invoices') ?>
+            <span><?= \App\Support\I18n::html('New Invoice') ?></span>
+            <span aria-hidden="true">→</span>
+        </a>
+    </section>
+
+    <?php require APP_ROOT.'/app/Views/dashboard-metrics.php'; ?>
+
+    <div class="dashboard-section-heading">
+        <div>
+            <p class="dashboard-eyebrow"><?= \App\Support\I18n::html('Navigation') ?></p>
+            <h2><?= \App\Support\I18n::locale()==='en'?'Your workspace':'ඔබගේ වැඩ අවකාශය' ?></h2>
+        </div>
+    </div>
+
+    <div class="row g-3 dashboard-grid">
+        <?php foreach($links as $label=>$href): if($label==='Overview')continue;
+            $currentPath=parse_url($_SERVER['REQUEST_URI']??'',PHP_URL_PATH);
+            $isCurrent=$currentPath===AuthController::url(explode('#',$href)[0]);
+        ?>
+        <section class="col-6 col-md-4 col-xl-3">
+            <a class="module-card" href="<?= Http::escape(AuthController::url($href)) ?>" <?= $isCurrent?'aria-current="page"':'' ?>>
+                <span class="module-icon"><?= Workspace::icon($label) ?></span>
+                <h3 class="h6"><?= \App\Support\I18n::html($label) ?></h3>
+            </a>
+        </section>
+        <?php endforeach; ?>
+    </div>
+
+    <?php if($admin): require APP_ROOT.'/app/Views/dashboard-trend.php'; endif; ?>
+    <?php if(isset($assignedStock)): ?>
+    <div class="mt-4"><?php require APP_ROOT.'/app/Views/rep-stock-dashboard.php'; ?></div>
+    <?php endif; ?>
+    <?php if(!$admin): ?>
+    <p class="small text-secondary mt-4"><?= \App\Support\I18n::html('Offline sales remain provisional until accepted. Register and refresh your device online before offline use.') ?></p>
+    <?php endif; ?>
+</main>
+<?php require APP_ROOT.'/app/Views/workspace-footer.php'; ?>
+</body>
+</html>

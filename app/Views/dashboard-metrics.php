@@ -1,7 +1,38 @@
 <?php
-use App\Support\{Http,Workspace};use App\Controllers\AuthController;
-$si=\App\Support\I18n::locale()!=='en';$base=$admin?'/admin':'/rep';$cards=$dashboardToday['cards']??null;
+use App\Support\{Http,Workspace};
+use App\Controllers\AuthController;
+
+$si=\App\Support\I18n::locale()!=='en';
+$base=$admin?'/admin':'/rep';
+$cards=$dashboardToday['cards']??null;
+
 $sales=$cards['Operational net sales after returns · LKR']??$cards['Period net sales · LKR']??null;
-$metrics=[[$si?'අද විකුණුම්':'Today’s net sales',$sales,'Invoices','/reports/sales?period=today',true],[$si?'හිඟ මුදල':'Outstanding',$cards['Current outstanding · LKR']??null,'Customers','/reports/outstanding',true],[$si?'විසඳිය යුතු සමමුහුර්ත ඉල්ලීම්':'Unresolved server sync submissions',$cards['Period unresolved server submissions']??null,'Offline Sales','/reports/offline?period=today',false],[$si?'නියෝජිත තොග ඒකක':'Representative stock units',$cards['Current representative units']??null,'Inventory','/reports/inventory',false]];
+
+$metrics=[
+    ['label'=>$si?'අද විකුණුම්':'Today’s net sales','value'=>$sales,'icon'=>'Invoices','destination'=>'/reports/sales?period=today','money'=>true,'chip'=>null],
+    ['label'=>$si?'හිඟ මුදල':'Outstanding','value'=>$cards['Current outstanding · LKR']??null,'icon'=>'Customers','destination'=>'/reports/outstanding','money'=>true,'chip'=>null],
+    ['label'=>$si?'විසඳිය යුතු සමමුහුර්ත ඉල්ලීම්':'Unresolved server sync submissions','value'=>$cards['Period unresolved server submissions']??null,'icon'=>'Offline Sales','destination'=>'/reports/offline?period=today','money'=>false,'chip'=>'Offline'],
+    ['label'=>$si?'නියෝජිත තොග ඒකක':'Representative stock units','value'=>$cards['Current representative units']??null,'icon'=>'Inventory','destination'=>'/reports/inventory','money'=>false,'chip'=>null],
+];
 ?>
-<div class="dashboard-metrics"><?php foreach($metrics as [$label,$amount,$icon,$destination,$money]): ?><a class="dashboard-metric" href="<?= Http::escape(AuthController::url($admin ? $base.$destination : match($destination) { '/reports/sales?period=today', '/reports/outstanding' => '/rep/invoices', '/reports/offline?period=today' => '/offline/index.html#status', '/reports/inventory' => '/rep/stock' })) ?>"><?= Workspace::icon($icon) ?><span><span class="dashboard-metric-label"><?= Http::escape($label) ?></span><strong><?= $amount===null?($si?'ලබාගත නොහැක':'Unavailable'):($money?'LKR ':'').Http::escape((string)$amount) ?></strong></span><span class="dashboard-metric-arrow" aria-hidden="true">›</span></a><?php endforeach; ?></div>
+<div class="dashboard-metrics">
+    <?php foreach($metrics as $metric):
+        $destination=$admin
+            ?$base.$metric['destination']
+            :match($metric['destination']){
+                '/reports/sales?period=today','/reports/outstanding'=>'/rep/invoices',
+                '/reports/offline?period=today'=>'/offline/index.html#status',
+                '/reports/inventory'=>'/rep/stock',
+            };
+    ?>
+    <a class="stat-card" href="<?= Http::escape(AuthController::url($destination)) ?>">
+        <span class="stat-icon"><?= Workspace::icon($metric['icon']) ?></span>
+        <span class="stat-body">
+            <span class="stat-label"><?= Http::escape($metric['label']) ?></span>
+            <strong class="stat-value"><?= $metric['value']===null?($si?'ලබාගත නොහැක':'Unavailable'):($metric['money']?'LKR ':'').Http::escape((string)$metric['value']) ?></strong>
+            <?php if($metric['chip']!==null): ?><span class="chip chip-amber"><?= \App\Support\I18n::html($metric['chip']) ?></span><?php endif; ?>
+        </span>
+        <span class="stat-chevron" aria-hidden="true">›</span>
+    </a>
+    <?php endforeach; ?>
+</div>

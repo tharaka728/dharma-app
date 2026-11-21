@@ -86,7 +86,7 @@ async function fillFirstProduct(quantity){
  // Sinhala UI labels.
  await navigate(input.base+'/rep/invoices/new?language=si-LK');
  check(await evaluate('document.querySelector("#invoice-benefit-fields legend").textContent==="ප්‍රවර්ධන ප්‍රතිලාභය"'),'Sinhala benefit fieldset legend');
- check(await evaluate('[...document.getElementById("benefit_mode").options].some(o=>o.textContent.includes("නොමිලේ ඒකක වෙනුවට"))'),'Sinhala benefit mode options');
+ check(await evaluate('[...document.getElementById("benefit_mode").options].some(o=>o.textContent.includes("නොමිලේ භාණ්ඩ වෙනුවට"))'),'Sinhala benefit mode options');
  await shot('promo-choice-form-sinhala.png');
 
  console.log(count+' benefit-mode browser checks passed.');

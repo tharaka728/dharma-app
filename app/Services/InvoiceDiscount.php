@@ -10,7 +10,8 @@ final class InvoiceDiscount
         if(!is_string($value)||!preg_match('/^(0|[1-9][0-9]{0,2})(?:\.[0-9]{1,2})?$/D',$value))throw new InventoryException(['invoice_discount_percent'=>'Enter a discount from 0 to 100 with up to two decimal places.']);
         $rate=Products::money($value);if(PromotionCalculator::compareMoney($rate,'100.00')>0)throw new InventoryException(['invoice_discount_percent'=>'Discount cannot exceed 100%.']);return $rate;
     }
-    private static function divide(string $numerator,string $denominator):array
+    /** Exact integer long division; also used by BenefitPolicy (PROMO_CHOICE_V1) allocation. */
+    public static function divide(string $numerator,string $denominator):array
     {
         if($denominator==='0')throw new \LogicException('Zero discount allocation divisor.');
         $quotient='';$remainder='0';

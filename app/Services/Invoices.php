@@ -138,6 +138,7 @@ final class Invoices
     }
     private function normalize(array $actor,array $input):array
     {
+        foreach(['benefit_mode','benefit_policy','promotion_discount_percent'] as $simulationField)if(array_key_exists($simulationField,$input))throw new InventoryException(['benefit'=>'Benefit simulation is not available for checkout.'],409);
         $a=$this->actor($actor);$customer=Representatives::id($input['customer_id']??null,'customer_id');$source=$input['stock_source']??'';
         if($a['role']==='SALES_REP'){$expected=(string)$a['id'];if($source!==''&&$source!==$expected)throw new InventoryException(['stock_source'=>'Representatives may sell only their own stock.'],403);$source=$expected;}
         elseif($source!=='warehouse')$source=Representatives::id($source,'stock_source');

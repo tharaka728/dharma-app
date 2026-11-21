@@ -17,6 +17,7 @@ try{
  $input=['request_id'=>Inventory::uuid(),'customer_id'=>$customer,'stock_source'=>$rep['id'],'payment_type'=>'CASH','amount_received'=>'50.00','items'=>[['product_id'=>$products[0],'quantity'=>'2']]];
  $prepare=static function(array $actor,array $in)use($svc):array{$r=$svc->review($actor,$in);$in['review_hash']=$r['review_hash'];return $in;};
  $check($svc->customers($other)===[],'Unassigned customer hidden from rep search');$check(count($svc->customers($rep))===1,'Assigned customer visible');
+ foreach(['benefit_mode','benefit_policy','promotion_discount_percent'] as $field){$forged=$input;$forged[$field]='PROMOTION_DISCOUNT_INSTEAD';$reject(fn()=>$svc->review($rep,$forged),409,'Simulation field denied in review');$reject(fn()=>$svc->issue($rep,$forged),409,'Simulation field denied in issue');}
  $reject(fn()=>$svc->review($other,$input),403,'Cannot invoice another rep stock');$bad=$input;$bad['stock_source']=$other['id'];$reject(fn()=>$svc->review($other,$bad),403,'Cannot invoice unassigned customer');
  $bad=$input;unset($bad['stock_source']);$reject(fn()=>$svc->review($admin,$bad),422,'Admin must explicitly choose stock source');
  foreach(['0','-1','1.2','9223372036854775808'] as $q){$bad=$input;$bad['items'][0]['quantity']=$q;$reject(fn()=>$svc->review($rep,$bad),422,'Invalid quantity '.$q);}

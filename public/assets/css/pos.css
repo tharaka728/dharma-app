@@ -1506,3 +1506,6 @@
     max-width: none;
   }
 }
+
+/* Non-posting benefit simulation, independent of checkout controls. */
+.benefit-simulation{border:1px solid #9bceb1;border-radius:12px;padding:14px;margin:14px 0;background:#f5fcf7;min-width:0}.benefit-simulation h2{font-weight:700}.benefit-simulation label{display:block;margin:.6rem 0 .25rem}.benefit-simulation-notice{padding:10px;background:#fff5d9;border-radius:8px;font-weight:650;line-height:1.6}.benefit-simulation-result{margin-top:12px;overflow-wrap:anywhere;line-height:1.6}.benefit-simulation-result ul{padding-inline-start:1.4rem}.benefit-simulation-result p{margin:.4rem 0}.benefit-simulation-total{font-weight:700;color:#075b37}.benefit-simulation [hidden]{display:none!important}

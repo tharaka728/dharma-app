@@ -15,6 +15,7 @@ try{
  foreach(['admin'=>'ADMIN','pilot'=>'SALES_REP','plain'=>'SALES_REP'] as $key=>$role){$pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Pilot fixture '.$key,$tag.$key,password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),$role]);$actors[$key]=['id'=>$pdo->lastInsertId()];}
  $admin=$actors['admin'];$pilot=$actors['pilot'];$plain=$actors['plain'];
  putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$pilot['id']);
+ putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=0');
  $pdo->prepare('INSERT INTO categories(name) VALUES (?)')->execute([$tag]);$cat=$pdo->lastInsertId();
  $products=[];foreach(['200.00','140.00','100.00','10.00'] as $ix=>$price){$pdo->prepare('INSERT INTO products(sku,name,category_id,cost_price,selling_price) VALUES (?,?,?,NULL,?)')->execute([$tag.$ix,'Pilot product '.$ix,$cat,$price]);$products[]=$pdo->lastInsertId();}
  [$pA,$pB,$pC,$o1]=$products;
@@ -92,6 +93,22 @@ try{
  $in=$base($pilot)+$benefit('FREE_PROMOTION');$in['request_id']=Inventory::uuid();$in['items']=[['product_id'=>$pA,'quantity'=>'12']];
  $r=$svc->review($pilot,$in);$in['review_hash']=$r['review_hash'];
  $reject(fn()=>$svc->issue($pilot,$in,['device_id'=>'00000000-0000-4000-8000-0000000000e1','grant_id'=>'00000000-0000-4000-8000-0000000000e2','created_at_utc'=>'2026-11-22 00:00:00']),409,'New-mode offline synchronization rejected');
+
+ // H1-H5: Phase 4H first-posting hold - review available, no new-policy posting, direct API blocked, legacy unaffected, replays safe.
+ putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=1');
+ $in=$base($pilot)+$benefit('PROMOTION_DISCOUNT_INSTEAD','25');$in['request_id']=Inventory::uuid();$in['items']=[['product_id'=>$pA,'quantity'=>'12']];
+ $r=$svc->review($pilot,$in);$in['review_hash']=$r['review_hash'];
+ $check($r['benefit_discount_amount']==='600.00','Hold still allows the authoritative review');
+ try{$svc->issue($pilot,$in);throw new RuntimeException('Unexpected acceptance: hold blocked posting');}catch(InventoryException $e){$check($e->status===403&&($e->errors['benefit']??'')==='Promotion benefit invoice posting is on hold pending owner approval. Reviewed totals remain available.','Hold blocks posting with the exact message');}
+ $forged=$in;$forged['benefit_note']='forged';$reject(fn()=>$svc->issue($pilot,$forged),403,'Hold blocks direct API bypass');
+ $inL=$base($plain);$inL['request_id']=Inventory::uuid();$inL['items']=[['product_id'=>$pA,'quantity'=>'1']];$inL['discount_policy']='INVOICE_PERCENT_V1';$inL['invoice_discount_choice']='custom';$inL['invoice_discount_percent']='5';
+ $rL=$svc->review($plain,$inL);$inL['review_hash']=$rL['review_hash'];$legacyIssued=$svc->issue($plain,$inL);
+ $check($legacyIssued['replayed']===false,'Legacy non-pilot checkout unaffected by the hold');
+ putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=0');
+ $issued=$svc->issue($pilot,$in);$check($issued['replayed']===false,'Lifting the hold posts the reviewed invoice');
+ putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=1');
+ $replayed=$svc->issue($pilot,$in);$check($replayed['replayed']===true&&$replayed['invoice_id']===$issued['invoice_id'],'Replay of an issued invoice stays safe under the hold');
+ putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=0');
 }finally{
  $pdo->rollBack();
  $ok=true;foreach($before as $t=>$hash){$now=hash('sha256',json_encode($pdo->query('SELECT * FROM `'.$t.'` ORDER BY 1')->fetchAll(),JSON_THROW_ON_ERROR));if($now!==$hash){fwrite(STDERR,"Table changed: $t\n");$ok=false;}}

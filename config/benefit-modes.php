@@ -20,4 +20,10 @@ return [
     // Phase 3 decision A: new benefit modes are online only. Signed offline
     // payloads carrying benefit fields are rejected by OfflineSales with 409.
     'online_only'=>true,
+    // Phase 4H: temporary first-posting hold. While true, pilot representatives
+    // can select benefit modes and obtain server-authoritative reviewed totals,
+    // but NO PROMO_CHOICE_V1 invoice may post (server-side, covers direct API
+    // submissions too). The owner lifts this only with separate first-posting
+    // approval. Keep true until then.
+    'posting_hold'=>true,
 ];

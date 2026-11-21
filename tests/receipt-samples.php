@@ -15,6 +15,7 @@ try{
  $pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Sample admin '.$tag,$tag.'a',password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),'ADMIN']);$admin=['id'=>$pdo->lastInsertId()];
  $pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Sample rep '.$tag,$tag.'r',password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),'SALES_REP']);$rep=['id'=>$pdo->lastInsertId(),'role'=>'SALES_REP'];
  putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$rep['id']);
+putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=0');
  $pdo->prepare('INSERT INTO categories(name) VALUES (?)')->execute([$tag]);$cat=$pdo->lastInsertId();
  $pdo->prepare('INSERT INTO products(sku,name,category_id,cost_price,selling_price) VALUES (?,?,?,NULL,?)')->execute([$tag.'0','Sample rice 5kg '.$tag,$cat,'125.50']);$pA=$pdo->lastInsertId();
  $pdo->prepare('INSERT INTO products(sku,name,category_id,cost_price,selling_price) VALUES (?,?,?,NULL,?)')->execute([$tag.'1','Sample oil 1L '.$tag,$cat,'400.00']);$pB=$pdo->lastInsertId();

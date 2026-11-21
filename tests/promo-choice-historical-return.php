@@ -14,6 +14,7 @@ try{
  $tag='HRC'.strtoupper(bin2hex(random_bytes(5)));
  foreach(['admin'=>'ADMIN','rep'=>'SALES_REP'] as $key=>$role){$pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Combined fixture',$tag.$key,password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),$role]);$actors[$key]=['id'=>$pdo->lastInsertId()];}$admin=$actors['admin'];$rep=$actors['rep'];
  putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$rep['id']);
+putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=0');
  putenv('HISTORICAL_RETURN_TEST_REP_ID='.$rep['id']);
  $check($svc->historicalReturnAllowed($rep),'Isolated return pilot unlocks for the fixture representative');
  $check(BenefitPolicy::enabled($pdo),'Isolated benefit gate opens on the combined target');

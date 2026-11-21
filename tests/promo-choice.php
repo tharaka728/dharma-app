@@ -16,6 +16,7 @@ try{
  $tag='PROMO'.strtoupper(bin2hex(random_bytes(5)));
  foreach(['admin'=>'ADMIN','rep'=>'SALES_REP','other'=>'SALES_REP'] as $key=>$role){$pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Benefit fixture',$tag.$key,password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),$role]);$actors[$key]=['id'=>$pdo->lastInsertId()];}$admin=$actors['admin'];$rep=$actors['rep'];$other=$actors['other'];
  putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$rep['id']);
+putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=0');
  $pdo->prepare('INSERT INTO categories(name) VALUES (?)')->execute([$tag]);$cat=$pdo->lastInsertId();
  $products=[];foreach(['100.00','0.05','50.00','25.00','10.00','10.00','0.01','0.01','0.01'] as $ix=>$price){$pdo->prepare('INSERT INTO products(sku,name,category_id,cost_price,selling_price) VALUES (?,?,?,NULL,?)')->execute([$tag.$ix,'Benefit product '.$ix,$cat,$price]);$products[]=$pdo->lastInsertId();}
  [$p1,$p2,$p3,$p4,$o1,$o2,$c1,$c2,$c3]=$products;

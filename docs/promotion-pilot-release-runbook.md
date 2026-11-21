@@ -156,12 +156,13 @@ Preserve the phone's existing encrypted offline workspace. The owner previously 
 5. Apply migrations: `php bin/migrate.php`. Post-migration schema verification: 24 rows in `schema_migrations` all `applied` with matching checksums; the two snapshot tables and four triggers exist; invoice counts unchanged.
 6. Feature-disabled smoke test: with the gate still off, an ordinary checkout works and no benefit UI appears.
 7. Owner confirms the pilot representative. Candidate from the historical-return configuration: username `nissanka`, user ID 156. This candidate is NOT verified: the operational database was not inspected during this task, so the owner must confirm the account exists, is active, and is the intended person before it is listed.
-8. Set `pilot_representatives` in `config/benefit-modes.php` to the confirmed user ID, e.g. `[156]`.
-9. Enable the policy: `enabled => true` in `config/benefit-modes.php`.
-10. Verify a non-pilot representative is unaffected: no benefit UI, legacy checkout works, benefit API calls return 403.
-11. Read-only mobile preview checks on the Redmi (section 11).
-12. Obtain the owner's confirmation immediately before the first real checkout; then reconcile the first genuine invoice, stock movements, payment and receipt against the review.
-13. Disable the pilot immediately (section 13) if a critical issue appears.
+8. Set `pilot_representatives` in `config/benefit-modes.php` to the confirmed user ID, exactly `[156]`.
+9. Enable the policy for the operational database only: `enabled => true` and `databases => ['dharma_sales_phase1']` in `config/benefit-modes.php`.
+10. Keep the first-posting hold ON: `posting_hold => true` must remain. With the hold active the pilot can select benefit modes and get server-authoritative reviewed totals, but no PROMO_CHOICE_V1 invoice can post - the hold is enforced inside `Invoices::issue`, so direct API submissions are blocked too, and replays of previously issued invoices stay safe. Verified in isolation (6 hold checks in `tests/promo-choice-pilot.php`).
+11. Verify a non-pilot representative is unaffected: no benefit UI, legacy checkout works, benefit API calls return 403.
+12. Read-only mobile preview checks on the Redmi (section 11).
+13. FIRST FINANCIAL INVOICE - MANDATORY STOP: the owner has NOT authorized the first real posting. Only after the owner's separate, explicit first-posting approval: set `posting_hold => false`, refresh and revalidate the review, then post and reconcile the first genuine invoice, stock movements, payment and receipt against the review. Never treat an old reviewed total as permanently authorized.
+14. Disable the pilot immediately (section 13) if a critical issue appears.
 
 ## 13. Emergency feature disable
 

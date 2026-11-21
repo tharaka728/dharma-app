@@ -61,6 +61,18 @@ final class BenefitPolicy
     {
         return self::enabled($pdo)&&self::pilotMember($actor);
     }
+    /**
+     * Phase 4H first-posting hold. While active, pilot representatives may select
+     * benefit modes and obtain server-authoritative reviewed totals, but no
+     * PROMO_CHOICE_V1 invoice may post. Defaults to the safe state (hold active)
+     * when the key is absent. The isolated-test override never touches the config file.
+     */
+    public static function postingHold():bool
+    {
+        $hold=(require APP_ROOT.'/config/benefit-modes.php')['posting_hold']??true;
+        if(getenv('DHARMA_BENEFIT_TEST')==='1'){$override=getenv('DHARMA_BENEFIT_TEST_POSTING_HOLD');if(is_string($override)&&$override!=='')$hold=$override==='1';}
+        return $hold===true;
+    }
     /** Validate the client benefit selection. Only the mode and the rate choice are accepted; all amounts are server-computed. */
     public static function validate(array $input,bool $oilSelected):array
     {

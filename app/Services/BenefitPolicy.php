@@ -33,7 +33,7 @@ final class BenefitPolicy
         $database=(string)$pdo->query('SELECT DATABASE()')->fetchColumn();
         $allowed=false;
         if(($config['enabled']??false)===true)$allowed=in_array($database,$config['databases']??[],true);
-        if(!$allowed&&getenv('DHARMA_BENEFIT_TEST')==='1')$allowed=$database===(string)($config['isolated_test_database']??'dharma_sales_phase9_test');
+        if(!$allowed&&getenv('DHARMA_BENEFIT_TEST')==='1'){$testDatabase=getenv('DHARMA_BENEFIT_TEST_DB');if(!is_string($testDatabase)||$testDatabase==='')$testDatabase=(string)($config['isolated_test_database']??'dharma_sales_phase9_test');$allowed=$database===$testDatabase;}
         if($allowed){$q=$pdo->prepare('SELECT status FROM schema_migrations WHERE version=?');$q->execute(['024_promotion_benefit_modes.sql']);$allowed=$q->fetchColumn()==='applied';}
         return $cache=$allowed;
     }

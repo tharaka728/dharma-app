@@ -23,12 +23,13 @@ async function fillFirstProduct(quantity){
  // Gate-open checkout UI: real benefit controls replace the simulation.
  await navigate(input.base+'/rep/invoices/new?language=en');
  check(await evaluate('!!document.getElementById("benefit_mode")&&!document.getElementById("benefit-simulation-mode")'),'Benefit controls replace simulation when the gate is open');
- check(await evaluate('!document.getElementById("benefit_mode").disabled&&document.getElementById("benefit_mode").disabled===false'),'Benefit mode enabled initially');
- check(await evaluate('document.getElementById("promotion_discount_choice").disabled&&document.querySelector("input[name=benefit_policy]").disabled'),'No benefit fields post until a mode is chosen');
+ check(await evaluate('document.getElementById("benefit_mode").value==="FREE_PROMOTION"&&![...document.getElementById("benefit_mode").options].some(o=>o.value==="")'),'Pilot representative must choose a benefit mode');
+ check(await evaluate('document.getElementById("promotion_discount_choice").disabled&&!document.querySelector("input[name=benefit_policy]").disabled'),'Rate choice rests until a discount mode is chosen');
  await evaluate('document.getElementById("customer_id").value='+JSON.stringify(input.customer)+';document.getElementById("customer_id").dispatchEvent(new Event("change",{bubbles:true}));');
  await fillFirstProduct('4');
  await until('!document.querySelector(".pos-pay").disabled&&!!document.querySelector(".pos-free-units")','baseline preview');
  check(await evaluate('document.querySelector(".pos-free-units").textContent.endsWith("2")'),'Baseline keeps free units');
+ check(await evaluate('document.getElementById("invoice-live-summary").textContent.includes("Free promotion")'),'Baseline preview is the free-promotion mode');
  await shot('promo-choice-form-baseline.png');
 
  // Select PROMOTION_DISCOUNT_INSTEAD at 25%: legacy fieldset leaves the form, suppression + discount preview.

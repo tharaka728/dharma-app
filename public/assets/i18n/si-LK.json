@@ -1627,5 +1627,9 @@
   "Benefit discount": "ප්‍රතිලාභ වට්ටම",
   "on eligible LKR": "සුදුසු රු. මත",
   "Benefit: {0} · Final total LKR {1} · Applied LKR {2} · Change LKR {3} · Outstanding LKR {4}. Review before issuing.": "ප්‍රතිලාභය: {0} · අවසන් එකතුව රු. {1} · භාවිත රු. {2} · ඉතිරි රු. {3} · හිඟ රු. {4}. නිකුත් කිරීමට පෙර සමාලෝචනය කරන්න.",
-  "Benefit: {0} {1}% on eligible LKR {2}: LKR {3} · Final total LKR {4} · Applied LKR {5} · Change LKR {6} · Outstanding LKR {7}. Review before issuing.": "ප්‍රතිලාභය: සුදුසු රු. {2} මත {0} {1}%: රු. {3} · අවසන් එකතුව රු. {4} · භාවිත රු. {5} · ඉතිරි රු. {6} · හිඟ රු. {7}. නිකුත් කිරීමට පෙර සමාලෝචනය කරන්න."
+  "Benefit: {0} {1}% on eligible LKR {2}: LKR {3} · Final total LKR {4} · Applied LKR {5} · Change LKR {6} · Outstanding LKR {7}. Review before issuing.": "ප්‍රතිලාභය: සුදුසු රු. {2} මත {0} {1}%: රු. {3} · අවසන් එකතුව රු. {4} · භාවිත රු. {5} · ඉතිරි රු. {6} · හිඟ රු. {7}. නිකුත් කිරීමට පෙර සමාලෝචනය කරන්න.",
+  "0% — No Promotion or Discount": "0% — ප්‍රවර්ධන හෝ වට්ටම් නොමැත",
+  "This promotion benefit mode requires an online connection to complete checkout.": "මෙම ප්‍රවර්ධන ක්‍රමය යටතේ බිල්පත නිකුත් කිරීමට සේවාදායක සම්බන්ධතාවයක් අවශ්‍ය වේ.",
+  "Promotion benefit modes are not available for this account.": "ප්‍රවර්ධන ප්‍රතිලාභ ක්‍රම මෙම ගිණුම සඳහා ලබා නොදේ.",
+  "This account must use the promotion benefit checkout.": "මෙම ගිණුම ප්‍රවර්ධන ප්‍රතිලාභ බිල්පත් ක්‍රමය භාවිත කළ යුතුය."
 }

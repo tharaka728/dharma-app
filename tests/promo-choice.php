@@ -14,13 +14,16 @@ try{
  $check(BenefitPolicy::enabled($pdo),'Isolated test gate opens with flag and matching database');
  $config=require dirname(__DIR__).'/config/benefit-modes.php';$check($config['enabled']===false&&$config['databases']===[],'Operational gate remains disabled by default');
  $tag='PROMO'.strtoupper(bin2hex(random_bytes(5)));
- foreach(['admin'=>'ADMIN','rep'=>'SALES_REP'] as $key=>$role){$pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Benefit fixture',$tag.$key,password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),$role]);$actors[$key]=['id'=>$pdo->lastInsertId()];}$admin=$actors['admin'];$rep=$actors['rep'];
+ foreach(['admin'=>'ADMIN','rep'=>'SALES_REP','other'=>'SALES_REP'] as $key=>$role){$pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Benefit fixture',$tag.$key,password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),$role]);$actors[$key]=['id'=>$pdo->lastInsertId()];}$admin=$actors['admin'];$rep=$actors['rep'];$other=$actors['other'];
+ putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$rep['id']);
  $pdo->prepare('INSERT INTO categories(name) VALUES (?)')->execute([$tag]);$cat=$pdo->lastInsertId();
  $products=[];foreach(['100.00','0.05','50.00','25.00','10.00','10.00','0.01','0.01','0.01'] as $ix=>$price){$pdo->prepare('INSERT INTO products(sku,name,category_id,cost_price,selling_price) VALUES (?,?,?,NULL,?)')->execute([$tag.$ix,'Benefit product '.$ix,$cat,$price]);$products[]=$pdo->lastInsertId();}
  [$p1,$p2,$p3,$p4,$o1,$o2,$c1,$c2,$c3]=$products;
  foreach($products as $ix=>$p)(new ProductStock($pdo))->post($admin,['request_id'=>Inventory::uuid(),'product_id'=>$p,'quantity'=>'500','selling_price'=>['100.00','0.05','50.00','25.00','10.00','10.00','0.01','0.01','0.01'][$ix],'product_version'=>'1']);
  foreach($products as $p)(new RepresentativeStock($pdo))->post($admin,['request_id'=>Inventory::uuid(),'rep_id'=>$rep['id'],'product_id'=>$p,'quantity'=>$p===$p1?'80':'400'],'ALLOCATE');
  $pdo->prepare("INSERT INTO customers(customer_code,shop_name,contact_person,phone,address,area,assigned_rep_id,credit_terms_days,credit_limit_enabled) VALUES (?,'Benefit customer','Fixture','0110000000','Benefit address','',?,30,0)")->execute([$tag,$rep['id']]);$customer=$pdo->lastInsertId();
+ (new RepresentativeStock($pdo))->post($admin,['request_id'=>Inventory::uuid(),'rep_id'=>$other['id'],'product_id'=>$p3,'quantity'=>'100'],'ALLOCATE');
+ $pdo->prepare("INSERT INTO customers(customer_code,shop_name,contact_person,phone,address,area,assigned_rep_id,credit_terms_days,credit_limit_enabled) VALUES (?,'Legacy customer','Fixture','0110000001','Legacy address','',?,30,0)")->execute([$tag.'L',$other['id']]);$legacyCustomer=$pdo->lastInsertId();
  $promos=new Promotions($pdo);
  $mkOffer=static function(array $over)use($promos,$admin){return $promos->save($admin,$over);};
  $buyGet=$mkOffer(['request_id'=>Inventory::uuid(),'name'=>'Benefit buy get','description'=>'','product_id'=>$p1,'type'=>'BUY_X_GET_Y','buy_quantity'=>'2','free_quantity'=>'1','percent_rate'=>'','fixed_discount'=>'','start_date'=>'','end_date'=>'','is_active'=>'1']);
@@ -66,7 +69,7 @@ try{
  [$r]=$prepare($rep,$in);$check($r['benefit_discount_amount']==='25.00'&&$r['benefit_rate']==='12.50','Custom percent accepted');
 
  // S4: monetary promotion discounts suppressed in discount modes, kept in free mode.
- $in=$benefit('PROMOTION_DISCOUNT_INSTEAD','0');$in['request_id']=Inventory::uuid();$in['items']=[['product_id'=>$p2,'quantity'=>'10']];
+ $in=$benefit('PROMOTION_DISCOUNT_INSTEAD','custom','0');$in['request_id']=Inventory::uuid();$in['items']=[['product_id'=>$p2,'quantity'=>'10']];
  [$r]=$prepare($rep,$in);
  $check($r['grand_total']==='0.50'&&$r['benefit_suppressed_monetary_discount']==='0.05'&&$r['lines'][0]['benefit_eligibility_reason']==='NOT_BUY_X_GET_Y','Monetary promotion suppressed');
  $in=$benefit('FREE_PROMOTION');$in['request_id']=Inventory::uuid();$in['items']=[['product_id'=>$p2,'quantity'=>'10']];
@@ -122,15 +125,15 @@ try{
  $tampered=$in;$tampered['benefit_mode']='ORDINARY_INVOICE_DISCOUNT';$reject(fn()=>$svc->issue($rep,$tampered),409,'Changed benefit mode after review rejected');
 
  // S13: legacy INVOICE_PERCENT_V1 path unchanged alongside the new gate.
- $legacy=['request_id'=>Inventory::uuid(),'customer_id'=>$customer,'stock_source'=>$rep['id'],'payment_type'=>'CASH','amount_received'=>'100.00','items'=>[['product_id'=>$p3,'quantity'=>'2']],'discount_policy'=>'INVOICE_PERCENT_V1','invoice_discount_choice'=>'25'];
- [$r,$legacy]=$prepare($rep,$legacy);$check($r['grand_total']==='75.00'&&$r['discount_policy']==='INVOICE_PERCENT_V1','Legacy invoice discount still applies');
- $issued=$svc->issue($rep,$legacy);
+ $legacy=['request_id'=>Inventory::uuid(),'customer_id'=>$legacyCustomer,'stock_source'=>$other['id'],'payment_type'=>'CASH','amount_received'=>'100.00','items'=>[['product_id'=>$p3,'quantity'=>'2']],'discount_policy'=>'INVOICE_PERCENT_V1','invoice_discount_choice'=>'25'];
+ [$r,$legacy]=$prepare($other,$legacy);$check($r['grand_total']==='75.00'&&$r['discount_policy']==='INVOICE_PERCENT_V1','Legacy invoice discount still applies');
+ $issued=$svc->issue($other,$legacy);
  $check((int)$pdo->query("SELECT COUNT(*) FROM invoice_discount_snapshots WHERE invoice_id='{$issued['invoice_id']}'")->fetchColumn()===1&&(int)$pdo->query("SELECT COUNT(*) FROM invoice_benefit_snapshots WHERE invoice_id='{$issued['invoice_id']}'")->fetchColumn()===0,'Legacy snapshot routing unchanged');
- $check($svc->get($rep,$issued['invoice_id'])['benefit_mode']===null,'Legacy invoice has no benefit mode');
+ $check($svc->get($other,$issued['invoice_id'])['benefit_mode']===null,'Legacy invoice has no benefit mode');
 
  // S14: invoices with no benefit data still read cleanly.
- $plain=['request_id'=>Inventory::uuid(),'customer_id'=>$customer,'stock_source'=>$rep['id'],'payment_type'=>'CASH','amount_received'=>'50.00','items'=>[['product_id'=>$p3,'quantity'=>'1']]];
- [$r,$plain]=$prepare($rep,$plain);$issued=$svc->issue($rep,$plain);$check($svc->get($rep,$issued['invoice_id'])['benefit_mode']===null,'Plain invoice benefit fields null');
+ $plain=['request_id'=>Inventory::uuid(),'customer_id'=>$legacyCustomer,'stock_source'=>$other['id'],'payment_type'=>'CASH','amount_received'=>'50.00','items'=>[['product_id'=>$p3,'quantity'=>'1']]];
+ [$r,$plain]=$prepare($other,$plain);$issued=$svc->issue($other,$plain);$check($svc->get($other,$issued['invoice_id'])['benefit_mode']===null,'Plain invoice benefit fields null');
  $check($svc->listing($rep,['customer_id'=>$customer])['total']>=1,'Listing survives benefit columns');
  // S15: reporting distinguishes benefit modes and the benefit reconciliation check passes.
  $reports=new \App\Services\Reports($pdo);

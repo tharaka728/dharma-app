@@ -5,6 +5,7 @@ use App\Support\Database;
 if(getenv('DHARMA_BENEFIT_TEST')!=='1')throw new RuntimeException('Gate-on browser verification requires DHARMA_BENEFIT_TEST=1.');
 $pdo=Database::connect();if($pdo->query('SELECT DATABASE()')->fetchColumn()!=='dharma_sales_phase9_test')throw new RuntimeException('Disposable database required');
 $f=offlineFixtures($pdo);
+putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$f['actors']['rep']['id']);
 $f['checkout_skus']=[];foreach($f['products'] as $pid){$st=$pdo->prepare('SELECT sku FROM products WHERE id=?');$st->execute([$pid]);$f['checkout_skus'][]=$st->fetchColumn();}
 $socket=stream_socket_server('tcp://127.0.0.1:0',$errno,$error);$address=stream_socket_get_name($socket,false);fclose($socket);$f['base']='http://'.$address;
 $server=proc_open([PHP_BINARY,'-S',$address,'-t',APP_ROOT.'/public',APP_ROOT.'/tests/http-router.php'],[0=>['pipe','r'],1=>['file',APP_ROOT.'/storage/promo-choice-browser-server.log','a'],2=>['file',APP_ROOT.'/storage/promo-choice-browser-server.log','a']],$pipes,APP_ROOT,null,['bypass_shell'=>true]);fclose($pipes[0]);

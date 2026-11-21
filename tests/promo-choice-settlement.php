@@ -13,6 +13,7 @@ $pdo->beginTransaction();
 try{
  $tag='SETT'.strtoupper(bin2hex(random_bytes(5)));
  foreach(['admin'=>'ADMIN','rep'=>'SALES_REP'] as $key=>$role){$pdo->prepare('INSERT INTO users(name,username,password_hash,role) VALUES (?,?,?,?)')->execute(['Settlement fixture',$tag.$key,password_hash(bin2hex(random_bytes(10)),PASSWORD_DEFAULT),$role]);$actors[$key]=['id'=>$pdo->lastInsertId()];}$admin=$actors['admin'];$rep=$actors['rep'];
+ putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$rep['id']);
  $pdo->prepare('INSERT INTO categories(name) VALUES (?)')->execute([$tag]);$cat=$pdo->lastInsertId();
  $pdo->prepare('INSERT INTO products(sku,name,category_id,cost_price,selling_price) VALUES (?,?,?,NULL,?)')->execute([$tag.'A','Settlement product A',$cat,'100.00']);$p1=$pdo->lastInsertId();
  (new ProductStock($pdo))->post($admin,['request_id'=>Inventory::uuid(),'product_id'=>$p1,'quantity'=>'500','selling_price'=>'100.00','product_version'=>'1']);

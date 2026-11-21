@@ -12,4 +12,12 @@ return [
     // Isolated verification only: the gate also opens when environment variable
     // DHARMA_BENEFIT_TEST=1 and the connected database is exactly this name.
     'isolated_test_database'=>'dharma_sales_phase9_test',
+    // Phase 3 decision C: controlled single-representative pilot. User IDs of
+    // representatives authorized for PROMO_CHOICE_V1 financial checkout while the
+    // master switch is on. MUST stay empty until the owner approves activation for
+    // a specific representative; never reuse the historical-return pilot allowlist.
+    'pilot_representatives'=>[],
+    // Phase 3 decision A: new benefit modes are online only. Signed offline
+    // payloads carrying benefit fields are rejected by OfflineSales with 409.
+    'online_only'=>true,
 ];

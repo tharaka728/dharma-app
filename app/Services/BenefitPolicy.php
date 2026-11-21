@@ -21,7 +21,9 @@ final class BenefitPolicy
     public const MODE_PROMO_DISCOUNT='PROMOTION_DISCOUNT_INSTEAD';
     public const MODE_ORDINARY='ORDINARY_INVOICE_DISCOUNT';
     public const MODES=[self::MODE_FREE,self::MODE_PROMO_DISCOUNT,self::MODE_ORDINARY];
-    public const CHOICES=['0','25','30','35','custom'];
+    // Phase 3 decision B: 0% is the approved no-benefit choice for ORDINARY_INVOICE_DISCOUNT only.
+    public const CHOICES_PROMO=['25','30','35','custom'];
+    public const CHOICES_ORDINARY=['0','25','30','35','custom'];
     /** Client-supplied field names that belong to the benefit checkout interface. */
     public const FIELDS=['benefit_mode','benefit_policy','promotion_discount_percent','promotion_discount_choice'];
 
@@ -38,6 +40,27 @@ final class BenefitPolicy
         return $cache=$allowed;
     }
 
+    /**
+     * Approved pilot representatives (user IDs) for PROMO_CHOICE_V1. The operational
+     * list stays empty until the owner approves activation for one representative
+     * (Phase 3 decision C). The isolated-test override never touches the config file.
+     */
+    public static function pilotRepIds():array
+    {
+        $ids=(require APP_ROOT.'/config/benefit-modes.php')['pilot_representatives']??[];
+        if(getenv('DHARMA_BENEFIT_TEST')==='1'){$override=getenv('DHARMA_BENEFIT_TEST_PILOT_IDS');if(is_string($override))$ids=$override===''?[]:explode(',',$override);}
+        return array_map('strval',is_array($ids)?$ids:[]);
+    }
+    /** Whether this actor is an approved promotion pilot representative. */
+    public static function pilotMember(array $actor):bool
+    {
+        return in_array((string)($actor['id']??''),self::pilotRepIds(),true);
+    }
+    /** Whether this actor may post new PROMO_CHOICE_V1 financial checkout right now. */
+    public static function checkoutAuthorized(PDO $pdo,array $actor):bool
+    {
+        return self::enabled($pdo)&&self::pilotMember($actor);
+    }
     /** Validate the client benefit selection. Only the mode and the rate choice are accepted; all amounts are server-computed. */
     public static function validate(array $input,bool $oilSelected):array
     {
@@ -45,7 +68,7 @@ final class BenefitPolicy
         $mode=$input['benefit_mode']??null;if(!is_string($mode)||!in_array($mode,self::MODES,true))throw new InventoryException(['benefit_mode'=>'Choose a listed benefit mode.']);
         $rate='0.00';$choice=null;
         if($mode!==self::MODE_FREE){
-            $choice=$input['promotion_discount_choice']??'custom';if(!is_string($choice)||!in_array($choice,self::CHOICES,true))throw new InventoryException(['promotion_discount_percent'=>'Choose a listed promotion discount.']);
+            $choice=$input['promotion_discount_choice']??'custom';$allowed=$mode===self::MODE_ORDINARY?self::CHOICES_ORDINARY:self::CHOICES_PROMO;if(!is_string($choice)||!in_array($choice,$allowed,true))throw new InventoryException(['promotion_discount_percent'=>'Choose a listed promotion discount.']);
             $rate=InvoiceDiscount::rate($choice==='custom'?($input['promotion_discount_percent']??null):$choice);
             if($oilSelected)throw new InventoryException(['oil_rewards'=>'Mixed-oil rewards are not available with an invoice discount benefit mode.'],409);
         }

@@ -147,7 +147,7 @@ final class Invoices
         $scope=$a['role']==='SALES_REP'?' AND i.rep_id=?':'';$params=[$customer];if($scope)$params[]=$a['id'];
         return $this->rows("SELECT i.id invoice_id,i.invoice_number,i.business_date,hr.approved_value,hr.applied_value,hr.forfeited_value,u.name representative,rl.price_year,rl.unit_price,rl.quantity,rl.line_value,rl.disposition,p.sku,p.name,p.name_si,IF(v.invoice_id IS NULL,'ISSUED','VOIDED') validity FROM historical_customer_returns hr JOIN invoices i ON i.id=hr.invoice_id JOIN users u ON u.id=hr.actor_user_id JOIN historical_customer_return_lines rl ON rl.invoice_id=hr.invoice_id JOIN products p ON p.id=rl.product_id LEFT JOIN invoice_voids v ON v.invoice_id=i.id WHERE hr.customer_id=?".$scope.' ORDER BY i.business_date DESC,i.invoice_number DESC,rl.line_number LIMIT 100',$params);
     }
-    private function normalize(array $actor,array $input):array
+    private function normalize(array $actor,array $input,bool $legacyOfflineSync=false):array
     {
         $benefitRequested=false;foreach(BenefitPolicy::FIELDS as $simulationField)if(array_key_exists($simulationField,$input))$benefitRequested=true;
         // The 409 safeguard stays for every context where the benefit gate is closed.
@@ -157,7 +157,13 @@ final class Invoices
             foreach(BenefitPolicy::FIELDS as $strayField)if($strayField!=='benefit_mode'&&array_key_exists($strayField,$input))throw new InventoryException(['benefit'=>'Benefit simulation is not available for checkout.'],409);
             $benefitRequested=false;
         }
-        $a=$this->actor($actor);$customer=Representatives::id($input['customer_id']??null,'customer_id');$source=$input['stock_source']??'';
+        $a=$this->actor($actor);
+        // Phase 3 decision C: with the gate open, new benefit checkout needs pilot authorization,
+        // and a pilot representative may not bypass the new policy with legacy online checkout.
+        // Reviewed at posting time too, so a flag or allowlist change between review and issue cannot slip through.
+        if($benefitRequested&&!BenefitPolicy::pilotMember($a))throw new InventoryException(['benefit'=>'Promotion benefit modes are not available for this account.'],403);
+        if(!$benefitRequested&&!$legacyOfflineSync&&$a['role']==='SALES_REP'&&BenefitPolicy::enabled($this->pdo)&&BenefitPolicy::pilotMember($a))throw new InventoryException(['benefit'=>'This account must use the promotion benefit checkout.'],409);
+        $customer=Representatives::id($input['customer_id']??null,'customer_id');$source=$input['stock_source']??'';
         if($a['role']==='SALES_REP'){$expected=(string)$a['id'];if($source!==''&&$source!==$expected)throw new InventoryException(['stock_source'=>'Representatives may sell only their own stock.'],403);$source=$expected;}
         elseif($source!=='warehouse')$source=Representatives::id($source,'stock_source');
         $type=$input['payment_type']??null;if(!in_array($type,['CASH','CREDIT'],true))throw new InventoryException(['payment_type'=>'Choose cash or credit.']);
@@ -265,10 +271,10 @@ final class Invoices
         $fingerprint=$review;unset($fingerprint['oil_offers']);foreach($fingerprint['lines'] as &$line)unset($line['available_quantity'],$line['name_si']);unset($line);
         $review['review_hash']=hash('sha256',json_encode($fingerprint,JSON_THROW_ON_ERROR));return $review;
     }
-    public function review(array $actor,array $input):array
+    public function review(array $actor,array $input,bool $legacyOfflineSync=false):array
     {
         if(array_key_exists('historical_return',$input))$this->requireHistoricalReturnAccess($actor);
-        $n=$this->normalize($actor,$input);
+        $n=$this->normalize($actor,$input,$legacyOfflineSync);
         // Review may create no permanent operating state or business rows.
         $own=!$this->pdo->inTransaction();if($own){$this->pdo->exec('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');$this->pdo->beginTransaction();}else $this->pdo->exec('SAVEPOINT invoice_review');
         try{return $this->reviewLocked($actor,$n);}finally{if($own)$this->pdo->rollBack();else{$this->pdo->exec('ROLLBACK TO SAVEPOINT invoice_review');$this->pdo->exec('RELEASE SAVEPOINT invoice_review');}}
@@ -292,8 +298,10 @@ final class Invoices
     public function issue(array $actor,array $input,?array $syncContext=null):array
     {
         if($syncContext!==null&&array_key_exists('historical_return',$input))throw new InventoryException(['return'=>'Historical returns require an online transaction.'],409);
+        // Phase 3 decision A: benefit modes are online only - never via the offline synchronization path.
+        if($syncContext!==null)foreach(BenefitPolicy::FIELDS as $benefitField)if(array_key_exists($benefitField,$input))throw new InventoryException(['benefit'=>'Benefit modes require an online transaction.'],409);
         if(array_key_exists('historical_return',$input))$this->requireHistoricalReturnAccess($actor);
-        $n=$this->normalize($actor,$input);$id=self::uuid($input['request_id']??null);$review=$input['review_hash']??null;if(!is_string($review)||!preg_match('/^[0-9a-f]{64}$/D',$review))throw new InventoryException(['review'=>'Review the invoice before issuing.']);$hash=hash('sha256',json_encode([$n,$review],JSON_THROW_ON_ERROR));$returnHash=hash('sha256',json_encode($n,JSON_THROW_ON_ERROR));
+        $n=$this->normalize($actor,$input,$syncContext!==null);$id=self::uuid($input['request_id']??null);$review=$input['review_hash']??null;if(!is_string($review)||!preg_match('/^[0-9a-f]{64}$/D',$review))throw new InventoryException(['review'=>'Review the invoice before issuing.']);$hash=hash('sha256',json_encode([$n,$review],JSON_THROW_ON_ERROR));$returnHash=hash('sha256',json_encode($n,JSON_THROW_ON_ERROR));
         return $this->tx(function()use($actor,$n,$id,$review,$hash,$returnHash,$syncContext){$this->gate();$a=$this->actor($actor);if(isset($n['historical_return']))$this->requireHistoricalReturnAccess($a);
             if($syncContext===null&&$this->one('SELECT id FROM sync_operations WHERE id=? FOR UPDATE',[$id]))throw new InventoryException(['request_id'=>'This identity belongs to the offline synchronization workflow. Use its queue or administrator review.'],409);
             $old=$this->one('SELECT i.client_payload_hash,i.posting_channel,i.device_id,i.policy_grant_id,d.issued_by_user_id FROM invoices i JOIN online_invoice_details d ON d.invoice_id=i.id WHERE i.id=? FOR UPDATE',[$id]);

@@ -41,6 +41,7 @@ final class InvoiceController
             elseif($action==='show'){$record=$this->invoices->get($user,$id);if($api){Http::json($record);return;}}
             elseif($action==='create')$input=['payment_type'=>'CASH','amount_received'=>'0.00'];
         }catch(InventoryException $e){http_response_code($e->status);if($api||!in_array($e->status,[422,409],true)){Http::json(['errors'=>$e->errors],$e->status);return;}$errors=$e->errors;if(in_array($action,['preview','index'],true)&&$_SERVER['REQUEST_METHOD']==='POST')$action='create';elseif(in_array($action,['void','payment'],true)){$action='show';$record=$this->invoices->get($user,$id);}}
+        $benefitModes=$this->invoices->benefitModesEnabled();
         $source=is_string($input['stock_source']??null)?$input['stock_source']:null;$selected=$action==='create'&&($_POST['catalogue_fallback']??'')!=='1'?array_column(is_array($input['items']??null)?$input['items']:[],'product_id'):null;$options=$this->invoices->options($user,$source,$action==='index',$selected);
         require APP_ROOT.'/app/Views/invoices.php';
     }

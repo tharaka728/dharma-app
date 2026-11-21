@@ -132,6 +132,12 @@ try{
  $plain=['request_id'=>Inventory::uuid(),'customer_id'=>$customer,'stock_source'=>$rep['id'],'payment_type'=>'CASH','amount_received'=>'50.00','items'=>[['product_id'=>$p3,'quantity'=>'1']]];
  [$r,$plain]=$prepare($rep,$plain);$issued=$svc->issue($rep,$plain);$check($svc->get($rep,$issued['invoice_id'])['benefit_mode']===null,'Plain invoice benefit fields null');
  $check($svc->listing($rep,['customer_id'=>$customer])['total']>=1,'Listing survives benefit columns');
+ // S15: reporting distinguishes benefit modes and the benefit reconciliation check passes.
+ $reports=new \App\Services\Reports($pdo);
+ $rec=$reports->reconciliation($admin);$check(($rec['Invoice benefit snapshots / lines / totals']??null)===0,'Benefit reconciliation clean');
+ $sales=$reports->report($admin,'sales',['period'=>'today']);$row=$sales['rows'][0]??null;
+ $check($row!==null&&(int)$row['benefit_invoices']>=3&&(float)$row['benefit_discounts_lkr']>=50.0,'Sales report distinguishes benefit invoices');
+ $out=$reports->report($admin,'outstanding',['period'=>'today']);$check(in_array('benefit_mode',$out['columns'],true),'Outstanding report carries benefit mode');
 }finally{
  $pdo->rollBack();
  $ok=true;foreach($before as $t=>$hash){$now=hash('sha256',json_encode($pdo->query('SELECT * FROM `'.$t.'` ORDER BY 1')->fetchAll(),JSON_THROW_ON_ERROR));if($now!==$hash){fwrite(STDERR,"Table changed: $t\n");$ok=false;}}

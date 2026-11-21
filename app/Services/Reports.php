@@ -57,6 +57,12 @@ final class Reports
         }
         return ['from'=>$from,'to'=>$to];
     }
+    /** Benefit snapshot schema may be absent before migration 024 is applied; reports then show no benefit data. */
+    private function benefitColumn():string
+    {
+        static $applied=null;if($applied===null){$q=$this->pdo->prepare('SELECT status FROM schema_migrations WHERE version=?');$q->execute(['024_promotion_benefit_modes.sql']);$applied=$q->fetchColumn()==='applied';}
+        return $applied?'(SELECT b.benefit_mode FROM invoice_benefit_snapshots b WHERE b.invoice_id=i.id) benefit_mode':'NULL benefit_mode';
+    }
     private function context(array $a,array $f):array
     {
         $tz=new \DateTimeZone('Asia/Colombo');$utc=new \DateTimeZone('UTC');
@@ -74,7 +80,7 @@ final class Reports
         COALESCE(pa.paid,0.00) paid_amount,IF(v.invoice_id IS NULL,'ISSUED','VOIDED') validity,
         $return return_applied,IF(COALESCE(pa.paid,0)+$return>=i.grand_total,'PAID',IF(COALESCE(pa.paid,0)+$return>0,'PARTIAL','UNPAID')) payment_status,
         IF(v.invoice_id IS NULL,i.grand_total-COALESCE(pa.paid,0)-$return,0.00) outstanding,COALESCE(v.refund_due,0.00) refund_due,v.created_at_utc voided_at_utc,
-        COALESCE(iq.paid_units,0) paid_units,COALESCE(iq.free_units,0) free_units
+        COALESCE(iq.paid_units,0) paid_units,COALESCE(iq.free_units,0) free_units,".$this->benefitColumn()."
         FROM invoices i JOIN online_invoice_details d ON d.invoice_id=i.id JOIN customers c ON c.id=i.customer_id
         LEFT JOIN (SELECT x.invoice_id,SUM(x.amount) paid FROM payment_allocations x JOIN payments p ON p.id=x.payment_id WHERE p.status='POSTED' GROUP BY x.invoice_id) pa ON pa.invoice_id=i.id
         LEFT JOIN (SELECT invoice_id,SUM(quantity) paid_units,SUM(free_quantity) free_units FROM invoice_items GROUP BY invoice_id) iq ON iq.invoice_id=i.id
@@ -145,7 +151,7 @@ final class Reports
         }
         if(in_array($type,['overview','sales'],true)){
             $bucket=['day'=>'business_date','week'=>'DATE_SUB(business_date,INTERVAL WEEKDAY(business_date) DAY)','month'=>"DATE_FORMAT(business_date,'%Y-%m-01')"][$f['group']];
-            $sql=$cte."SELECT $bucket period_start,COUNT(*) finalized_count,COALESCE(SUM(validity='VOIDED'),0) void_count,COALESCE(SUM(IF(validity='ISSUED',subtotal,0)),0.00) gross_lkr,COALESCE(SUM(IF(validity='ISSUED',discount_total,0)),0.00) discounts_lkr,COALESCE(SUM(IF(validity='ISSUED',grand_total,0)),0.00) net_lkr,COALESCE(SUM(IF(validity='ISSUED',return_applied,0)),0.00) applied_returns_lkr,COALESCE(SUM(IF(validity='ISSUED',grand_total-return_applied,0)),0.00) operational_net_after_returns_lkr,COALESCE(SUM(IF(validity='ISSUED' AND payment_type='CASH',grand_total,0)),0.00) cash_sales_lkr,COALESCE(SUM(IF(validity='ISSUED' AND payment_type='CREDIT',grand_total,0)),0.00) credit_sales_lkr,COALESCE(SUM(IF(validity='ISSUED',paid_units,0)),0) paid_units,COALESCE(SUM(IF(validity='ISSUED',free_units,0)),0) free_units FROM period_invoices GROUP BY $bucket";$order='period_start DESC';
+            $sql=$cte."SELECT $bucket period_start,COUNT(*) finalized_count,COALESCE(SUM(validity='VOIDED'),0) void_count,COALESCE(SUM(IF(validity='ISSUED',subtotal,0)),0.00) gross_lkr,COALESCE(SUM(IF(validity='ISSUED',discount_total,0)),0.00) discounts_lkr,COALESCE(SUM(IF(validity='ISSUED',grand_total,0)),0.00) net_lkr,COALESCE(SUM(IF(validity='ISSUED',return_applied,0)),0.00) applied_returns_lkr,COALESCE(SUM(IF(validity='ISSUED',grand_total-return_applied,0)),0.00) operational_net_after_returns_lkr,COALESCE(SUM(IF(validity='ISSUED' AND payment_type='CASH',grand_total,0)),0.00) cash_sales_lkr,COALESCE(SUM(IF(validity='ISSUED' AND payment_type='CREDIT',grand_total,0)),0.00) credit_sales_lkr,COALESCE(SUM(IF(validity='ISSUED',paid_units,0)),0) paid_units,COALESCE(SUM(IF(validity='ISSUED',free_units,0)),0) free_units,COALESCE(SUM(validity='ISSUED' AND benefit_mode IS NOT NULL),0) benefit_invoices,COALESCE(SUM(IF(validity='ISSUED' AND benefit_mode='FREE_PROMOTION',free_units,0)),0) benefit_free_units,COALESCE(SUM(IF(validity='ISSUED' AND benefit_mode<>'FREE_PROMOTION' AND benefit_mode IS NOT NULL,discount_total,0)),0.00) benefit_discounts_lkr FROM period_invoices GROUP BY $bucket";$order='period_start DESC';
         }elseif($type==='products'){
             $where=["a.validity='ISSUED'"];if($f['product_id']!==''){$where[]='li.product_id=?';$params[]=$f['product_id'];}if($f['category_id']!==''){$where[]='p.category_id=?';$params[]=$f['category_id'];}
             $sql=$cte.'SELECT li.product_id,li.sku_snapshot,li.product_name_snapshot,ls.name_si,SUM(li.quantity) paid_units,SUM(li.free_quantity) free_units,SUM(li.gross_amount) gross_lkr,SUM(li.discount_amount) discounts_lkr,SUM(li.line_total) net_lkr FROM period_invoices a JOIN invoice_items li ON li.invoice_id=a.id JOIN products p ON p.id=li.product_id LEFT JOIN invoice_product_language_snapshots ls ON ls.invoice_id=li.invoice_id AND ls.product_id=li.product_id WHERE '.implode(' AND ',$where).' GROUP BY li.product_id,li.sku_snapshot,li.product_name_snapshot,ls.name_si';$order='net_lkr DESC,product_id';
@@ -183,7 +189,7 @@ final class Reports
                 $sql=$cte."SELECT $labels,COUNT(DISTINCT payment_id) payments,SUM(amount) gross_posted_collections_lkr,SUM(IF(validity='VOIDED',amount,0)) collected_on_voided_invoices_lkr FROM collected GROUP BY $bucket";$order='gross_posted_collections_lkr DESC';
             }
         }elseif($type==='outstanding'){
-            $sql=$cte."SELECT invoice_number,business_date,customer_name,rep_name_snapshot,payment_type,payment_status,grand_total total_lkr,paid_amount paid_lkr,outstanding outstanding_lkr,due_date,GREATEST(DATEDIFF(clock.today,due_date),0) overdue_days,IF(due_date<clock.today,outstanding,0.00) overdue_lkr FROM a CROSS JOIN clock WHERE validity='ISSUED' AND outstanding>0";$order='due_date,invoice_number';
+            $sql=$cte."SELECT invoice_number,business_date,customer_name,rep_name_snapshot,benefit_mode,payment_type,payment_status,grand_total total_lkr,paid_amount paid_lkr,outstanding outstanding_lkr,due_date,GREATEST(DATEDIFF(clock.today,due_date),0) overdue_days,IF(due_date<clock.today,outstanding,0.00) overdue_lkr FROM a CROSS JOIN clock WHERE validity='ISSUED' AND outstanding>0";$order='due_date,invoice_number';
         }elseif($type==='refunds'){
             $sql=$cte."SELECT invoice_number,customer_name,rep_name_snapshot,CONVERT_TZ(voided_at_utc,'+00:00','+05:30') voided_colombo,refund_due current_refund_liability_lkr,'Unavailable — refund posting not implemented.' actual_refunds FROM a WHERE validity='VOIDED'";$order='voided_colombo DESC,invoice_number';
         }elseif($type==='inventory'){
@@ -231,6 +237,8 @@ final class Reports
             'Transfers conserve stock'=>"SELECT t.id FROM inventory_transactions t LEFT JOIN inventory_movements m ON m.transaction_id=t.id WHERE t.type='TRANSFER' AND m.batch_id IS NULL GROUP BY t.id HAVING COUNT(m.id)<>2 OR COALESCE(SUM(m.quantity_delta),0)<>0",
             'Finalized offline submissions'=>"SELECT o.id FROM sync_operations o LEFT JOIN invoices i ON i.id=o.invoice_id WHERE o.result_status='ACCEPTED' AND (i.id IS NULL OR i.posting_channel<>'SYNC' OR i.rep_id<>o.user_id OR i.device_id<>o.device_id)"
         ];if($return!=='0.00')$queries['Historical return settlement / lines']="SELECT hr.invoice_id FROM historical_customer_returns hr JOIN invoices i ON i.id=hr.invoice_id LEFT JOIN (SELECT invoice_id,SUM(line_value) amount FROM historical_customer_return_lines GROUP BY invoice_id) rl ON rl.invoice_id=hr.invoice_id WHERE hr.customer_id<>i.customer_id OR hr.approved_value<>hr.applied_value+hr.forfeited_value OR hr.applied_value>i.grand_total OR rl.amount IS NULL OR rl.amount<>hr.approved_value";
+        static $benefitApplied=null;if($benefitApplied===null){$bq=$this->pdo->prepare('SELECT status FROM schema_migrations WHERE version=?');$bq->execute(['024_promotion_benefit_modes.sql']);$benefitApplied=$bq->fetchColumn()==='applied';}
+        if($benefitApplied)$queries['Invoice benefit snapshots / lines / totals']="SELECT b.invoice_id FROM invoice_benefit_snapshots b JOIN invoices i ON i.id=b.invoice_id LEFT JOIN (SELECT invoice_id,COUNT(*) rows_n,SUM(allocated_discount) allocated,SUM(suppressed_free_quantity) suppressed_free,SUM(suppressed_monetary_discount) suppressed_monetary FROM invoice_benefit_line_snapshots GROUP BY invoice_id) l ON l.invoice_id=b.invoice_id WHERE l.invoice_id IS NULL OR b.discount_amount<>i.manual_discount_total OR b.discount_amount<>COALESCE(l.allocated,0) OR b.suppressed_free_quantity<>COALESCE(l.suppressed_free,0) OR b.suppressed_monetary_discount<>COALESCE(l.suppressed_monetary,0) OR (b.benefit_mode='FREE_PROMOTION' AND b.discount_amount<>'0.00')";
         $result=[];foreach($queries as $label=>$sql)$result[$label]=(int)$this->one('SELECT COUNT(*) n FROM ('.$sql.') failures')['n'];
         $result['Warehouse movement ledger']=count((new ProductStock($this->pdo))->reconciliation($a));$result['Representative movement ledger']=count((new RepresentativeStock($this->pdo))->reconciliation($a));return $result;
     }

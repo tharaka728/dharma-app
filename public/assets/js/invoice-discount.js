@@ -17,7 +17,8 @@ const tr_invoice_discount_js=(key,values={})=>globalThis.DharmaI18n?.t(key,value
    const response=await fetch(endpoint,{method:'POST',body:new FormData(form),credentials:'same-origin',cache:'no-store',signal:controller.signal});const data=await response.json();if(mine!==epoch)return;
    if(!response.ok)throw Error(Object.values(data.errors||{}).join(' ')||tr_invoice_discount_js("Unable to calculate. Sign in or refresh."));
    form.dispatchEvent(new CustomEvent('pos:totals',{detail:data}));
-   summary.textContent=tr_invoice_discount_js("After promotions LKR {0} · Invoice Discount {1}%: LKR {2} · Final total LKR {3} · Applied LKR {4} · Change LKR {5} · Outstanding LKR {6}. Review before issuing.",{0:(data.discountable_subtotal),1:(data.invoice_discount_percent),2:(data.invoice_discount_amount),3:(data.grand_total),4:(data.applied_amount),5:(data.change_amount),6:(data.outstanding)});
+   // Benefit-mode previews are summarized by invoice-benefit.js from the same event.
+   if(!data.benefit_mode)summary.textContent=tr_invoice_discount_js("After promotions LKR {0} · Invoice Discount {1}%: LKR {2} · Final total LKR {3} · Applied LKR {4} · Change LKR {5} · Outstanding LKR {6}. Review before issuing.",{0:(data.discountable_subtotal),1:(data.invoice_discount_percent),2:(data.invoice_discount_amount),3:(data.grand_total),4:(data.applied_amount),5:(data.change_amount),6:(data.outstanding)});
   }catch(error){if(mine===epoch&&error.name!=='AbortError')summary.textContent=error.message;}
  }
  function changed(){selection();invalidate();timer=setTimeout(preview,300);}

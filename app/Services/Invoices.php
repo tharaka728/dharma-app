@@ -152,6 +152,11 @@ final class Invoices
         $benefitRequested=false;foreach(BenefitPolicy::FIELDS as $simulationField)if(array_key_exists($simulationField,$input))$benefitRequested=true;
         // The 409 safeguard stays for every context where the benefit gate is closed.
         if($benefitRequested&&!BenefitPolicy::enabled($this->pdo))throw new InventoryException(['benefit'=>'Benefit simulation is not available for checkout.'],409);
+        if($benefitRequested&&($input['benefit_mode']??null)===''){
+            // The enabled UI posts a bare empty mode selector with its other controls disabled; anything more is a forgery.
+            foreach(BenefitPolicy::FIELDS as $strayField)if($strayField!=='benefit_mode'&&array_key_exists($strayField,$input))throw new InventoryException(['benefit'=>'Benefit simulation is not available for checkout.'],409);
+            $benefitRequested=false;
+        }
         $a=$this->actor($actor);$customer=Representatives::id($input['customer_id']??null,'customer_id');$source=$input['stock_source']??'';
         if($a['role']==='SALES_REP'){$expected=(string)$a['id'];if($source!==''&&$source!==$expected)throw new InventoryException(['stock_source'=>'Representatives may sell only their own stock.'],403);$source=$expected;}
         elseif($source!=='warehouse')$source=Representatives::id($source,'stock_source');

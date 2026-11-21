@@ -94,11 +94,11 @@ Use separate responsive cart/summary areas and test desktop and Redmi mobile in 
 | Historical returns | Separately permitted online return after each merchandise calculation; applied/forfeited/cash/credit, void and no carryforward credit; existing pilot and preview guards. |
 | Responsive UI | Sinhala and English, 320–1920px including 393px Redmi, narrow cart containers, keyboard/touch, mode switching and draft preservation. |
 
-## Remaining owner decisions — recommendations only
+## Owner decisions — RESOLVED 2026-11-21
 
-1. **Previously signed offline invoices:** decide whether unchanged valid legacy bodies may post under their original agreed version or must be held for review at cutover. Recommendation: preserve bodies and operation IDs, accept only explicitly supported original versions after all existing checks, and hold unsupported or changed grants; never silently recalculate.
-2. **No benefit:** decide whether `ORDINARY_INVOICE_DISCOUNT` at 0% is the desired no-discount/no-free representation. Recommendation: use that representation to avoid a fourth mode if the owner agrees.
-3. **Online cutover:** approve the transition/version strategy for old forms and clients, including enforcement of the new selection on new requests without invalidating already signed offline bodies.
+1. **Previously signed offline invoices — RESOLVED (Decision A).** Unchanged valid legacy signed offline bodies post under their original agreed version after all existing checks; they are never silently recalculated. New benefit modes are online only: any offline synchronization payload carrying benefit fields is rejected (`409 Benefit modes require an online transaction.`), and a pilot representative's ordinary online checkout without a benefit selection is rejected (`409 This account must use the promotion benefit checkout.`). The pilot's legacy signed offline sync path is explicitly preserved.
+2. **No benefit — RESOLVED (Decision B).** `ORDINARY_INVOICE_DISCOUNT` at preset 0% is the official no-benefit representation, labeled `0% — No Promotion or Discount`. At 0% all free units and monetary product promotions are suppressed, the snapshot records 0.00, and stock demand is paid quantities only. Preset 0% is rejected for `PROMOTION_DISCOUNT_INSTEAD`; custom 0 remains valid in both discount modes.
+3. **Online cutover — RESOLVED (Decision C).** Single-representative controlled pilot first. Benefit modes require both the global `PROMO_CHOICE_V1` gate and membership in the `pilot_representatives` allowlist; membership is re-authorized server-side at issue time. Non-pilot representatives keep the legacy checkout unchanged and never see the benefit UI.
 
 ## Migration, rollback and safety
 

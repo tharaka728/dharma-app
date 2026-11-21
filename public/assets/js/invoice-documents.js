@@ -5,7 +5,7 @@ const tr_invoice_documents_js=(key,values={})=>globalThis.DharmaI18n?.t(key,valu
 (()=>{
  const message=document.querySelector('[data-document-message]');
  const tell=text=>{if(message)message.textContent=tr_invoice_documents_js(text);};
- document.querySelectorAll('[data-print-document]').forEach(button=>button.addEventListener('click',()=>{if(!navigator.onLine){tell('Reconnect to open a verified invoice document. Offline final-invoice printing is unavailable.');return;}window.print();}));
+ document.querySelectorAll('[data-print-document]').forEach(button=>button.addEventListener('click',()=>{if(!navigator.onLine){tell('Reconnect to open a verified invoice document. Offline final-invoice printing is unavailable.');return;}if(document.body?.classList.contains('receipt-58mm')&&document.fonts){document.fonts.ready.then(()=>window.print());}else{window.print();}}));
  document.querySelectorAll('[data-share-pdf]').forEach(button=>{
   if(!navigator.share||!navigator.canShare||!window.File)return;
   button.hidden=false;let file=null;

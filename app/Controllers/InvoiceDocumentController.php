@@ -21,7 +21,7 @@ final class InvoiceDocumentController
                 session_write_close();
                 $bytes=LocalPdf::generate(InvoiceDocuments::render($record,'a4',$base,true,\App\Support\I18n::valid($_GET['document_lang']??null)));
                 header('Content-Type: application/pdf');header('Content-Disposition: attachment; filename="'.InvoiceDocuments::filename($record).'"');header('Content-Length: '.strlen($bytes));echo $bytes;
-            }else{header('Content-Type: text/html; charset=utf-8');echo InvoiceDocuments::render($record,$route['format'],$base,false,\App\Support\I18n::valid($_GET['document_lang']??null));}
+            }else{header('Content-Type: text/html; charset=utf-8');echo InvoiceDocuments::render($record,$route['format'],$base,false,\App\Support\I18n::valid($_GET['document_lang']??null),($_GET['paper']??null)==='58'?'58':'80');}
         }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}
         catch(\Throwable $e){error_log('Invoice document generation failed: '.get_class($e));Http::error('DOCUMENT_UNAVAILABLE','Document unavailable. Try again or use Print A4 and Save as PDF.',503);}
     }

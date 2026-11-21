@@ -1,0 +1,28 @@
+/* Opt-in only: the default 80mm receipt and A4/PDF styles are unchanged.
+   58mm is paper width, not confirmed printer dot width. Use a conservative
+   48mm content area until the actual model's printable width is measured.
+   A finite page length is intentional: Chrome does not support 58mm auto. */
+@font-face{font-family:"Receipt Sinhala";font-style:normal;font-weight:400;font-display:block;src:url("../fonts/NotoSansSinhala-Regular.woff2") format("woff2")}
+@font-face{font-family:"Receipt Sinhala";font-style:normal;font-weight:700;font-display:block;src:url("../fonts/NotoSansSinhala-Bold.woff2") format("woff2")}
+@page{size:58mm 297mm;margin:0 5mm}
+html body.receipt-58mm,html[lang="si-LK"] body.receipt-58mm{font-family:Arial,"Receipt Sinhala","Nirmala UI",sans-serif;line-height:1.5;color:#000}
+.receipt.receipt-58mm .invoice-sheet{width:58mm;max-width:100%;padding:0 5mm 3mm;margin:12px auto;font-size:12px;overflow-wrap:anywhere}
+.receipt-58mm .invoice-heading{padding-top:0;border-color:#000}
+.receipt-58mm h1{font-size:16px;line-height:1.5;font-weight:700;color:#000}
+.receipt-58mm h2,.receipt-58mm h3{font-size:13px}
+.receipt-58mm .receipt-item>strong{display:block;font-size:14px;font-weight:700}
+.receipt-58mm .receipt-item{padding:8px 0}
+.receipt-58mm .sku,.receipt-58mm .receipts,.receipt-58mm footer,.receipt-58mm .totals p{font-size:12px;color:#000}
+.receipt-58mm .amount-row{flex-wrap:wrap;gap:2px 6px;font-size:12px}
+.receipt-58mm .amount-row>:first-child{min-width:0;flex:1 1 auto}
+.receipt-58mm .amount-row>:last-child{flex:0 0 auto;margin-left:auto;white-space:nowrap;overflow-wrap:normal;font-variant-numeric:tabular-nums}
+.receipt-58mm .receipt-unit-price{display:inline-block;white-space:nowrap;overflow-wrap:normal}
+.receipt-58mm .grand-total{font-size:16px;font-weight:700;border-color:#000}
+.receipt-58mm .customer{margin:12px 0}
+.receipt-58mm footer{margin-top:12px}
+@media print{
+ html,body.receipt-58mm{margin:0!important;padding:0!important;background:#fff}
+ .receipt.receipt-58mm .invoice-sheet{width:48mm;max-width:100%;margin:0!important;padding:0!important}
+ .receipt-58mm .document-actions{display:none!important}
+ .receipt-58mm .invoice-heading,.receipt-58mm h1{margin-top:0!important;padding-top:0!important}
+}

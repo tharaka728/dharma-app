@@ -69,7 +69,14 @@ function createPOS(config) {
   const rows=[['Subtotal after line promotions',data.discountable_subtotal||data.invoice_discount_base||data.subtotal]];const totalFreeUnits=(data.lines||[]).reduce((sum,line)=>sum+(parseInt(line.free_quantity,10)||0),0);if(totalFreeUnits>0)rows.push([tr_pos_js('Eligible free units'),String(totalFreeUnits),false,true]);if(data.benefit_mode&&data.benefit_mode!=='FREE_PROMOTION'){rows.push([tr_pos_js('Eligible discount subtotal'),data.benefit_eligible_subtotal??'0.00']);rows.push([tr_pos_js('Benefit discount')+' '+(data.benefit_rate||'0')+'%',data.benefit_discount_amount??'0.00']);}
  rows.push([tr_pos_js('Invoice discount')+' '+(data.invoice_discount_percent||'0')+'%',data.invoice_discount_amount||'0.00'],['Grand Total',data.grand_total,true],['Applied payment',data.applied_amount],['Change',data.change_amount],['Outstanding',data.outstanding]);
   for(const [label,value,grand,plain] of rows){const dt=el('dt',tr_pos_js(label),'col-7'+(grand?' pos-grand':'')),dd=el('dd',plain?(value??'—'):tr_pos_js("LKR {0}",{0:(value??'—')}),'col-5'+(grand?' pos-grand':''));dl.append(dt,dd);}totals.append(dl);
-  for(const line of data.lines||data.items||[]){const n=[...cart.querySelectorAll('[data-product-id]')].find(n=>n.dataset.productId===String(line.product_id));if(n)n.replaceChildren(el("span",tr_pos_js("LKR {0}",{0:line.payable_amount}),"pos-line-amount"),el("span",tr_pos_js("Free units")+": "+line.free_quantity,"pos-free-units"));}
+  for(const line of data.lines||data.items||[]){const n=[...cart.querySelectorAll('[data-product-id]')].find(n=>n.dataset.productId===String(line.product_id));if(!n)continue;
+   const parts=[];
+   if(line.paid_quantity!==undefined&&line.unit_price!==undefined&&line.gross_amount!==undefined)parts.push(el("span",tr_pos_js("{0} × LKR {1} = LKR {2}",{0:line.paid_quantity,1:line.unit_price,2:line.gross_amount}),"pos-line-breakdown"));
+   const hasDiscount=line.discount_amount!==undefined&&line.discount_amount!=='0.00';
+   if(hasDiscount){let benefitRate=String(data.benefit_rate||'0');if(benefitRate.includes('.'))benefitRate=benefitRate.replace(/0+$/,'').replace(/\.$/,'');const discountLabel=data.benefit_mode&&data.benefit_mode!=='FREE_PROMOTION'?tr_pos_js("Discount ({0}%)",{0:benefitRate}):tr_pos_js("Discount");parts.push(el("span",discountLabel+": -"+tr_pos_js("LKR {0}",{0:line.discount_amount}),"pos-line-discount"));}
+   parts.push(el("span",(hasDiscount?tr_pos_js("Net: "):"")+tr_pos_js("LKR {0}",{0:line.payable_amount}),"pos-line-amount"));
+   parts.push(el("span",tr_pos_js("Free units")+": "+line.free_quantity,"pos-free-units"));
+   n.replaceChildren(...parts);}
   pay.textContent=(config.offline?tr_pos_js("Review provisional sale"):tr_pos_js("Pay Now — Review"))+tr_pos_js(" · LKR {0}",{0:(data.grand_total)});if(!config.offline)pay.disabled=false;
  }
  form.addEventListener('pos:totals',e=>amounts(e.detail));

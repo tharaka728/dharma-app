@@ -1640,5 +1640,8 @@
 "Pending server review.": "සේවාදායක සමාලෝචනයට යොමුව ඇත.",
 "Eligible free units": "සුදුසුකම් ලබන නොමිලේ ඒකක",
 "Eligible discount subtotal": "වට්ටමට සුදුසු උප එකතුව",
-"Eligible free products and existing promotions are calculated during Review.": "සුදුසුකම් ලබන නොමිලේ භාණ්ඩ සහ පවතින දීමනා සමාලෝචනයේදී ගණනය කෙරේ."
+"Eligible free products and existing promotions are calculated during Review.": "සුදුසුකම් ලබන නොමිලේ භාණ්ඩ සහ පවතින දීමනා සමාලෝචනයේදී ගණනය කෙරේ.",
+"{0} × LKR {1} = LKR {2}": "{0} × LKR {1} = LKR {2}",
+"Discount ({0}%)": "වට්ටම ({0}%)",
+"Net: ": "ශුද්ධ: "
 }

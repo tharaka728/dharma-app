@@ -1648,3 +1648,23 @@
   display:none!important;
 }
 
+
+/* Per-line price breakdown inside the cart: quantity, unit price, gross, discount and net stay visibly separate. */
+
+.pos-line-breakdown,.pos-line-discount {
+  display:block;
+  font-size:.85rem;
+  font-weight:600;
+}
+
+.pos-line-breakdown {
+  color:#4c6672;
+}
+
+.pos-line-discount {
+  color:#9b2525;
+}
+
+.pos-line-amount {
+  display:block;
+}

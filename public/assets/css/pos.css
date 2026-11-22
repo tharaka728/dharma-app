@@ -1509,3 +1509,142 @@
 
 /* Non-posting benefit simulation, independent of checkout controls. */
 .benefit-simulation{border:1px solid #9bceb1;border-radius:12px;padding:14px;margin:14px 0;background:#f5fcf7;min-width:0}.benefit-simulation h2{font-weight:700}.benefit-simulation label{display:block;margin:.6rem 0 .25rem}.benefit-simulation-notice{padding:10px;background:#fff5d9;border-radius:8px;font-weight:650;line-height:1.6}.benefit-simulation-result{margin-top:12px;overflow-wrap:anywhere;line-height:1.6}.benefit-simulation-result ul{padding-inline-start:1.4rem}.benefit-simulation-result p{margin:.4rem 0}.benefit-simulation-total{font-weight:700;color:#075b37}.benefit-simulation [hidden]{display:none!important}
+
+/* Promotion & Discount benefit controls inside the checkout panel. Presentational only; the server policy owns eligibility and amounts. */
+
+.pos-panel #invoice-benefit-fields {
+  border:1px solid #d0e8df;
+  border-radius:12px;
+  margin:12px 0;
+  min-width:0;
+  max-width:100%;
+}
+
+.pos-panel #invoice-benefit-fields legend {
+  color:#004c4a;
+  font-weight:700;
+}
+
+.benefit-cards {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+
+.benefit-card {
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:4px;
+  border:1.5px solid #cfe0da;
+  border-radius:10px;
+  padding:10px;
+  background:#fff;
+  cursor:pointer;
+  min-width:0;
+  min-height:44px;
+  position:relative;
+  margin-bottom:0;
+  font-weight:normal;
+}
+
+.benefit-card input[type="radio"] {
+  position:absolute;
+  top:10px;
+  right:10px;
+  margin:0;
+  width:1.15rem;
+  height:1.15rem;
+  accent-color:#075b37;
+}
+
+.benefit-card-icon {
+  font-size:.8rem;
+  font-weight:800;
+  line-height:1.2;
+  color:#075b37;
+  border:1.5px solid #075b37;
+  border-radius:6px;
+  padding:3px 6px;
+  white-space:nowrap;
+}
+
+.benefit-card-text {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+  max-width:100%;
+}
+
+.benefit-card-text strong {
+  font-size:.95rem;
+  color:#172e36;
+  overflow-wrap:break-word;
+  padding-right:1.6rem;
+}
+
+.benefit-card-text small {
+  color:#4c6672;
+  font-size:.78rem;
+  line-height:1.35;
+  overflow-wrap:break-word;
+}
+
+.benefit-card:has(input[type="radio"]:checked) {
+  border-color:#075b37;
+  background:#f4fbf7;
+  box-shadow:0 0 0 1px #075b37 inset;
+}
+
+.benefit-card:focus-within {
+  outline:2px solid #004d53;
+  outline-offset:2px;
+}
+
+.rate-chips {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.rate-chip {
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  border:1.5px solid #cfe0da;
+  border-radius:999px;
+  padding:6px 14px;
+  background:#fff;
+  cursor:pointer;
+  min-height:44px;
+  color:#172e36;
+  font-weight:600;
+  margin-bottom:0;
+}
+
+.rate-chip input[type="radio"] {
+  position:absolute;
+  inset:0;
+  opacity:0;
+  margin:0;
+  width:100%;
+  height:100%;
+  cursor:pointer;
+}
+
+.rate-chip:has(input[type="radio"]:checked) {
+  background:#075b37;
+  border-color:#075b37;
+  color:#fff;
+}
+
+.rate-chip:has(input[type="radio"]:focus-visible) {
+  outline:2px solid #004d53;
+  outline-offset:2px;
+}
+
+#promotion-discount-rate[hidden],.rate-chip[hidden] {
+  display:none!important;
+}
+

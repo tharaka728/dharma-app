@@ -19,7 +19,7 @@ const tr_invoice_discount_js=(key,values={})=>globalThis.DharmaI18n?.t(key,value
    form.dispatchEvent(new CustomEvent('pos:totals',{detail:data}));
    // Benefit-mode previews are summarized by invoice-benefit.js from the same event.
    if(!data.benefit_mode)summary.textContent=tr_invoice_discount_js("After promotions LKR {0} · Invoice Discount {1}%: LKR {2} · Final total LKR {3} · Applied LKR {4} · Change LKR {5} · Outstanding LKR {6}. Review before issuing.",{0:(data.discountable_subtotal),1:(data.invoice_discount_percent),2:(data.invoice_discount_amount),3:(data.grand_total),4:(data.applied_amount),5:(data.change_amount),6:(data.outstanding)});
-  }catch(error){if(mine===epoch&&error.name!=='AbortError'){const benefitMode=document.getElementById('benefit_mode');summary.textContent=(benefitMode&&!benefitMode.disabled&&benefitMode.value!==''&&error instanceof TypeError)?tr_invoice_discount_js('This promotion benefit mode requires an online connection to complete checkout.'):error.message;}}
+  }catch(error){if(mine===epoch&&error.name!=='AbortError'){const benefitMode=form.querySelector('input[name="benefit_mode"]:checked');summary.textContent=(benefitMode&&!benefitMode.disabled&&benefitMode.value!==''&&error instanceof TypeError)?tr_invoice_discount_js('This promotion benefit mode requires an online connection to complete checkout.'):error.message;}}
  }
  function changed(){selection();invalidate();timer=setTimeout(preview,300);}
  selection();form.addEventListener('input',changed);form.addEventListener('change',changed);form.addEventListener('click',event=>{if(event.target.closest('.remove-invoice-line,#add-invoice-line'))changed();});

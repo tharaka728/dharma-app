@@ -25,8 +25,8 @@ const ONLINE_MSG_EN='This promotion benefit mode requires an online connection t
  await navigate(input.base+'/rep/invoices/new?language=en');
  await evaluate('document.getElementById("customer_id").value='+JSON.stringify(input.customer)+';document.getElementById("customer_id").dispatchEvent(new Event("change",{bubbles:true}));');
  await fillFirstProduct('4');
- await evaluate('document.getElementById("benefit_mode").value="PROMOTION_DISCOUNT_INSTEAD";document.getElementById("benefit_mode").dispatchEvent(new Event("change",{bubbles:true}));');
- await evaluate('document.getElementById("promotion_discount_choice").value="25";document.getElementById("promotion_discount_choice").dispatchEvent(new Event("change",{bubbles:true}));');
+ await evaluate('document.getElementById("benefit_mode_promotion_discount_instead").click()');
+ await evaluate('document.getElementById("promotion_discount_choice_25").click()');
  await until('document.getElementById("invoice-live-summary").textContent.includes("Promotion discount instead")','online benefit preview');
  await offline(true);
  await evaluate('document.querySelector(".pos-stepper input").value="6";document.querySelector(".pos-stepper input").dispatchEvent(new Event("input",{bubbles:true}))');
@@ -34,7 +34,7 @@ const ONLINE_MSG_EN='This promotion benefit mode requires an online connection t
  check(true,'Exact connectivity-loss message shown');
  check(await evaluate('!document.querySelector("[data-invoice-confirmation]")'),'No stale review survives the connection loss');
  check(await evaluate('document.getElementById("customer_id").value==='+JSON.stringify(input.customer)),'Customer selection preserved as UI state');
- check(await evaluate('document.getElementById("benefit_mode").value==="PROMOTION_DISCOUNT_INSTEAD"'),'Benefit mode preserved as nonfinancial UI state');
+ check(await evaluate('document.getElementById("benefit_mode_promotion_discount_instead").checked'),'Benefit mode preserved as nonfinancial UI state');
  const forged=await evaluate(`(async()=>{try{const f=new FormData();f.set('benefit_policy','PROMO_CHOICE_V1');f.set('benefit_mode','FREE_PROMOTION');const r=await fetch('/api/v1/rep/invoices/preview',{method:'POST',body:f});return r.status;}catch(e){return 'offline';}})()`);
  check(forged==='offline','No financial authorization cached for offline posting');
 
@@ -54,7 +54,7 @@ const ONLINE_MSG_EN='This promotion benefit mode requires an online connection t
  await navigate(input.base+'/rep/invoices/new?language=si-LK');
  await evaluate('document.getElementById("customer_id").value='+JSON.stringify(input.customer)+';document.getElementById("customer_id").dispatchEvent(new Event("change",{bubbles:true}));');
  await fillFirstProduct('4');
- await evaluate('document.getElementById("benefit_mode").value="FREE_PROMOTION";document.getElementById("benefit_mode").dispatchEvent(new Event("change",{bubbles:true}));');
+ await evaluate('document.getElementById("benefit_mode_free_promotion").click()');
  await until('document.getElementById("invoice-live-summary").textContent.includes("නොමිලේ")','Sinhala online preview');
  await offline(true);
  await evaluate('document.querySelector(".pos-stepper input").dispatchEvent(new Event("input",{bubbles:true}))');

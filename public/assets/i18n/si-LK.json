@@ -1632,5 +1632,13 @@
 "This promotion benefit mode requires an online connection to complete checkout.": "මෙම ප්‍රවර්ධන ක්‍රමය යටතේ බිල්පත නිකුත් කිරීමට සේවාදායක සම්බන්ධතාවයක් අවශ්‍ය වේ.",
 "Promotion benefit modes are not available for this account.": "ප්‍රවර්ධන ප්‍රතිලාභ ක්‍රම මෙම ගිණුම සඳහා ලබා නොදේ.",
 "This account must use the promotion benefit checkout.": "මෙම ගිණුම ප්‍රවර්ධන ප්‍රතිලාභ බිල්පත් ක්‍රමය භාවිත කළ යුතුය.",
-"Promotion benefit invoice posting is on hold pending owner approval. Reviewed totals remain available.": "ප්‍රවර්ධන වාසි බිල්පත නිකුත් කිරීම හිමිකරුගේ අනුමැතිය ලැබෙන තෙක් තාවකාලිකව රඳවා ඇත. සමාලෝචනය කළ එකතු තවදුරටත් ලබාගත හැක."
+"Promotion benefit invoice posting is on hold pending owner approval. Reviewed totals remain available.": "ප්‍රවර්ධන වාසි බිල්පත නිකුත් කිරීම හිමිකරුගේ අනුමැතිය ලැබෙන තෙක් තාවකාලිකව රඳවා ඇත. සමාලෝචනය කළ එකතු තවදුරටත් ලබාගත හැක.",
+"Promotion & Discount": "ප්‍රවර්ධනය සහ වට්ටම",
+"Receive eligible free products and existing promotions.": "සුදුසුකම් ලබන නොමිලේ භාණ්ඩ සහ පවතින දීමනා ලබාගන්න.",
+"Discount on qualifying promotional products only.": "සුදුසුකම් ලබන ප්‍රවර්ධන භාණ්ඩ සඳහා පමණක් වට්ටමක්.",
+"Discount on the eligible whole-invoice subtotal.": "සුදුසුකම් ලබන සම්පූර්ණ බිල්පත් උප එකතුව සඳහා වට්ටමක්.",
+"Pending server review.": "සේවාදායක සමාලෝචනයට යොමුව ඇත.",
+"Eligible free units": "සුදුසුකම් ලබන නොමිලේ ඒකක",
+"Eligible discount subtotal": "වට්ටමට සුදුසු උප එකතුව",
+"Eligible free products and existing promotions are calculated during Review.": "සුදුසුකම් ලබන නොමිලේ භාණ්ඩ සහ පවතින දීමනා සමාලෝචනයේදී ගණනය කෙරේ."
 }

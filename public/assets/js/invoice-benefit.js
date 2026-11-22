@@ -3,23 +3,32 @@
 const tr_invoice_benefit_js=(key,values={})=>globalThis.DharmaI18n?.t(key,values)??key.replace(/\{([0-9]+)\}/g,(m,k)=>Object.hasOwn(values,k)?String(values[k]):m);
 
 (() => {
- const form=document.getElementById('invoice-form'),mode=document.getElementById('benefit_mode');if(!form||!mode)return;
- const policy=form.querySelector('input[name="benefit_policy"]'),choice=document.getElementById('promotion_discount_choice'),custom=document.getElementById('promotion_discount_percent'),customBox=document.getElementById('promotion-discount-custom'),rateRow=document.getElementById('promotion-discount-rate');
+ const form=document.getElementById('invoice-form'),fieldset=document.getElementById('invoice-benefit-fields');if(!form||!fieldset)return;
+ const modes=[...fieldset.querySelectorAll('input[name="benefit_mode"]')];
+ const policy=form.querySelector('input[name="benefit_policy"]');
+ const choices=[...fieldset.querySelectorAll('input[name="promotion_discount_choice"]')];
+ const custom=fieldset.querySelector('#promotion_discount_percent'),customBox=fieldset.querySelector('#promotion-discount-custom'),rateRow=fieldset.querySelector('#promotion-discount-rate'),freeInfo=fieldset.querySelector('#free-promotion-info');
  const legacyBox=document.querySelector('#invoice_discount_choice')?.closest('fieldset'),legacyControls=legacyBox?[...legacyBox.querySelectorAll('select,input')]:[];
  const summary=document.getElementById('invoice-live-summary');
  const modeLabels={'FREE_PROMOTION':'Free promotion','PROMOTION_DISCOUNT_INSTEAD':'Promotion discount instead','ORDINARY_INVOICE_DISCOUNT':'Ordinary invoice discount'};
+ const current=()=>modes.find(mode=>mode.checked)?.value??'';
+ const chosen=()=>choices.find(option=>option.checked)?.value??'';
  function selection(){
-  const active=mode.value!=='',discounted=active&&mode.value!=='FREE_PROMOTION',ordinary=mode.value==='ORDINARY_INVOICE_DISCOUNT';
+  const active=current()!=='',discounted=active&&current()!=='FREE_PROMOTION',ordinary=current()==='ORDINARY_INVOICE_DISCOUNT';
   if(policy)policy.disabled=!active;
-  for(const control of [choice,custom])if(control)control.disabled=!discounted;
+  for(const control of [...choices,custom])if(control)control.disabled=!discounted;
   for(const control of legacyControls)control.disabled=active;
   if(legacyBox)legacyBox.hidden=active;
   if(rateRow)rateRow.hidden=!discounted;
-  if(choice){const zero=choice.querySelector('option[value="0"]');if(zero)zero.hidden=!ordinary;if(!ordinary&&choice.value==='0')choice.value='25';}
-  if(customBox)customBox.hidden=!discounted||choice.value!=='custom';
-  if(custom)custom.required=discounted&&choice.value==='custom';
+  if(freeInfo)freeInfo.hidden=current()!=='FREE_PROMOTION';
+  const zeroChip=fieldset.querySelector('[data-rate="0"]');if(zeroChip)zeroChip.hidden=!ordinary;
+  if(discounted&&!ordinary&&chosen()==='0'){const fallback=fieldset.querySelector('#promotion_discount_choice_25');if(fallback)fallback.checked=true;}
+  if(customBox)customBox.hidden=!discounted||chosen()!=='custom';
+  if(custom)custom.required=discounted&&chosen()==='custom';
  }
- mode.addEventListener('change',selection);choice?.addEventListener('change',selection);selection();
+ for(const mode of modes)mode.addEventListener('change',selection);
+ for(const option of choices)option.addEventListener('change',selection);
+ selection();
  form.addEventListener('pos:totals',event=>{
   const data=event.detail;if(!data?.benefit_mode)return;
   const label=tr_invoice_benefit_js(modeLabels[data.benefit_mode]||data.benefit_mode);

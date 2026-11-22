@@ -21,19 +21,19 @@ async function viewport(width){await send('Emulation.setDeviceMetricsOverride',{
  await evaluate('document.querySelector('+JSON.stringify('.pos-product[data-product-id="'+input.products[0]+'"] button')+').click()');
  await evaluate('document.querySelector(".pos-stepper input").value="4";document.querySelector(".pos-stepper input").dispatchEvent(new Event("input",{bubbles:true}))');
  await until('!document.querySelector(".pos-pay").disabled','baseline preview');
- await evaluate('document.getElementById("benefit_mode").value="PROMOTION_DISCOUNT_INSTEAD";document.getElementById("benefit_mode").dispatchEvent(new Event("change",{bubbles:true}));');
- await evaluate('document.getElementById("promotion_discount_choice").value="25";document.getElementById("promotion_discount_choice").dispatchEvent(new Event("change",{bubbles:true}));');
+ await evaluate('document.getElementById("benefit_mode_promotion_discount_instead").click()');
+ await evaluate('document.getElementById("promotion_discount_choice_25").click()');
  await until('document.getElementById("invoice-live-summary").textContent.includes("වට්ටම")','Sinhala benefit preview');
  for(const width of [320,360,393,430,768,1280]){
   await viewport(width);
   check(await evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),'No horizontal scrolling at '+width+'px');
-  check(await evaluate('(()=>{const r=document.getElementById("benefit_mode").getBoundingClientRect();return r.width>0&&r.left>=-1&&r.right<=document.documentElement.clientWidth+1})()'),'Benefit mode control fits at '+width+'px');
-  check(await evaluate('(()=>{const r=document.getElementById("promotion_discount_choice").getBoundingClientRect();return r.width>0&&r.right<=document.documentElement.clientWidth+1})()'),'Discount choice control fits at '+width+'px');
+  check(await evaluate('(()=>{const r=document.getElementById("invoice-benefit-fields").getBoundingClientRect();return r.width>0&&r.left>=-1&&r.right<=document.documentElement.clientWidth+1})()'),'Benefit mode control fits at '+width+'px');
+  check(await evaluate('(()=>{const r=document.getElementById("promotion-discount-rate").getBoundingClientRect();return r.width>0&&r.right<=document.documentElement.clientWidth+1})()'),'Discount choice control fits at '+width+'px');
   check(await evaluate('(()=>{const r=document.querySelector(".pos-pay").getBoundingClientRect();return r.width>0&&r.right<=document.documentElement.clientWidth+1&&!document.querySelector(".pos-pay").disabled})()'),'Checkout button usable at '+width+'px');
   if(width===360)await shot('promo-choice-mobile-360-si.png');
   if(width===768)await shot('promo-choice-mobile-768-si.png');
  }
- check(await evaluate('document.getElementById("benefit_mode").selectedOptions[0].textContent.includes("නොමිලේ භාණ්ඩ වෙනුවට වට්ටම")'),'Spec Sinhala mode label on the selected option');
+ check(await evaluate('document.querySelector("label[for=benefit_mode_promotion_discount_instead]").textContent.includes("නොමිලේ භාණ්ඩ වෙනුවට වට්ටම")'),'Spec Sinhala mode label on the selected option');
  check(await evaluate('document.getElementById("invoice-live-summary").textContent.includes("125.50")'),'Benefit amounts not clipped in summary');
  console.log(count+' benefit mobile layout checks passed.');
 })().catch(e=>{console.error(e.message);process.exitCode=1;}).finally(async()=>{if(ws?.readyState===WebSocket.OPEN){try{await send('Browser.close',{},false);}catch{}ws.close();}browser.kill();await new Promise(r=>setTimeout(r,600));if(path.dirname(profile)===path.resolve('storage')&&/^promo-choice-mobile-[a-f0-9-]+$/.test(path.basename(profile)))await fs.promises.rm(profile,{recursive:true,force:true,maxRetries:12,retryDelay:300});setTimeout(()=>process.exit(process.exitCode||0),500).unref();});

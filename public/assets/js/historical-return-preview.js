@@ -3,7 +3,7 @@
  const root=document.getElementById('historical-return-preview');if(!root)return;
  const panel=root.querySelector('[data-preview-panel]'),toggle=root.querySelector('[data-preview-toggle]');
  const t=(en,si)=>globalThis.DharmaI18n?.locale==='en'?en:si;
- toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden));});
+ toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;if(root.tagName==='DETAILS'&&!panel.hidden)root.open=true;toggle.setAttribute('aria-expanded',String(!panel.hidden));});
  root.querySelectorAll('[data-preview-line]').forEach(line=>{
   const year=line.querySelector('[data-preview-year]'),query=line.querySelector('[data-preview-search]'),list=line.querySelector('[data-preview-products]'),status=line.querySelector('[data-preview-status]'),chosen=line.querySelector('[data-preview-selected]');
   let epoch=0,timer,request,selected='';

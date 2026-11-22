@@ -22,9 +22,10 @@ async function fillFirstProduct(quantity){
 
  // Gate-open checkout UI: real benefit controls replace the simulation.
  await navigate(input.base+'/rep/invoices/new?language=en');
- check(await evaluate('!!document.getElementById("benefit_mode")&&!document.getElementById("benefit-simulation-mode")'),'Benefit controls replace simulation when the gate is open');
- check(await evaluate('document.getElementById("benefit_mode").value==="FREE_PROMOTION"&&![...document.getElementById("benefit_mode").options].some(o=>o.value==="")'),'Pilot representative must choose a benefit mode');
- check(await evaluate('document.getElementById("promotion_discount_choice").disabled&&!document.querySelector("input[name=benefit_policy]").disabled'),'Rate choice rests until a discount mode is chosen');
+ check(await evaluate('document.querySelectorAll("#invoice-benefit-fields input[name=benefit_mode]").length===3&&!document.getElementById("benefit-simulation-mode")'),'Benefit controls replace simulation when the gate is open');
+ check(await evaluate('!!document.querySelector("#pos-checkout-panel #invoice-benefit-fields")'),'Benefit controls sit inside the checkout panel');
+ check(await evaluate('document.getElementById("benefit_mode_free_promotion").checked&&![...document.querySelectorAll("input[name=benefit_mode]")].some(r=>r.value==="")'),'Pilot representative must choose a benefit mode');
+ check(await evaluate('document.getElementById("promotion_discount_choice_25").disabled&&document.getElementById("promotion-discount-rate").hidden&&!document.querySelector("input[name=benefit_policy]").disabled'),'Rate choice rests until a discount mode is chosen');
  await evaluate('document.getElementById("customer_id").value='+JSON.stringify(input.customer)+';document.getElementById("customer_id").dispatchEvent(new Event("change",{bubbles:true}));');
  await fillFirstProduct('4');
  await until('!document.querySelector(".pos-pay").disabled&&!!document.querySelector(".pos-free-units")','baseline preview');
@@ -33,9 +34,10 @@ async function fillFirstProduct(quantity){
  await shot('promo-choice-form-baseline.png');
 
  // Select PROMOTION_DISCOUNT_INSTEAD at 25%: legacy fieldset leaves the form, suppression + discount preview.
- await evaluate('document.getElementById("benefit_mode").value="PROMOTION_DISCOUNT_INSTEAD";document.getElementById("benefit_mode").dispatchEvent(new Event("change",{bubbles:true}));');
- check(await evaluate('document.querySelector("#invoice_discount_choice").disabled&&document.getElementById("promotion_discount_choice").disabled===false'),'Benefit and legacy discount controls are mutually exclusive');
- await evaluate('document.getElementById("promotion_discount_choice").value="25";document.getElementById("promotion_discount_choice").dispatchEvent(new Event("change",{bubbles:true}));');
+ await evaluate('document.getElementById("benefit_mode_promotion_discount_instead").click()');
+ check(await evaluate('document.querySelector("#invoice_discount_choice").disabled&&!document.getElementById("promotion_discount_choice_25").disabled&&!document.getElementById("promotion-discount-rate").hidden'),'Benefit and legacy discount controls are mutually exclusive');
+ check(await evaluate("document.querySelector('.rate-chip[data-rate=\"0\"]').hidden"),'Zero-percent choice stays hidden outside the ordinary mode');
+ await evaluate('document.getElementById("promotion_discount_choice_25").click()');
  await until('document.getElementById("invoice-live-summary").textContent.includes("Promotion discount instead")','benefit preview summary');
  const summary=await evaluate('document.getElementById("invoice-live-summary").textContent');
  check(summary.includes('502.00')&&summary.includes('125.50')&&summary.includes('376.50'),'Server preview: eligible 502.00, discount 125.50, total 376.50: '+summary);
@@ -69,7 +71,8 @@ async function fillFirstProduct(quantity){
  await navigate(input.base+'/rep/invoices/new?language=en');
  await evaluate('document.getElementById("customer_id").value='+JSON.stringify(input.customer)+';document.getElementById("customer_id").dispatchEvent(new Event("change",{bubbles:true}));');
  await fillFirstProduct('4');
- await evaluate('document.getElementById("benefit_mode").value="FREE_PROMOTION";document.getElementById("benefit_mode").dispatchEvent(new Event("change",{bubbles:true}));');
+ await evaluate('document.getElementById("benefit_mode_free_promotion").click()');
+ check(await evaluate('!document.getElementById("free-promotion-info").hidden&&document.getElementById("promotion-discount-rate").hidden'),'Free mode shows the eligibility note and hides the rate choices');
  await until('document.getElementById("invoice-live-summary").textContent.includes("Free promotion")','free mode preview');
  check(await evaluate('document.querySelector(".pos-free-units").textContent.endsWith("2")'),'Free mode keeps free units in preview');
  await evaluate('document.querySelector(".pos-pay").click()');
@@ -86,8 +89,8 @@ async function fillFirstProduct(quantity){
 
  // Sinhala UI labels.
  await navigate(input.base+'/rep/invoices/new?language=si-LK');
- check(await evaluate('document.querySelector("#invoice-benefit-fields legend").textContent==="ප්‍රවර්ධන ප්‍රතිලාභය"'),'Sinhala benefit fieldset legend');
- check(await evaluate('[...document.getElementById("benefit_mode").options].some(o=>o.textContent.includes("නොමිලේ භාණ්ඩ වෙනුවට"))'),'Sinhala benefit mode options');
+ check(await evaluate('document.querySelector("#invoice-benefit-fields legend").textContent==="ප්‍රවර්ධනය සහ වට්ටම"'),'Sinhala benefit fieldset legend');
+ check(await evaluate('[...document.querySelectorAll(".benefit-card strong")].some(n=>n.textContent.includes("නොමිලේ භාණ්ඩ වෙනුවට"))'),'Sinhala benefit mode options');
  await shot('promo-choice-form-sinhala.png');
 
  console.log(count+' benefit-mode browser checks passed.');

@@ -7,11 +7,17 @@ final class InvoiceDocuments
     public function __construct(private PDO $pdo){}
     public function snapshot(array $actor,string $id):array
     {
-        if($this->pdo->inTransaction())return (new Invoices($this->pdo))->get($actor,$id);
+        if($this->pdo->inTransaction())return $this->withSaleTime((new Invoices($this->pdo))->get($actor,$id));
         $this->pdo->exec('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         $this->pdo->exec('START TRANSACTION WITH CONSISTENT SNAPSHOT, READ ONLY');
-        try{$record=(new Invoices($this->pdo))->get($actor,$id);$this->pdo->commit();return $record;}
+        try{$record=$this->withSaleTime((new Invoices($this->pdo))->get($actor,$id));$this->pdo->commit();return $record;}
         catch(\Throwable $e){if($this->pdo->inTransaction())$this->pdo->rollBack();throw $e;}
+    }
+    /** Adds the stored sale time (UTC) for document display only; the invoice record itself is unchanged. */
+    private function withSaleTime(array $record):array
+    {
+        $stmt=$this->pdo->prepare('SELECT created_at_client_utc FROM invoices WHERE id=?');$stmt->execute([$record['id']]);
+        $value=$stmt->fetchColumn();$record['sale_time_utc']=$value===false||$value===null?null:(string)$value;return $record;
     }
     public static function money(string $value):string
     {

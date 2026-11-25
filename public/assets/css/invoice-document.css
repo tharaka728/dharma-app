@@ -3,3 +3,4 @@
 @page{size:A4;margin:12mm}
 @media screen and (max-width:600px){.a4 .invoice-sheet{padding:12px}.a4 .invoice-items{font-size:8pt}.document-actions{margin:8px}.invoice-items th,.invoice-items td{padding:5px 2px}}
 @media print{body{background:white;color:#000}.document-actions{display:none!important}.invoice-sheet{width:auto;max-width:none;margin:0;padding:0;box-shadow:none}.receipt .invoice-sheet{width:72mm;padding:0;margin:0 auto}h1{color:#000}a{color:inherit;text-decoration:none}.invoice-items th{background:#eee}h1,h2,h3{break-after:avoid}.invoice-heading,.customer{break-inside:avoid}}
+.simple-invoice .invoice-heading{text-align:center}.simple-invoice .invoice-heading p{margin:2px 0}.simple-meta{margin:10px 0;padding:8px 0;border-top:1px dashed #000;border-bottom:1px dashed #000}.simple-meta p{margin:2px 0}.simple-invoice .receipt-item strong{display:block}.simple-invoice .totals{border-top:1px dashed #000;margin-top:8px;padding-top:6px}

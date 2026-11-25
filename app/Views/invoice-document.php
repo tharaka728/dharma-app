@@ -1,7 +1,7 @@
 <?php
 use App\Support\Http;use App\Controllers\AuthController;use App\Services\InvoiceDocuments;
 $e=static fn($v):string=>Http::escape((string)$v);$url=static fn($p):string=>Http::escape(AuthController::url($p).(str_contains($p,'/invoices/')?'?document_lang='.\App\Support\I18n::locale():''));$money=static fn($v):string=>InvoiceDocuments::money((string)$v);
-$company=$record['company']??['name'=>'Dharma Chemical','address'=>(string)(getenv('INVOICE_COMPANY_ADDRESS')?:''),'phone'=>(string)(getenv('INVOICE_COMPANY_PHONE')?:''),'email'=>(string)(getenv('INVOICE_COMPANY_EMAIL')?:''),'footer'=>'Authoritative invoice snapshots. Payment and validity shown as of this document request. Retain this copy securely.'];$companyField=static fn($key)=>\App\Support\I18n::locale()==='si-LK'&&!empty($company[$key.'_si'])?$company[$key.'_si']:($company[$key]??'');
+$company=$record['company']??['name'=>'Dharma Chemical','address'=>(string)(getenv('INVOICE_COMPANY_ADDRESS')?:''),'phone'=>(string)(getenv('INVOICE_COMPANY_PHONE')?:'0770520905'),'email'=>(string)(getenv('INVOICE_COMPANY_EMAIL')?:''),'footer'=>'Authoritative invoice snapshots. Payment and validity shown as of this document request. Retain this copy securely.'];$companyField=static fn($key)=>\App\Support\I18n::locale()==='si-LK'&&!empty($company[$key.'_si'])?$company[$key.'_si']:($company[$key]??'');
 $receipt58=$layout==='receipt'&&$receiptPaper==='58'&&!$pdf;
 $documentBase=$base.'/'.$record['id'];$void=$record['validity']==='VOIDED';
 ?>

@@ -17,7 +17,7 @@ final class CompanyLanguages
  }
  public function snapshot():array
  {
-  $r=$this->pdo->query('SELECT name_si,address_si,footer_si,approved FROM company_language_settings WHERE id=1')->fetch();$out=['name'=>'Dharma Chemical','address'=>(string)(getenv('INVOICE_COMPANY_ADDRESS')?:''),'phone'=>(string)(getenv('INVOICE_COMPANY_PHONE')?:'0770520905'),'email'=>(string)(getenv('INVOICE_COMPANY_EMAIL')?:''),'footer'=>'Authoritative invoice snapshots. Payment and validity shown as of this document request. Retain this copy securely.'];
+  $r=$this->pdo->query('SELECT name_si,address_si,footer_si,approved FROM company_language_settings WHERE id=1')->fetch();$out=['name'=>'Dharma Chemical','address'=>(string)(getenv('INVOICE_COMPANY_ADDRESS')?:''),'phone'=>'0770520905','email'=>(string)(getenv('INVOICE_COMPANY_EMAIL')?:''),'footer'=>'Authoritative invoice snapshots. Payment and validity shown as of this document request. Retain this copy securely.'];
   if((int)$r['approved'])foreach(['name_si','address_si','footer_si'] as $key)$out[$key]=$r[$key];return $out;
  }
 }

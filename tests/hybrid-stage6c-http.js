@@ -1,0 +1,42 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const input=JSON.parse(fs.readFileSync(0,'utf8')),f=input.fixtures;let checks=0;
+function check(ok,label){assert.ok(ok,label);checks++;}
+const basePolicy=JSON.parse(fs.readFileSync(input.policy,'utf8'));
+const policy=value=>fs.writeFileSync(input.policy,JSON.stringify({...basePolicy,financial_posting_hold:value.hold??true,enabled:!value.disabled,_test_fault:value.fault??null,_test_reply_delay_ms:value.delay??0}));
+async function client(){const jar=new Map();let csrf='';const cookies=r=>{for(const value of r.headers.getSetCookie()){const pair=value.split(';')[0],i=pair.indexOf('=');jar.set(pair.slice(0,i),pair.slice(i+1));}};const cookie=()=>[...jar].map(([k,v])=>k+'='+v).join('; ');return {async call(path,payload,token){
+ if(path==='/session'){const r=await fetch(input.base+'/login?language=en',{headers:{Cookie:cookie()}});cookies(r);const html=await r.text();csrf=html.match(/name="csrf_token" value="([^"]+)"/)[1];return {status:r.status,body:{csrf}};}
+ const r=await fetch(input.base+path,{redirect:'manual',method:payload?'POST':'GET',headers:{Cookie:cookie(),...(payload?{'Content-Type':'application/json','X-CSRF-Token':token??csrf}:{})},...(payload?{body:JSON.stringify(payload)}:{})});cookies(r);const body=await r.json();return {status:r.status,body};
+ },async login(actor){await this.call('/session');const r=await fetch(input.base+'/login',{redirect:'manual',method:'POST',headers:{Cookie:cookie(),'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({...input.logins[actor],csrf_token:csrf})});cookies(r);check(r.status===303,'real form login '+actor);const me=await this.call('/api/v1/me');check(me.status===200&&me.body.user.role==='SALES_REP','real authenticated actor');csrf=me.body.csrf;}};}
+function sale(product='glucose',qty='8',discount={choice:'25'}){return {request_id:crypto.randomUUID(),customer_id:f.customers.rep1,payment_type:'CASH',amount_received:'10000.00',hybrid:{policy_version:'HYBRID_PROMOTION_V1',lines:[{product_id:f.products[product],paid_quantity:qty,product_discount:discount}],invoice_discount_percent:'10'}};}
+const preview='/api/v1/rep/invoices/preview',issue='/api/v1/rep/invoices',ret='/api/v1/rep/invoices/hybrid/returns/';
+(async()=>{
+ const rep=await client(),other=await client(),anon=await client();await anon.call('/session');check((await anon.call(preview,sale())).status===401,'anonymous denied');await rep.login('rep1');await other.login('rep2');
+ check((await rep.call(preview,sale(),'invalid')).status===403,'CSRF denied');
+ check((await rep.call(preview,{...sale(),csrf_token:'invalid'})).status===403,'invalid body CSRF is not replaced by valid header');
+ for(const [product,qty,choice,qual,rem,free,pd]of [['glucose','6',{choice:'25'},'6','0','1','0.00'],['glucose','8',{choice:'25'},'6','2','1','50.00'],['glucose','12',{choice:'25'},'12','0','2','0.00'],['suwada','12',{choice:'25'},'12','0','1','0.00'],['glucose','8',{choice:'30'},'6','2','1','60.00'],['glucose','8',{choice:'35'},'6','2','1','70.00'],['glucose','8',{choice:'other',percent:'12.50'},'6','2','1','25.00']]){
+  const r=await rep.call(preview,sale(product,qty,choice));check(r.status===200,'preview '+product+' '+qty+' '+JSON.stringify(choice));const l=r.body.calculation.lines[0];check(l.qualifying_paid_quantity===qual&&l.discount_eligible_quantity===rem&&l.actual_free_quantity===free&&l.product_discount_amount===pd,'authoritative quantities/components');
+ }
+ let inputSale=sale(),review=await rep.call(preview,inputSale);inputSale.review_hash=review.body.review_hash;
+ check((await rep.call(issue,inputSale)).status===403,'default posting hold enforced');policy({hold:false});
+ review=await rep.call(preview,inputSale);inputSale.review_hash=review.body.review_hash;
+ const stale=structuredClone(inputSale);stale.hybrid.lines[0].paid_quantity='9';check((await rep.call(issue,stale)).status===409,'changed review rejected');
+ check((await other.call(preview,sale())).status===403,'different representative customer scope');
+ policy({hold:false,fault:'payment'});const failed=await rep.call(issue,inputSale);check(failed.status===503,'failure after stock/payment is safely ambiguous; rollback verified by retry and backstops');policy({hold:false});
+ const issued=await rep.call(issue,inputSale);check(issued.status===201,'same command succeeds after rolled-back fault');check((await rep.call(issue,inputSale)).body.replayed===true,'exact replay');
+ const changed=structuredClone(inputSale);changed.amount_received='9999.00';check((await rep.call(issue,changed)).status===409,'changed accepted command rejected');
+ policy({hold:true,disabled:true});check((await rep.call(issue,inputSale)).body.replayed===true,'accepted replay survives gate changes');check((await rep.call(preview,sale())).status===409,'disabled new preview denied');policy({hold:false});
+ const cap=sale('ordinary','1',{choice:'other',percent:'50'});cap.hybrid.invoice_discount_percent='1';check((await rep.call(preview,cap)).status>=400,'combined monetary cap');
+ const replacement=sale('replacement','24',{choice:'0'});replacement.hybrid.lines[0].replace_free_entitlement=true;replacement.hybrid.replacement_discount={choice:'25'};const rr=await rep.call(preview,replacement);check(rr.status===200&&rr.body.calculation.replacement_discount_total==='600.00','explicit complete replacement');
+ const line={line_number:'1',paid_quantity:'1',free_quantity:'0',paid_conditions:{SALEABLE:'1',QUARANTINE:'0',UNSALEABLE:'0'},free_conditions:{SALEABLE:'0',QUARANTINE:'0',UNSALEABLE:'0'},condition_reason:'Synthetic inspected goods',holding_reference:'Synthetic bin'};
+ const request={policy_version:'HYBRID_RETURN_V1',request_id:crypto.randomUUID(),invoice_id:issued.body.invoice_id,operation:'RETURN',reason:'Synthetic HTTP return',lines:[line]};
+ const rp=await rep.call(ret+'preview',request);check(rp.status===200,'HTTP return preview');request.review_hash=rp.body.review_hash;
+ policy({hold:true});check((await rep.call(ret+'post',request)).status===403,'return hold');policy({hold:false});const returned=await rep.call(ret+'post',request);check(returned.status===200,'HTTP return post');check((await rep.call(ret+'post',request)).body.replayed===true,'return idempotency');
+ check((await other.call(ret+'preview',{...request,request_id:crypto.randomUUID()})).status===403,'return invoice scope');check((await rep.call('/api/v1/rep/offline/sync',inputSale)).status===403,'unsupported route default denied');
+ // Timeout AFTER a successful commit: safe ambiguity and exact accepted replay.
+ const late=sale('ordinary','1',{choice:'0'}),lr=await rep.call(preview,late);late.review_hash=lr.body.review_hash;
+ const profile=JSON.parse(fs.readFileSync(input.profile,'utf8'));fs.writeFileSync(input.profile,JSON.stringify({...profile,timeout_ms:800}));policy({hold:false,delay:3000});
+ const lost=await rep.call(issue,late);check(lost.status===503&&lost.body.error.code==='OUTCOME_UNKNOWN','bounded timeout returns safe financial ambiguity');policy({hold:false});fs.writeFileSync(input.profile,JSON.stringify(profile));
+ const recovered=await rep.call(issue,late);check(recovered.status===200&&recovered.body.replayed===true,'timeout recovery uses same command without duplicate posting');
+ fs.writeFileSync(input.result,JSON.stringify({checks,invoice:issued.body.invoice_id,command:inputSale.request_id,return_command:request.request_id,returned:returned.body},null,2));console.log(`Stage 6C integrated application HTTP: ${checks} checks passed.`);
+})().catch(e=>{console.error(e.stack);process.exitCode=1;}).finally(()=>policy({hold:true,disabled:true}));

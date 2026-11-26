@@ -5,7 +5,7 @@ final class LocalPdf
 {
     public static function generate(string $html):string
     {
-        $node='C:/nvm4w/nodejs/node.exe';
+        $node='';foreach(['C:/nvm4w/nodejs/node.exe','C:/Program Files/nodejs/node.exe']as$candidate)if(is_file($candidate)){$node=$candidate;break;}
         if(!is_file($node)||strlen($html)>2097152)throw new \RuntimeException('Local PDF renderer unavailable.');
         // File descriptors avoid pipe-buffer deadlocks. Anonymous temporary streams
         // are outside public/, disappear on close, and never receive predictable names.

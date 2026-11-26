@@ -1,0 +1,738 @@
+[
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Controllers/HybridReturnController.php",
+        "transferred_sha256":  "C99C36F864A04EAF15B6CBE3CF15602930F0C79EA88F5E2B37AB9CAD74E04A04",
+        "integrated_sha256":  "C99C36F864A04EAF15B6CBE3CF15602930F0C79EA88F5E2B37AB9CAD74E04A04",
+        "source_sha256":  "C99C36F864A04EAF15B6CBE3CF15602930F0C79EA88F5E2B37AB9CAD74E04A04",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridCheckoutStore.php",
+        "transferred_sha256":  "814BC6B2B401B4C5694475CB3DF067106A03F9178CFD7B176383002E0B0FFCBA",
+        "integrated_sha256":  "814BC6B2B401B4C5694475CB3DF067106A03F9178CFD7B176383002E0B0FFCBA",
+        "source_sha256":  "814BC6B2B401B4C5694475CB3DF067106A03F9178CFD7B176383002E0B0FFCBA",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridCustody.php",
+        "transferred_sha256":  "EFF5B18B76AB4D6E3CA634E36B8F1A23208714B786E3D731ED88942F1953C996",
+        "integrated_sha256":  "EFF5B18B76AB4D6E3CA634E36B8F1A23208714B786E3D731ED88942F1953C996",
+        "source_sha256":  "EFF5B18B76AB4D6E3CA634E36B8F1A23208714B786E3D731ED88942F1953C996",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridCustodyLedger.php",
+        "transferred_sha256":  "6C95FF833AD8B343FF684510151ACE58856D483CAA28E46AF0CEC0CCB9715BCD",
+        "integrated_sha256":  "6C95FF833AD8B343FF684510151ACE58856D483CAA28E46AF0CEC0CCB9715BCD",
+        "source_sha256":  "6C95FF833AD8B343FF684510151ACE58856D483CAA28E46AF0CEC0CCB9715BCD",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridDatabaseScope.php",
+        "transferred_sha256":  "994EBEDF80111C43FA6827A9F842AD4A16E1D00ED9ED366E2B022FF01CAA5B70",
+        "integrated_sha256":  "994EBEDF80111C43FA6827A9F842AD4A16E1D00ED9ED366E2B022FF01CAA5B70",
+        "source_sha256":  "994EBEDF80111C43FA6827A9F842AD4A16E1D00ED9ED366E2B022FF01CAA5B70",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source; document-only CSP nonce compatibility",
+        "path":  "app/Services/HybridDocuments.php",
+        "transferred_sha256":  "93AC6D3F1C3804EC078209226CC2DEFB25977AAD00D3B563C645ABB2AA7532AF",
+        "integrated_sha256":  "92AB842D5E64DD8BBDB7FEFC049BB6C8ED61B39D6946AA4A6669155D4AE845A8",
+        "source_sha256":  "93AC6D3F1C3804EC078209226CC2DEFB25977AAD00D3B563C645ABB2AA7532AF",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridFeatureGate.php",
+        "transferred_sha256":  "D68F175A6C67646CA13E0A3776C04C39D53220634C407B32D40E08EFFD23DA8B",
+        "integrated_sha256":  "D68F175A6C67646CA13E0A3776C04C39D53220634C407B32D40E08EFFD23DA8B",
+        "source_sha256":  "D68F175A6C67646CA13E0A3776C04C39D53220634C407B32D40E08EFFD23DA8B",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceBalances.php",
+        "transferred_sha256":  "67DA48F715AA8E02EFBC523D5B298136D5F2096DE02F21FCCED5313844DB48FC",
+        "integrated_sha256":  "67DA48F715AA8E02EFBC523D5B298136D5F2096DE02F21FCCED5313844DB48FC",
+        "source_sha256":  "67DA48F715AA8E02EFBC523D5B298136D5F2096DE02F21FCCED5313844DB48FC",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceCheckout.php",
+        "transferred_sha256":  "073E1E704D8B170ECD377DCDA64EFF1BE66C12349E3B1D94E5ACF0631A3EA38B",
+        "integrated_sha256":  "073E1E704D8B170ECD377DCDA64EFF1BE66C12349E3B1D94E5ACF0631A3EA38B",
+        "source_sha256":  "073E1E704D8B170ECD377DCDA64EFF1BE66C12349E3B1D94E5ACF0631A3EA38B",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceContext.php",
+        "transferred_sha256":  "36E08668E55E1A7A9036DDB7AA1DDA94CEC6C67E21AF818E4BD5E9196CB93CEC",
+        "integrated_sha256":  "36E08668E55E1A7A9036DDB7AA1DDA94CEC6C67E21AF818E4BD5E9196CB93CEC",
+        "source_sha256":  "36E08668E55E1A7A9036DDB7AA1DDA94CEC6C67E21AF818E4BD5E9196CB93CEC",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceReader.php",
+        "transferred_sha256":  "35A2C64A5BC6C94467C675B09B4270FAC0A0D5A244B9815838AB1F213C8E9C5F",
+        "integrated_sha256":  "35A2C64A5BC6C94467C675B09B4270FAC0A0D5A244B9815838AB1F213C8E9C5F",
+        "source_sha256":  "35A2C64A5BC6C94467C675B09B4270FAC0A0D5A244B9815838AB1F213C8E9C5F",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceReconciliation.php",
+        "transferred_sha256":  "92A16BB65C0989F92FDE00BDC1749523FB5CF0A9920E1409D387722F014D9272",
+        "integrated_sha256":  "92A16BB65C0989F92FDE00BDC1749523FB5CF0A9920E1409D387722F014D9272",
+        "source_sha256":  "92A16BB65C0989F92FDE00BDC1749523FB5CF0A9920E1409D387722F014D9272",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceRequest.php",
+        "transferred_sha256":  "34FA9382D4F2AF8AE7116D752BDC9E246F3272C3C4F1C10F03BA744313C73289",
+        "integrated_sha256":  "34FA9382D4F2AF8AE7116D752BDC9E246F3272C3C4F1C10F03BA744313C73289",
+        "source_sha256":  "34FA9382D4F2AF8AE7116D752BDC9E246F3272C3C4F1C10F03BA744313C73289",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceResolver.php",
+        "transferred_sha256":  "FE3198E50A2C901908D20079A8B8CEF0645F965E2C6C281DB8330E3D6932FEBD",
+        "integrated_sha256":  "FE3198E50A2C901908D20079A8B8CEF0645F965E2C6C281DB8330E3D6932FEBD",
+        "source_sha256":  "FE3198E50A2C901908D20079A8B8CEF0645F965E2C6C281DB8330E3D6932FEBD",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridInvoiceSnapshots.php",
+        "transferred_sha256":  "B9AF51C2FF71515EC941F8F835BB189A36F9055E4305D0127E699FFC76807BF2",
+        "integrated_sha256":  "B9AF51C2FF71515EC941F8F835BB189A36F9055E4305D0127E699FFC76807BF2",
+        "source_sha256":  "B9AF51C2FF71515EC941F8F835BB189A36F9055E4305D0127E699FFC76807BF2",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridPromotionPolicy.php",
+        "transferred_sha256":  "FD87D10779DF385AD45A79935FB0F99C64D76DB1F5DCFC75FCE0D41FF17E7E89",
+        "integrated_sha256":  "FD87D10779DF385AD45A79935FB0F99C64D76DB1F5DCFC75FCE0D41FF17E7E89",
+        "source_sha256":  "FD87D10779DF385AD45A79935FB0F99C64D76DB1F5DCFC75FCE0D41FF17E7E89",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridReturnPolicy.php",
+        "transferred_sha256":  "BA7BF7B1C4520E9DBC2441C1A44E14202504FDCE873E9F57D8B72CD0CF56C0BE",
+        "integrated_sha256":  "BA7BF7B1C4520E9DBC2441C1A44E14202504FDCE873E9F57D8B72CD0CF56C0BE",
+        "source_sha256":  "BA7BF7B1C4520E9DBC2441C1A44E14202504FDCE873E9F57D8B72CD0CF56C0BE",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridReturnReconciliation.php",
+        "transferred_sha256":  "D09F27513A6926ED47441F9CD79C4470F36E65ADF53DDFED2D6ABA24715079A8",
+        "integrated_sha256":  "D09F27513A6926ED47441F9CD79C4470F36E65ADF53DDFED2D6ABA24715079A8",
+        "source_sha256":  "D09F27513A6926ED47441F9CD79C4470F36E65ADF53DDFED2D6ABA24715079A8",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridReturnRequest.php",
+        "transferred_sha256":  "48E3696D80343968737898852216871753A5FA2AF2383A39DCB8BCF292A89065",
+        "integrated_sha256":  "48E3696D80343968737898852216871753A5FA2AF2383A39DCB8BCF292A89065",
+        "source_sha256":  "48E3696D80343968737898852216871753A5FA2AF2383A39DCB8BCF292A89065",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridReturns.php",
+        "transferred_sha256":  "F49DD17113E72317B85B560453581F0A59093BA401189CD179DCA531F008E74A",
+        "integrated_sha256":  "F49DD17113E72317B85B560453581F0A59093BA401189CD179DCA531F008E74A",
+        "source_sha256":  "F49DD17113E72317B85B560453581F0A59093BA401189CD179DCA531F008E74A",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/HybridUnitAllocations.php",
+        "transferred_sha256":  "7A60850E73F4E71F69A896973D687A9BC6EDABD63DEB7938DE65A0820A1CCDC9",
+        "integrated_sha256":  "7A60850E73F4E71F69A896973D687A9BC6EDABD63DEB7938DE65A0820A1CCDC9",
+        "source_sha256":  "7A60850E73F4E71F69A896973D687A9BC6EDABD63DEB7938DE65A0820A1CCDC9",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/PdoHybridCheckoutStore.php",
+        "transferred_sha256":  "D046531867B9F98042A86FD8297501F31C7977B3DC3FBF178F659C5DC031485F",
+        "integrated_sha256":  "D046531867B9F98042A86FD8297501F31C7977B3DC3FBF178F659C5DC031485F",
+        "source_sha256":  "D046531867B9F98042A86FD8297501F31C7977B3DC3FBF178F659C5DC031485F",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/PdoHybridInvoiceContext.php",
+        "transferred_sha256":  "E45CDC064D3A646FFD6F4ABF18E506313466814726A4FF12DD99080E9D183862",
+        "integrated_sha256":  "E45CDC064D3A646FFD6F4ABF18E506313466814726A4FF12DD99080E9D183862",
+        "source_sha256":  "E45CDC064D3A646FFD6F4ABF18E506313466814726A4FF12DD99080E9D183862",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Services/PdoHybridInvoiceSnapshots.php",
+        "transferred_sha256":  "4EDA3A5D8C66BE337A7B08691F81DC5BACF22231054A7D7E693DE1630EC4B566",
+        "integrated_sha256":  "4EDA3A5D8C66BE337A7B08691F81DC5BACF22231054A7D7E693DE1630EC4B566",
+        "source_sha256":  "4EDA3A5D8C66BE337A7B08691F81DC5BACF22231054A7D7E693DE1630EC4B566",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Support/HybridCalculationException.php",
+        "transferred_sha256":  "B9D7F836670B8875EDDFE762CFFC9E57A1A9D84EFC5F0D7E421E5D9919C977D5",
+        "integrated_sha256":  "B9D7F836670B8875EDDFE762CFFC9E57A1A9D84EFC5F0D7E421E5D9919C977D5",
+        "source_sha256":  "B9D7F836670B8875EDDFE762CFFC9E57A1A9D84EFC5F0D7E421E5D9919C977D5",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Views/hybrid-document-links.php",
+        "transferred_sha256":  "99D3E21DCDCCCC1BDB2AF12773FE4B7DC0DD462592DE65569F558C9CCC3B148C",
+        "integrated_sha256":  "99D3E21DCDCCCC1BDB2AF12773FE4B7DC0DD462592DE65569F558C9CCC3B148C",
+        "source_sha256":  "99D3E21DCDCCCC1BDB2AF12773FE4B7DC0DD462592DE65569F558C9CCC3B148C",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source; document-only CSP nonce compatibility",
+        "path":  "app/Views/hybrid-document.php",
+        "transferred_sha256":  "95474402D6BE35D582ECF8A5A81847C6A5F5F99615D1277BD5B448182188ED23",
+        "integrated_sha256":  "165F04297188120D46B0D4A9CE5EBCC6E06DAE313B332D5602970E3FA4CB2AB6",
+        "source_sha256":  "95474402D6BE35D582ECF8A5A81847C6A5F5F99615D1277BD5B448182188ED23",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Views/hybrid-invoice.php",
+        "transferred_sha256":  "76825085FDA5EB7322AAF6C236395768D77DDB4E8685186B668D5F6225066922",
+        "integrated_sha256":  "76825085FDA5EB7322AAF6C236395768D77DDB4E8685186B668D5F6225066922",
+        "source_sha256":  "76825085FDA5EB7322AAF6C236395768D77DDB4E8685186B668D5F6225066922",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "app/Views/hybrid-returns.php",
+        "transferred_sha256":  "EA538C1456AD175A3DCF28A40C527138FA93CC9D1B50B429792A0B7AB9A1812E",
+        "integrated_sha256":  "EA538C1456AD175A3DCF28A40C527138FA93CC9D1B50B429792A0B7AB9A1812E",
+        "source_sha256":  "EA538C1456AD175A3DCF28A40C527138FA93CC9D1B50B429792A0B7AB9A1812E",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "config/hybrid-promotions.php",
+        "transferred_sha256":  "C300B91F1EA2EE73D85F4C18E810BB740932D9643EF2D4FEB10CAEBC36778730",
+        "integrated_sha256":  "C300B91F1EA2EE73D85F4C18E810BB740932D9643EF2D4FEB10CAEBC36778730",
+        "source_sha256":  "C300B91F1EA2EE73D85F4C18E810BB740932D9643EF2D4FEB10CAEBC36778730",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "database/migrations/025_hybrid_invoice_snapshots.sql",
+        "transferred_sha256":  "662054EB3025354EFF03C9DA928E3B618FA433A4CA69A8B6632342924D45F2C1",
+        "integrated_sha256":  "662054EB3025354EFF03C9DA928E3B618FA433A4CA69A8B6632342924D45F2C1",
+        "source_sha256":  "662054EB3025354EFF03C9DA928E3B618FA433A4CA69A8B6632342924D45F2C1",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "database/migrations/026_hybrid_linked_returns.sql",
+        "transferred_sha256":  "912B831EA2D3674BEE50EF7B6DFD3852683FEC2B00C921C5F419F5457A137D5F",
+        "integrated_sha256":  "912B831EA2D3674BEE50EF7B6DFD3852683FEC2B00C921C5F419F5457A137D5F",
+        "source_sha256":  "912B831EA2D3674BEE50EF7B6DFD3852683FEC2B00C921C5F419F5457A137D5F",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "database/migrations/027_hybrid_custody_dispositions.sql",
+        "transferred_sha256":  "1E00AD4388F60C4B130D560D6CBCEBB83489E8D43C9033BFC4D6E54FACA24FAC",
+        "integrated_sha256":  "1E00AD4388F60C4B130D560D6CBCEBB83489E8D43C9033BFC4D6E54FACA24FAC",
+        "source_sha256":  "1E00AD4388F60C4B130D560D6CBCEBB83489E8D43C9033BFC4D6E54FACA24FAC",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "public/assets/css/hybrid-invoice.css",
+        "transferred_sha256":  "8DCD6CBA176BBB17EEA9FE17B486B0BAF6C54FB0059E769767574079FF19989F",
+        "integrated_sha256":  "8DCD6CBA176BBB17EEA9FE17B486B0BAF6C54FB0059E769767574079FF19989F",
+        "source_sha256":  "8DCD6CBA176BBB17EEA9FE17B486B0BAF6C54FB0059E769767574079FF19989F",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "public/assets/css/hybrid-returns.css",
+        "transferred_sha256":  "3F797C6683D661F1145F93D898F6D68EB8B2D8F76206D89EB11A338FFAA422FA",
+        "integrated_sha256":  "3F797C6683D661F1145F93D898F6D68EB8B2D8F76206D89EB11A338FFAA422FA",
+        "source_sha256":  "3F797C6683D661F1145F93D898F6D68EB8B2D8F76206D89EB11A338FFAA422FA",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "public/assets/js/hybrid-invoice.js",
+        "transferred_sha256":  "689BFAAEB2EB63F91865B96DDC5A485F026026AF034F036BEBAC9F02669985DA",
+        "integrated_sha256":  "689BFAAEB2EB63F91865B96DDC5A485F026026AF034F036BEBAC9F02669985DA",
+        "source_sha256":  "689BFAAEB2EB63F91865B96DDC5A485F026026AF034F036BEBAC9F02669985DA",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "public/assets/js/hybrid-returns.js",
+        "transferred_sha256":  "0D74B821CCB465B15240DA1D6FB5DD6CF49606C443ACB155A36F98D711E75666",
+        "integrated_sha256":  "0D74B821CCB465B15240DA1D6FB5DD6CF49606C443ACB155A36F98D711E75666",
+        "source_sha256":  "0D74B821CCB465B15240DA1D6FB5DD6CF49606C443ACB155A36F98D711E75666",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-isolation.php",
+        "transferred_sha256":  "8911F9FCC5BE61BC211F60F7842E61E61A30A9C101942185F08C770E4F3EEADD",
+        "integrated_sha256":  "8911F9FCC5BE61BC211F60F7842E61E61A30A9C101942185F08C770E4F3EEADD",
+        "source_sha256":  "8911F9FCC5BE61BC211F60F7842E61E61A30A9C101942185F08C770E4F3EEADD",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-isolation-evidence.php",
+        "transferred_sha256":  "98455D26DA9924CE5CFD0A8BC6ACBBB334909F2E42D28FEDA610381F9F8034CF",
+        "integrated_sha256":  "98455D26DA9924CE5CFD0A8BC6ACBBB334909F2E42D28FEDA610381F9F8034CF",
+        "source_sha256":  "98455D26DA9924CE5CFD0A8BC6ACBBB334909F2E42D28FEDA610381F9F8034CF",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-bootstrap-isolated.php",
+        "transferred_sha256":  "9C3D1E321AFD4590A3FDCC293D9FB58C2C99772B3B16205FC0A20C71DD05D824",
+        "integrated_sha256":  "9C3D1E321AFD4590A3FDCC293D9FB58C2C99772B3B16205FC0A20C71DD05D824",
+        "source_sha256":  "9C3D1E321AFD4590A3FDCC293D9FB58C2C99772B3B16205FC0A20C71DD05D824",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-fixtures.php",
+        "transferred_sha256":  "829D078173631D2E8CD95FAB63FB5458825833FB19A8F747931FCE5DF77E67CD",
+        "integrated_sha256":  "829D078173631D2E8CD95FAB63FB5458825833FB19A8F747931FCE5DF77E67CD",
+        "source_sha256":  "829D078173631D2E8CD95FAB63FB5458825833FB19A8F747931FCE5DF77E67CD",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-database.php",
+        "transferred_sha256":  "B21299097D059B13549E2DCDD66C2570C579FBCCB15C9503F8401F3E9C89F2F0",
+        "integrated_sha256":  "B21299097D059B13549E2DCDD66C2570C579FBCCB15C9503F8401F3E9C89F2F0",
+        "source_sha256":  "B21299097D059B13549E2DCDD66C2570C579FBCCB15C9503F8401F3E9C89F2F0",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-invoice-foundations.php",
+        "transferred_sha256":  "7B321E005F1902462FF9A0600EC0F21160EEE985661B9D403AA5066317ECD0B0",
+        "integrated_sha256":  "7B321E005F1902462FF9A0600EC0F21160EEE985661B9D403AA5066317ECD0B0",
+        "source_sha256":  "7B321E005F1902462FF9A0600EC0F21160EEE985661B9D403AA5066317ECD0B0",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-legacy-regression.php",
+        "transferred_sha256":  "8A5099D0D5079EE0FAEBCB82AA90DB63290796A996F498E5830FB9F1FC4AE6DB",
+        "integrated_sha256":  "8A5099D0D5079EE0FAEBCB82AA90DB63290796A996F498E5830FB9F1FC4AE6DB",
+        "source_sha256":  "8A5099D0D5079EE0FAEBCB82AA90DB63290796A996F498E5830FB9F1FC4AE6DB",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-post-worker.php",
+        "transferred_sha256":  "EAD60FDF9319C4293108667C977C1EA3A659F93D113EBE900D915D39787960B4",
+        "integrated_sha256":  "EAD60FDF9319C4293108667C977C1EA3A659F93D113EBE900D915D39787960B4",
+        "source_sha256":  "EAD60FDF9319C4293108667C977C1EA3A659F93D113EBE900D915D39787960B4",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-promotion-policy.php",
+        "transferred_sha256":  "F1962840231FAAB2A24D2C109078D098FC716865AB156FAAC7731B176E30E4E0",
+        "integrated_sha256":  "F1962840231FAAB2A24D2C109078D098FC716865AB156FAAC7731B176E30E4E0",
+        "source_sha256":  "F1962840231FAAB2A24D2C109078D098FC716865AB156FAAC7731B176E30E4E0",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-return-browser.js",
+        "transferred_sha256":  "F9E12D48582683CD838DE2358746F5D6A18FA96868BEF10A0C581C907CAD2574",
+        "integrated_sha256":  "F9E12D48582683CD838DE2358746F5D6A18FA96868BEF10A0C581C907CAD2574",
+        "source_sha256":  "F9E12D48582683CD838DE2358746F5D6A18FA96868BEF10A0C581C907CAD2574",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-return-browser.php",
+        "transferred_sha256":  "9D37385597B9A97D9BAA62F49F4ADC7B0A481B359999D1C00163DF160C210661",
+        "integrated_sha256":  "9D37385597B9A97D9BAA62F49F4ADC7B0A481B359999D1C00163DF160C210661",
+        "source_sha256":  "9D37385597B9A97D9BAA62F49F4ADC7B0A481B359999D1C00163DF160C210661",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-return-domain.php",
+        "transferred_sha256":  "05DEFAE608E562ED1EE0FEC4A2D163DCD6EFA56DABEB0DE8AD7A076D06D7FE2F",
+        "integrated_sha256":  "05DEFAE608E562ED1EE0FEC4A2D163DCD6EFA56DABEB0DE8AD7A076D06D7FE2F",
+        "source_sha256":  "05DEFAE608E562ED1EE0FEC4A2D163DCD6EFA56DABEB0DE8AD7A076D06D7FE2F",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-return-worker.php",
+        "transferred_sha256":  "32C1760C4FE021CBBF495B7A2F1470878FDAAD392AD3E85EB756D25E88BAF616",
+        "integrated_sha256":  "32C1760C4FE021CBBF495B7A2F1470878FDAAD392AD3E85EB756D25E88BAF616",
+        "source_sha256":  "32C1760C4FE021CBBF495B7A2F1470878FDAAD392AD3E85EB756D25E88BAF616",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-returns-database.php",
+        "transferred_sha256":  "DB24A3A3ED88620B653AD10E51E05E0D90D7C7CC60BDAB7F744C66C623FFA62C",
+        "integrated_sha256":  "DB24A3A3ED88620B653AD10E51E05E0D90D7C7CC60BDAB7F744C66C623FFA62C",
+        "source_sha256":  "DB24A3A3ED88620B653AD10E51E05E0D90D7C7CC60BDAB7F744C66C623FFA62C",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stage4-close.php",
+        "transferred_sha256":  "43A55FB339D1B5196EBFCA206CE33C5C48D7447D4A8DB88C5B5E913327A42F3A",
+        "integrated_sha256":  "43A55FB339D1B5196EBFCA206CE33C5C48D7447D4A8DB88C5B5E913327A42F3A",
+        "source_sha256":  "43A55FB339D1B5196EBFCA206CE33C5C48D7447D4A8DB88C5B5E913327A42F3A",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stage5-browser.js",
+        "transferred_sha256":  "4B68E7847424E5CC112AA263C4221E4BB86C9A128436ACD0AA4B5D1049AACD9A",
+        "integrated_sha256":  "4B68E7847424E5CC112AA263C4221E4BB86C9A128436ACD0AA4B5D1049AACD9A",
+        "source_sha256":  "4B68E7847424E5CC112AA263C4221E4BB86C9A128436ACD0AA4B5D1049AACD9A",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stage5-browser.php",
+        "transferred_sha256":  "93AF141D708330B88B2A0A1F294AD07FA2625563617AC488CD0AD38766E12FEB",
+        "integrated_sha256":  "93AF141D708330B88B2A0A1F294AD07FA2625563617AC488CD0AD38766E12FEB",
+        "source_sha256":  "93AF141D708330B88B2A0A1F294AD07FA2625563617AC488CD0AD38766E12FEB",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stage5-documents.php",
+        "transferred_sha256":  "E807AC0990B1E8A01C853150DD163FE37CE1186A837D3700ACB0FD7316782CB1",
+        "integrated_sha256":  "E807AC0990B1E8A01C853150DD163FE37CE1186A837D3700ACB0FD7316782CB1",
+        "source_sha256":  "E807AC0990B1E8A01C853150DD163FE37CE1186A837D3700ACB0FD7316782CB1",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stage5-fixtures.php",
+        "transferred_sha256":  "8F4DEC9A774E609E119A98858BC8D056C3BEC87CE83DE15E1E33EF47C28571AD",
+        "integrated_sha256":  "8F4DEC9A774E609E119A98858BC8D056C3BEC87CE83DE15E1E33EF47C28571AD",
+        "source_sha256":  "8F4DEC9A774E609E119A98858BC8D056C3BEC87CE83DE15E1E33EF47C28571AD",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stage5-pdf.php",
+        "transferred_sha256":  "1BB85006DE222C4E5B463302B1EF367C98834CE70832EC48644B8169276B2B8A",
+        "integrated_sha256":  "1BB85006DE222C4E5B463302B1EF367C98834CE70832EC48644B8169276B2B8A",
+        "source_sha256":  "1BB85006DE222C4E5B463302B1EF367C98834CE70832EC48644B8169276B2B8A",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stage5-reporting.php",
+        "transferred_sha256":  "25AB5C66E6638E8EE9B544CA4CE2B431EADBD49BA5B2DEA76B6BDC27BA0DB35E",
+        "integrated_sha256":  "25AB5C66E6638E8EE9B544CA4CE2B431EADBD49BA5B2DEA76B6BDC27BA0DB35E",
+        "source_sha256":  "25AB5C66E6638E8EE9B544CA4CE2B431EADBD49BA5B2DEA76B6BDC27BA0DB35E",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-stop-isolated.php",
+        "transferred_sha256":  "2927934815353F8BAA897139F294C5EE06A26F50A0A60FF4A5C44C907D5F6EEC",
+        "integrated_sha256":  "2927934815353F8BAA897139F294C5EE06A26F50A0A60FF4A5C44C907D5F6EEC",
+        "source_sha256":  "2927934815353F8BAA897139F294C5EE06A26F50A0A60FF4A5C44C907D5F6EEC",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source; Stage 6A combined-controller test adapter",
+        "path":  "tests/hybrid-ui-bridge.php",
+        "transferred_sha256":  "4C66273E3F6A688DA1F7C2D8C39936DD0BED094E3DBD69B9B60135397B428452",
+        "integrated_sha256":  "F5A5D90D19E08F0D0F383F66A1A849D41801A641D5275CC76AE1E594909D8980",
+        "source_sha256":  "4C66273E3F6A688DA1F7C2D8C39936DD0BED094E3DBD69B9B60135397B428452",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-ui-browser.js",
+        "transferred_sha256":  "28404BB404C98CF8496E9EB5A25C181C59740ADA1D3618103B5FD553920C4BAB",
+        "integrated_sha256":  "28404BB404C98CF8496E9EB5A25C181C59740ADA1D3618103B5FD553920C4BAB",
+        "source_sha256":  "28404BB404C98CF8496E9EB5A25C181C59740ADA1D3618103B5FD553920C4BAB",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-ui-browser.php",
+        "transferred_sha256":  "D87A8F7948EA75511918E302B03006F657247ACA4CB2E36FDE2C887DC49D86D8",
+        "integrated_sha256":  "D87A8F7948EA75511918E302B03006F657247ACA4CB2E36FDE2C887DC49D86D8",
+        "source_sha256":  "D87A8F7948EA75511918E302B03006F657247ACA4CB2E36FDE2C887DC49D86D8",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-ui-controllers.php",
+        "transferred_sha256":  "0619C13E8261A336BB2B89FAFA923DEEC190A27B15BE8C4BC434D2F2392026CD",
+        "integrated_sha256":  "0619C13E8261A336BB2B89FAFA923DEEC190A27B15BE8C4BC434D2F2392026CD",
+        "source_sha256":  "0619C13E8261A336BB2B89FAFA923DEEC190A27B15BE8C4BC434D2F2392026CD",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-ui-domain.js",
+        "transferred_sha256":  "D6D94CB442220876AF7116AD2B75DB8E6938B625DE1B1B72537150DEB748DAA5",
+        "integrated_sha256":  "D6D94CB442220876AF7116AD2B75DB8E6938B625DE1B1B72537150DEB748DAA5",
+        "source_sha256":  "D6D94CB442220876AF7116AD2B75DB8E6938B625DE1B1B72537150DEB748DAA5",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-ui-prepare.php",
+        "transferred_sha256":  "A8E2862926B2F4B6454596A30B20D4084E966B2F083697877EF72E5611E8FB56",
+        "integrated_sha256":  "A8E2862926B2F4B6454596A30B20D4084E966B2F083697877EF72E5611E8FB56",
+        "source_sha256":  "A8E2862926B2F4B6454596A30B20D4084E966B2F083697877EF72E5611E8FB56",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source; Stage 6A combined-controller test adapter",
+        "path":  "tests/hybrid-ui-router.php",
+        "transferred_sha256":  "9E3ABD52A38123E06C322B93B227F9DB3A94E087BE4C1C45C574E6582E2EA73D",
+        "integrated_sha256":  "7393A8DE5D89D20E1186B7A593790799871470E4AB4167A8620371DC8A98AC92",
+        "source_sha256":  "9E3ABD52A38123E06C322B93B227F9DB3A94E087BE4C1C45C574E6582E2EA73D",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "tests/hybrid-pdf-render.ps1",
+        "transferred_sha256":  "070CDAF81C5EE33D9CAB99BF847F1CF6CDF31F54A4BFCDAD7AA122C7E03EB8BC",
+        "integrated_sha256":  "070CDAF81C5EE33D9CAB99BF847F1CF6CDF31F54A4BFCDAD7AA122C7E03EB8BC",
+        "source_sha256":  "070CDAF81C5EE33D9CAB99BF847F1CF6CDF31F54A4BFCDAD7AA122C7E03EB8BC",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "docs/hybrid-promotion-v1.md",
+        "transferred_sha256":  "16AE58C7AE6BAF99BBF704EEA66698CE23F14FD1BE51D8B7B3D7CCE5F2C2A5A4",
+        "integrated_sha256":  "16AE58C7AE6BAF99BBF704EEA66698CE23F14FD1BE51D8B7B3D7CCE5F2C2A5A4",
+        "source_sha256":  "16AE58C7AE6BAF99BBF704EEA66698CE23F14FD1BE51D8B7B3D7CCE5F2C2A5A4",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "docs/hybrid-stage1-engine.md",
+        "transferred_sha256":  "10B6B9E2C34517D1E1E2B4875C60EB76BD20A4C5C81231F33FAC122E3BC9C651",
+        "integrated_sha256":  "10B6B9E2C34517D1E1E2B4875C60EB76BD20A4C5C81231F33FAC122E3BC9C651",
+        "source_sha256":  "10B6B9E2C34517D1E1E2B4875C60EB76BD20A4C5C81231F33FAC122E3BC9C651",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "docs/hybrid-stage2b-foundations.md",
+        "transferred_sha256":  "13ECD1CDDBB06ADBC29A53F43A2AC13AB1282EF45CF89BDB0A46643F9AC79341",
+        "integrated_sha256":  "13ECD1CDDBB06ADBC29A53F43A2AC13AB1282EF45CF89BDB0A46643F9AC79341",
+        "source_sha256":  "13ECD1CDDBB06ADBC29A53F43A2AC13AB1282EF45CF89BDB0A46643F9AC79341",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "docs/hybrid-stage2c-integration.md",
+        "transferred_sha256":  "4F01AED9A9594046EE828C2AF14A070AD707036852C53BF03EC0F72F4038717D",
+        "integrated_sha256":  "4F01AED9A9594046EE828C2AF14A070AD707036852C53BF03EC0F72F4038717D",
+        "source_sha256":  "4F01AED9A9594046EE828C2AF14A070AD707036852C53BF03EC0F72F4038717D",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "docs/hybrid-stage3-ui.md",
+        "transferred_sha256":  "88EB8DAC9CA60F7E64F53916C45DA34462D798A7EF0DFB0F4FF8A55C8A8E38B6",
+        "integrated_sha256":  "88EB8DAC9CA60F7E64F53916C45DA34462D798A7EF0DFB0F4FF8A55C8A8E38B6",
+        "source_sha256":  "88EB8DAC9CA60F7E64F53916C45DA34462D798A7EF0DFB0F4FF8A55C8A8E38B6",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "docs/hybrid-stage4-returns.md",
+        "transferred_sha256":  "94F4303ADD6DB196C7B11EB9A89C0133672E1707FDAA2201AB5735C091215428",
+        "integrated_sha256":  "94F4303ADD6DB196C7B11EB9A89C0133672E1707FDAA2201AB5735C091215428",
+        "source_sha256":  "94F4303ADD6DB196C7B11EB9A89C0133672E1707FDAA2201AB5735C091215428",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "new reviewed source",
+        "path":  "docs/hybrid-stage5-readiness.md",
+        "transferred_sha256":  "059BF69F33C578E9A04DF2261800A9060A013DD381FAF0042501AADCCE13037E",
+        "integrated_sha256":  "059BF69F33C578E9A04DF2261800A9060A013DD381FAF0042501AADCCE13037E",
+        "source_sha256":  "059BF69F33C578E9A04DF2261800A9060A013DD381FAF0042501AADCCE13037E",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change",
+        "path":  "app/Controllers/InvoiceController.php",
+        "transferred_sha256":  "DE0E25DE68C668EB388DDA655D642A5B7EFDAE2A7CE749319D2209843E835654",
+        "integrated_sha256":  "DE0E25DE68C668EB388DDA655D642A5B7EFDAE2A7CE749319D2209843E835654",
+        "source_sha256":  "DE0E25DE68C668EB388DDA655D642A5B7EFDAE2A7CE749319D2209843E835654",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change; document-only CSP nonce compatibility",
+        "path":  "app/Controllers/InvoiceDocumentController.php",
+        "transferred_sha256":  "DB8518AE37A21739F0387A419294433DBCC2A78E6974ECF41483CD4BD87B038B",
+        "integrated_sha256":  "F45FAC3D9479FD60D2D1857686C7A79CCA1ED41DC5E51F33DDE16A13BAF0A365",
+        "source_sha256":  "DB8518AE37A21739F0387A419294433DBCC2A78E6974ECF41483CD4BD87B038B",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change",
+        "path":  "app/Controllers/ReportController.php",
+        "transferred_sha256":  "B5FCE222523AD798678D281CFAD8D6A679E7797948982221034E617DD176BC70",
+        "integrated_sha256":  "B5FCE222523AD798678D281CFAD8D6A679E7797948982221034E617DD176BC70",
+        "source_sha256":  "B5FCE222523AD798678D281CFAD8D6A679E7797948982221034E617DD176BC70",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "three-way merge: retained main sale time and Hybrid dispatch; document-only CSP nonce compatibility",
+        "path":  "app/Services/InvoiceDocuments.php",
+        "transferred_sha256":  "3C8FBA3627520FA0CAFA86FA19EEAD0EB7CBBE99E2333BBE7B4A4144CF443978",
+        "integrated_sha256":  "C767CCAA49DD90F0841F53C8D935520E24673D0485B31E0607A34C8D250C9048",
+        "source_sha256":  "6FC62D960495EE6D114C7D441EBA0C07FFFDCFFECEAC0912A6EDE90998443C75",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change",
+        "path":  "app/Services/Invoices.php",
+        "transferred_sha256":  "5AD3E3C40D54CD4825907A94D847D8A653934BCE9CF8E52AEC248DE348D6CE1E",
+        "integrated_sha256":  "5AD3E3C40D54CD4825907A94D847D8A653934BCE9CF8E52AEC248DE348D6CE1E",
+        "source_sha256":  "5AD3E3C40D54CD4825907A94D847D8A653934BCE9CF8E52AEC248DE348D6CE1E",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change",
+        "path":  "app/Services/OfflineSales.php",
+        "transferred_sha256":  "BF8BFA03656545FDCC618FD259ABBFBFC506CBBFE6A81A3C224C36ED3052FCBD",
+        "integrated_sha256":  "BF8BFA03656545FDCC618FD259ABBFBFC506CBBFE6A81A3C224C36ED3052FCBD",
+        "source_sha256":  "BF8BFA03656545FDCC618FD259ABBFBFC506CBBFE6A81A3C224C36ED3052FCBD",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change",
+        "path":  "app/Services/Reports.php",
+        "transferred_sha256":  "619B7A276D16BE7BDA8E685720E5D3E9CDA4C2D8A6050EC65C798728952980D0",
+        "integrated_sha256":  "619B7A276D16BE7BDA8E685720E5D3E9CDA4C2D8A6050EC65C798728952980D0",
+        "source_sha256":  "619B7A276D16BE7BDA8E685720E5D3E9CDA4C2D8A6050EC65C798728952980D0",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change",
+        "path":  "app/Support/LocalPdf.php",
+        "transferred_sha256":  "C98927AA12B265B7AC889DAACE46F816A98976439F3A1B7EB226F1E892477C10",
+        "integrated_sha256":  "C98927AA12B265B7AC889DAACE46F816A98976439F3A1B7EB226F1E892477C10",
+        "source_sha256":  "C98927AA12B265B7AC889DAACE46F816A98976439F3A1B7EB226F1E892477C10",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "reviewed non-overlapping change",
+        "path":  "app/Views/invoices.php",
+        "transferred_sha256":  "676E4E1F4545339FBFEF5D61D6C5967DB572EFC28E5517D43DDC4B1245B2E017",
+        "integrated_sha256":  "676E4E1F4545339FBFEF5D61D6C5967DB572EFC28E5517D43DDC4B1245B2E017",
+        "source_sha256":  "676E4E1F4545339FBFEF5D61D6C5967DB572EFC28E5517D43DDC4B1245B2E017",
+        "origin":  "Stage 1-5 reviewed transfer"
+    },
+    {
+        "strategy":  "Optional isolated connection injection; main view/design unchanged",
+        "path":  "app/Controllers/AuthController.php",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "F6384B2CD741DD4E53C407B232935F1CC6B9B91243BA925B1F04881A4EFED6CB",
+        "source_sha256":  "6D06404D4210DF7E2A23965ABCA458FB59024B2BE95D08033EDE61475071D065",
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Optional isolated connection injection; main view/design unchanged",
+        "path":  "app/Controllers/CustomerController.php",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "E1587EDF8AA0F02576DCFECFFB4BF410E301AA718D1AC9A7217E11750251F6FA",
+        "source_sha256":  "F3AFE3E735D5406CE495A5F9718BF7974E2A08B60F5A0FCB5198371FC972AFBF",
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Stage 6A synthetic verification helper",
+        "path":  "tests/hybrid-stage6a-fixture-restore.php",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "9854A40EF328CD4E2A7DE89443859DCC02BAE21AF0DBD80EFDD9E9FBE2740DC3",
+        "source_sha256":  null,
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Stage 6A synthetic verification helper",
+        "path":  "tests/hybrid-stage6a-readers.php",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "F5C2DDCD396496EA13BF5C070B82CEB659AFD42B1CC95339A04E56F50A45383B",
+        "source_sha256":  null,
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Stage 6A synthetic verification helper",
+        "path":  "tests/hybrid-stage6a-browser.php",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "D0132BFCBE3E5C978FB1B3ECBD0EF32DFC0D98226AE5176DCE1C76A452C0EFF0",
+        "source_sha256":  null,
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Stage 6A synthetic verification helper",
+        "path":  "tests/hybrid-stage6a-browser.js",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "887B09ED8D207F5192DD254AC34084A3E68A04AEE90D108B7E3CFD6AC578901E",
+        "source_sha256":  null,
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Stage 6A synthetic verification helper",
+        "path":  "tests/hybrid-stage6a-http.php",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "47AEE1051CC4E90C9724D209AE02DB1ECDE0AC70EDFE139AFA3E1EFEED56C4F7",
+        "source_sha256":  null,
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Stage 6A synthetic verification helper",
+        "path":  "tests/hybrid-stage6a-http.js",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "F2C1FC8D99F902F9AE20CB1021DC8F315658174EA7B83E434199DD28F6BC3B86",
+        "source_sha256":  null,
+        "origin":  "Stage 6A"
+    },
+    {
+        "strategy":  "Stage 6A test evidence and blocker report",
+        "path":  "docs/hybrid-stage6a-integration.md",
+        "transferred_sha256":  null,
+        "integrated_sha256":  "601045EF66D34D5E0D0014D187A038BB5DD557E519F6AF1503A229BCAD30427C",
+        "source_sha256":  null,
+        "origin":  "Stage 6A"
+    }
+]

@@ -7,6 +7,9 @@ final class InvoiceController
     public function __construct(private Invoices $invoices){}
     public static function route(string $path):?array
     {
+        if($r=HybridReturnController::route($path))return $r;
+        if($path==='/rep/invoices/hybrid/new')return ['action'=>'hybrid-create','id'=>null,'api'=>false,'role'=>'SALES_REP','methods'=>['GET']];
+        if($path==='/api/v1/rep/invoices/hybrid/eligibility')return ['action'=>'hybrid-eligibility','id'=>null,'api'=>true,'role'=>'SALES_REP','methods'=>['POST']];
         foreach(['/admin/invoices'=>['ADMIN',false],'/rep/invoices'=>['SALES_REP',false],'/api/v1/admin/invoices'=>['ADMIN',true],'/api/v1/rep/invoices'=>['SALES_REP',true]] as $base=>[$role,$api]){
             $action=null;$id=null;$methods=['GET'];
             if($path===$base){$action='index';if($api)$methods[]='POST';}
@@ -22,6 +25,8 @@ final class InvoiceController
     }
     public function handle(array $route,array $user):void
     {
+        if(strpos($route['action'],'hybrid-return-')===0){(new HybridReturnController($this->invoices->hybridReturns()))->handle($route,$user);return;}
+        if(in_array($route['action'],['hybrid-create','hybrid-eligibility'],true)){$this->hybridHandle($route,$user);return;}
         $action=$route['action'];$id=$route['id'];$api=$route['api'];$admin=$route['role']==='ADMIN';$base=$admin?'/admin/invoices':'/rep/invoices';$returnTestEnabled=$this->invoices->historicalReturnAllowed($user);$returnReadOnly=!$returnTestEnabled&&!$admin&&$this->invoices->historicalReturnPreviewAllowed($user);$input=[];$errors=[];$review=null;$record=null;$listing=null;$notice=$_SESSION['invoice_notice']??'';unset($_SESSION['invoice_notice']);
         try{
             $this->invoices->actor($user,$admin);
@@ -44,6 +49,27 @@ final class InvoiceController
         // Benefit checkout UI is offered only to an authorized pilot representative (Phase 3 decision C).
         $benefitModes=$this->invoices->benefitModesEnabled()&&\App\Services\BenefitPolicy::pilotMember($user);$benefitRequired=$benefitModes;
         $source=is_string($input['stock_source']??null)?$input['stock_source']:null;$selected=$action==='create'&&($_POST['catalogue_fallback']??'')!=='1'?array_column(is_array($input['items']??null)?$input['items']:[],'product_id'):null;$options=$this->invoices->options($user,$source,$action==='index',$selected);
+        $hybridAvailability=$action==='create'&&!$admin?$this->invoices->hybridAvailability($user):['enabled'=>false,'posting'=>false];
         require APP_ROOT.'/app/Views/invoices.php';
+    }
+    private function hybridHandle(array $route,array $user):void
+    {
+        header('Cache-Control: private, no-store');
+        try{
+            if(!in_array($_SERVER['REQUEST_METHOD'],$route['methods'],true))throw new InventoryException(['method'=>'Method not allowed.'],405);
+            $user=$this->invoices->actor($user);
+            if($user['role']!=='SALES_REP')throw new InventoryException(['access'=>'Sales Representative access is required.'],403);
+            $hybridAvailability=$this->invoices->hybridAvailability($user);
+            if(!$hybridAvailability['enabled'])throw new InventoryException(['hybrid'=>'Hybrid checkout is disabled.'],409);
+            if($route['action']==='hybrid-eligibility'){
+                $input=$_POST;
+                if(stripos($_SERVER['CONTENT_TYPE']??'','application/json')===0){try{$body=json_decode(file_get_contents('php://input'),false,32,JSON_THROW_ON_ERROR);}catch(\JsonException $e){throw new InventoryException(['body'=>'Invalid JSON.'],400);}if(!$body instanceof \stdClass)throw new InventoryException(['body'=>'Send a JSON object.'],400);$input=(array)$body;}
+                $token=$input['csrf_token']??($_SERVER['HTTP_X_CSRF_TOKEN']??null);
+                if(!is_string($token)||!Csrf::valid($token,$_SESSION['csrf_token']??null))throw new InventoryException(['csrf'=>'Refresh the form and try again.'],403);
+                Http::json($this->invoices->hybridEligibility($user,$input));return;
+            }
+            $options=$this->invoices->options($user,(string)$user['id']);$admin=false;$home='/rep';$base='/rep/invoices';
+            require APP_ROOT.'/app/Views/hybrid-invoice.php';
+        }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}
     }
 }

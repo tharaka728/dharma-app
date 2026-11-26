@@ -51,7 +51,9 @@ final class OfflineSales
     }
     private function envelope(array $a,array $input):array
     {
+        HybridInvoiceRequest::rejectOffline($input);
         $body=$input['body']??null;if(!is_string($body)||strlen($body)>500000)throw new InventoryException(['body'=>'Invalid or excessive offline submission.']);try{$p=json_decode($body,true,32,JSON_THROW_ON_ERROR);}catch(\JsonException $e){throw new InventoryException(['body'=>'Invalid offline JSON.']);}if(!is_array($p)||($p===[]||array_keys($p)===range(0,count($p)-1)))throw new InventoryException(['body'=>'An offline object is required.']);
+        HybridInvoiceRequest::rejectOffline($p);
         $device=self::uuid($p['device_id']??null);$d=$this->one('SELECT d.*,c.public_key,c.last_sequence,c.replacement_cleared_at_utc FROM devices d JOIN offline_device_controls c ON c.device_id=d.id WHERE d.id=?',[$device]);
         if(!$d||(string)$d['user_id']!==(string)$a['id']||!self::verifySignature($body,$input['signature']??null,$d['public_key']))throw new InventoryException(['device'=>'Device identity or signed submission is invalid.'],403);return [$p,$d,hash('sha256',$body)];
     }
@@ -85,6 +87,7 @@ final class OfflineSales
     {
         $id=$p['operation_id'];
         try{
+            HybridInvoiceRequest::rejectOffline($p);
             if($revoked)throw new InventoryException(['device'=>'Revoked or replaced device: administrator reconciliation required.'],409);
             $grant=$this->one('SELECT * FROM offline_policy_grants WHERE id=? AND rep_id=? AND device_id=?',[self::uuid($p['grant_id']??null),$a['id'],$d['id']]);if(!$grant)throw new InventoryException(['grant'=>'Offline authorization is missing.'],409);$snapshot=json_decode($grant['approved_snapshot'],true,512,JSON_THROW_ON_ERROR);
             $now=gmdate('Y-m-d H:i:s');if(time()>=(new \DateTimeImmutable($grant['expires_at_utc'],new \DateTimeZone('UTC')))->getTimestamp())throw new InventoryException(['expired'=>'Offline authorization expired. Sale and provisional cash are retained for review.'],409);

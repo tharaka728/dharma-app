@@ -9,7 +9,27 @@ final class Invoices
 {
     private ?bool $returnSchema=null;
     private ?bool $benefitSchema=null;
-    public function __construct(private PDO $pdo){}
+    private ?bool $hybridSchema=null;
+    public function __construct(private PDO $pdo,private ?HybridInvoiceCheckout $hybrid=null,private ?HybridReturns $returns=null){}
+    public function hybridReturns():HybridReturns{return $this->returns??new HybridReturns($this->pdo,require dirname(__DIR__,2).'/config/hybrid-promotions.php');}
+    public function hybridReturnAvailability(array $actor):array{try{return $this->hybridReturns()->availability($actor);}catch(InventoryException|\PDOException $e){return ['enabled'=>false,'posting'=>false,'custody'=>false,'manager'=>false];}}
+    private function hybrid():HybridInvoiceCheckout
+    {
+        if($this->hybrid!==null)return $this->hybrid;
+        $config=require dirname(__DIR__,2).'/config/hybrid-promotions.php';
+        HybridFeatureGate::configured($config);
+        return new HybridInvoiceCheckout(new PdoHybridCheckoutStore($this->pdo),$config);
+    }
+    public function hybridAvailability(array $actor):array
+    {
+        if($this->hybrid===null && (require dirname(__DIR__,2).'/config/hybrid-promotions.php')['enabled']!==true)return ['enabled'=>false,'posting'=>false];
+        try{return $this->hybrid()->availability($actor);}catch(InventoryException|\PDOException $e){return ['enabled'=>false,'posting'=>false];}
+    }
+    public function hybridEligibility(array $actor,array $input):array{return $this->hybrid()->eligibility($actor,$input);}
+    private function hybridSchema():bool
+    {
+        if($this->hybridSchema===null){$q=$this->pdo->prepare('SELECT status FROM schema_migrations WHERE version=?');$q->execute(['025_hybrid_invoice_snapshots.sql']);$this->hybridSchema=$q->fetchColumn()==='applied';}return $this->hybridSchema;
+    }
     /** Whether the benefit snapshot schema exists (independent of the checkout gate, so old records stay readable). */
     private function benefitSchema():bool
     {
@@ -149,6 +169,7 @@ final class Invoices
     }
     private function normalize(array $actor,array $input,bool $legacyOfflineSync=false):array
     {
+        if(HybridInvoiceRequest::requested($input))throw new InventoryException(['hybrid'=>'Hybrid requests require explicit versioned checkout.'],409);
         $benefitRequested=false;foreach(BenefitPolicy::FIELDS as $simulationField)if(array_key_exists($simulationField,$input))$benefitRequested=true;
         // The 409 safeguard stays for every context where the benefit gate is closed.
         if($benefitRequested&&!BenefitPolicy::enabled($this->pdo))throw new InventoryException(['benefit'=>'Benefit simulation is not available for checkout.'],409);
@@ -194,7 +215,8 @@ final class Invoices
     {
         $a=$this->actor($actor);$c=$this->one('SELECT assigned_rep_id FROM customers WHERE id=?',[$customer]);if(!$c||($a['role']==='SALES_REP'&&(string)$c['assigned_rep_id']!==(string)$a['id']))throw new InventoryException(['customer'=>'Customer is not available to you.'],403);
         $settlement=$this->returnSchema()?'COALESCE((SELECT hr.applied_value FROM historical_customer_returns hr WHERE hr.invoice_id=i.id),0)':'0';
-        $row=$this->one("SELECT COALESCE(SUM(i.grand_total-COALESCE(p.paid,0)-$settlement),0.00) amount FROM invoices i LEFT JOIN invoice_voids v ON v.invoice_id=i.id LEFT JOIN (SELECT a.invoice_id,SUM(a.amount) paid FROM payment_allocations a JOIN payments p ON p.id=a.payment_id WHERE p.status='POSTED' GROUP BY a.invoice_id) p ON p.invoice_id=i.id WHERE i.customer_id=? AND v.invoice_id IS NULL",[$customer]);return (string)$row['amount'];
+        $hybrid=HybridInvoiceBalances::schema($this->pdo);$linked=$hybrid?'COALESCE((SELECT SUM(hr.net_credit) FROM hybrid_returns hr WHERE hr.invoice_id=i.id),0.00)':'0.00';$terminal=$hybrid?' AND NOT EXISTS(SELECT 1 FROM hybrid_voids hv WHERE hv.invoice_id=i.id)':'';
+        $row=$this->one("SELECT COALESCE(SUM(GREATEST(0,i.grand_total-COALESCE(p.paid,0)-$settlement-$linked)),0.00) amount FROM invoices i LEFT JOIN invoice_voids v ON v.invoice_id=i.id LEFT JOIN (SELECT a.invoice_id,SUM(a.amount) paid FROM payment_allocations a JOIN payments p ON p.id=a.payment_id WHERE p.status='POSTED' GROUP BY a.invoice_id) p ON p.invoice_id=i.id WHERE i.customer_id=? AND v.invoice_id IS NULL$terminal",[$customer]);return (string)$row['amount'];
     }
     private function balance(array $s,string $source,string $product,bool $reversing=false):array
     {
@@ -273,6 +295,8 @@ final class Invoices
     }
     public function review(array $actor,array $input,bool $legacyOfflineSync=false):array
     {
+        if($legacyOfflineSync)HybridInvoiceRequest::rejectOffline($input);
+        if(HybridInvoiceRequest::requested($input))return $this->hybrid()->review($actor,$input);
         if(array_key_exists('historical_return',$input))$this->requireHistoricalReturnAccess($actor);
         $n=$this->normalize($actor,$input,$legacyOfflineSync);
         // Review may create no permanent operating state or business rows.
@@ -297,6 +321,8 @@ final class Invoices
     }
     public function issue(array $actor,array $input,?array $syncContext=null):array
     {
+        if($syncContext!==null)HybridInvoiceRequest::rejectOffline($input);
+        if(HybridInvoiceRequest::requested($input))return $this->hybrid()->issue($actor,$input);
         if($syncContext!==null&&array_key_exists('historical_return',$input))throw new InventoryException(['return'=>'Historical returns require an online transaction.'],409);
         // Phase 3 decision A: benefit modes are online only - never via the offline synchronization path.
         if($syncContext!==null)foreach(BenefitPolicy::FIELDS as $benefitField)if(array_key_exists($benefitField,$input))throw new InventoryException(['benefit'=>'Benefit modes require an online transaction.'],409);
@@ -340,8 +366,9 @@ final class Invoices
     private function select():string
     {
         $return=$this->returnSchema()?'COALESCE((SELECT hr.applied_value FROM historical_customer_returns hr WHERE hr.invoice_id=i.id),0.00)':'0.00';
+        $h=HybridInvoiceBalances::sql($this->pdo);$linked=$h['credit'];$refund=$h['refund'];$terminal=$h['terminal'];$voided=$h['voided_at'];
         $benefit=$this->benefitSchema()?"(SELECT benefit_mode FROM invoice_benefit_snapshots WHERE invoice_id=i.id) benefit_mode,(SELECT percent_rate FROM invoice_benefit_snapshots WHERE invoice_id=i.id) benefit_percent_rate,(SELECT discount_amount FROM invoice_benefit_snapshots WHERE invoice_id=i.id) benefit_discount_amount,(SELECT eligible_subtotal FROM invoice_benefit_snapshots WHERE invoice_id=i.id) benefit_eligible_subtotal,":"NULL benefit_mode,NULL benefit_percent_rate,NULL benefit_discount_amount,NULL benefit_eligible_subtotal,";
-        return "SELECT $benefit(SELECT percent_rate FROM invoice_discount_snapshots WHERE invoice_id=i.id) invoice_discount_percent,(SELECT discount_amount FROM invoice_discount_snapshots WHERE invoice_id=i.id) invoice_discount_amount,(SELECT policy_version FROM invoice_discount_snapshots WHERE invoice_id=i.id) discount_policy,i.id,i.invoice_number,i.rep_id,i.customer_id,i.business_date,i.subtotal,i.discount_total,i.grand_total,i.payment_type,i.currency,i.customer_snapshot,i.rep_name_snapshot,d.source_location_id,d.issued_by_user_id,d.due_date,COALESCE(p.paid,0.00) paid_amount,$return return_applied,IF(v.invoice_id IS NULL,'ISSUED','VOIDED') validity,IF(COALESCE(p.paid,0)+$return>=i.grand_total,'PAID',IF(COALESCE(p.paid,0)+$return>0,'PARTIAL','UNPAID')) payment_status,IF(v.invoice_id IS NULL,i.grand_total-COALESCE(p.paid,0)-$return,0.00) outstanding,COALESCE(v.refund_due,0.00) refund_due,v.reason void_reason,v.created_at_utc voided_at_utc FROM invoices i JOIN online_invoice_details d ON d.invoice_id=i.id LEFT JOIN invoice_voids v ON v.invoice_id=i.id LEFT JOIN (SELECT a.invoice_id,SUM(a.amount) paid FROM payment_allocations a JOIN payments p ON p.id=a.payment_id WHERE p.status='POSTED' GROUP BY a.invoice_id) p ON p.invoice_id=i.id";
+        return "SELECT $benefit(SELECT percent_rate FROM invoice_discount_snapshots WHERE invoice_id=i.id) invoice_discount_percent,(SELECT discount_amount FROM invoice_discount_snapshots WHERE invoice_id=i.id) invoice_discount_amount,(SELECT policy_version FROM invoice_discount_snapshots WHERE invoice_id=i.id) discount_policy,i.id,i.invoice_number,i.rep_id,i.customer_id,i.business_date,i.subtotal,i.discount_total,i.grand_total,i.payment_type,i.currency,i.customer_snapshot,i.rep_name_snapshot,d.source_location_id,d.issued_by_user_id,d.due_date,COALESCE(p.paid,0.00) paid_amount,$return return_applied,$linked linked_return_credit,IF(v.invoice_id IS NULL AND NOT $terminal,'ISSUED','VOIDED') validity,IF(COALESCE(p.paid,0)+$return+$linked>=i.grand_total,'PAID',IF(COALESCE(p.paid,0)+$return+$linked>0,'PARTIAL','UNPAID')) payment_status,IF(v.invoice_id IS NULL AND NOT $terminal,GREATEST(0,i.grand_total-COALESCE(p.paid,0)-$return-$linked),0.00) outstanding,COALESCE(v.refund_due,0.00)+$refund refund_due,v.reason void_reason,COALESCE(v.created_at_utc,$voided) voided_at_utc FROM invoices i JOIN online_invoice_details d ON d.invoice_id=i.id LEFT JOIN invoice_voids v ON v.invoice_id=i.id LEFT JOIN (SELECT a.invoice_id,SUM(a.amount) paid FROM payment_allocations a JOIN payments p ON p.id=a.payment_id WHERE p.status='POSTED' GROUP BY a.invoice_id) p ON p.invoice_id=i.id";
     }
     public function get(array $actor,string $id):array
     {
@@ -352,7 +379,16 @@ final class Invoices
         if($this->returnSchema())$row['historical_return']=$this->one('SELECT approved_value,applied_value,forfeited_value,created_at_utc FROM historical_customer_returns WHERE invoice_id=?',[$id]);
         foreach(['rep_id','customer_id','source_location_id','issued_by_user_id'] as $key)$row[$key]=(string)$row[$key];
         foreach($row['items'] as &$line){$line['name_si']=$translatedNames[$line['product_id']]??null;foreach(['product_id','quantity','free_quantity','price_version'] as $key)$line[$key]=(string)$line[$key];}unset($line);
-        $row['receipts']=$this->rows('SELECT r.request_id,r.received_amount,r.applied_amount,r.change_amount,r.created_at_utc,u.name received_by FROM invoice_receipts r JOIN users u ON u.id=r.actor_user_id WHERE r.invoice_id=? ORDER BY r.created_at_utc,r.request_id',[$id]);return $row;
+        $row['receipts']=$this->rows('SELECT r.request_id,r.received_amount,r.applied_amount,r.change_amount,r.created_at_utc,u.name received_by FROM invoice_receipts r JOIN users u ON u.id=r.actor_user_id WHERE r.invoice_id=? ORDER BY r.created_at_utc,r.request_id',[$id]);
+        if($this->hybridSchema()&&$this->one('SELECT invoice_id FROM hybrid_invoice_snapshots WHERE invoice_id=?',[$id])){
+            $h=(new HybridInvoiceReader($this->pdo))->get($a,$id);
+            $row['hybrid']=['policy_version'=>$h['policy_version'],'calculation'=>$h['snapshot']['review']['calculation'],'seal_digest'=>$h['snapshot']['seal']['digest'],'financial'=>$h['financial']];
+            $row['hybrid']['returns']=HybridInvoiceBalances::schema($this->pdo)?$this->rows('SELECT id,operation,net_credit,debt_reduction,refund_increment,created_at_utc FROM hybrid_returns WHERE invoice_id=? ORDER BY revision',[$id]):[];
+            foreach(['paid_amount','outstanding','refund_due','validity'] as $field)$row[$field]=$h['financial'][$field];
+            $row['payment_status']=$row['outstanding']==='0.00'?'PAID':($row['paid_amount']==='0.00'&&$h['financial']['linked_return_credit']==='0.00'?'UNPAID':'PARTIAL');
+            $row['receipts']=$h['receipts'];
+        }
+        return $row;
     }
     public function listing(array $actor,array $filters):array
     {
@@ -376,6 +412,8 @@ final class Invoices
     }
     public function void(array $actor,string $id,array $input):array
     {
+        $this->actor($actor,true);self::uuid($id);
+        if($this->hybridSchema()&&$this->one('SELECT invoice_id FROM hybrid_invoice_snapshots WHERE invoice_id=?',[$id]))throw new InventoryException(['void'=>'Use the Hybrid residual-return/void workflow with explicit physical receipt conditions. Legacy full-original reversal is unavailable for Hybrid invoices.'],409);
         $this->actor($actor,true);self::uuid($id);$request=self::uuid($input['request_id']??null);$reason=Inventory::text($input['reason']??'','reason',500,true);$hash=hash('sha256',json_encode([$id,$reason],JSON_THROW_ON_ERROR));
         return $this->tx(function()use($actor,$id,$request,$reason,$hash){$s=$this->gate();$a=$this->actor($actor,true);$i=$this->get($a,$id);$location=$this->one('SELECT type,rep_id FROM stock_locations WHERE id=?',[$i['source_location_id']]);$source=$location['type']==='WAREHOUSE'?'warehouse':(string)$location['rep_id'];
             if($source!=='warehouse'){$this->one('SELECT id FROM users WHERE id=? FOR UPDATE',[$source]);$this->one('SELECT rep_id FROM rep_operating_state WHERE rep_id=? FOR UPDATE',[$source]);}

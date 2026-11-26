@@ -16,7 +16,7 @@ $render=static function(array $config)use($service,$actor):array{
     $_SERVER['REQUEST_METHOD']='GET';$_SERVER['REQUEST_URI']='/rep/invoices/new';$_GET=$_POST=[];$_SESSION=['csrf_token'=>str_repeat('a',64)];App\Support\I18n::set('en');http_response_code(200);
     ob_start();(new App\Controllers\InvoiceController($service($config)))->handle(App\Controllers\InvoiceController::route('/rep/invoices/new'),$service($config)->actor($actor));return [http_response_code(),ob_get_clean()];
 };
-[$status,$html]=$render($cfg);$check($status===409&&!str_contains($html,'<form'),'Checkout unavailable pending approved integration');$check(!str_contains($html,'ONLINE CHECKOUT'),'Separate Hybrid page heading absent');
+[$status,$html]=$render($cfg);$check($status===200&&str_contains($html,'data-template="app/Views/invoices.php"'),'Available checkout uses original invoice template');$check(!str_contains($html,'ONLINE CHECKOUT'),'Separate Hybrid page heading absent');
 $off=$cfg;$off['enabled']=false;[$status]=$render($off);$check($status===409,'No legacy fallback when disabled');
 try{
     putenv('DHARMA_BENEFIT_TEST=1');putenv('DHARMA_BENEFIT_TEST_DB='.$m['database']);putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$f['users']['rep1']);putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=1');

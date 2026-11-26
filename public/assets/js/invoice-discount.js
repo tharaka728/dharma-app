@@ -3,7 +3,7 @@
 const tr_invoice_discount_js=(key,values={})=>globalThis.DharmaI18n?.t(key,values)??key.replace(/\{([0-9]+)\}/g,(m,k)=>Object.hasOwn(values,k)?String(values[k]):m);
 
 (() => {
- const form=document.getElementById('invoice-form'),choice=document.getElementById('invoice_discount_choice');if(!form||!choice)return;
+ const form=document.getElementById('invoice-form'),choice=document.getElementById('invoice_discount_choice');if(!form||!choice||form.dataset.hybridOnline)return;
  const rate=document.getElementById('invoice_discount_percent'),custom=document.getElementById('invoice-discount-custom'),summary=document.getElementById('invoice-live-summary');
  let timer,controller,epoch=0;
  function selection(){custom.hidden=choice.value!=='custom';rate.disabled=custom.hidden;rate.required=!custom.hidden;}

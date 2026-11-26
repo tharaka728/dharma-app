@@ -14,7 +14,7 @@ function request6d(array $cfg,string $path,string $method,array $input=[]):array
 }
 try{
     $cfg=hybridTestConfig($m,$f);$cfg['financial_posting_hold']=true;$cfg['sale_posting']=false;
-    [$status,$body]=request6d($cfg,'/rep/invoices/new','GET');rc($status===409&&!str_contains($body,'<form'),'Eligible New Invoice fails closed pending integration');rc(App\Controllers\InvoiceController::route('/rep/invoices/hybrid/new')===null,'Discarded alias removed');
+    [$status,$body]=request6d($cfg,'/rep/invoices/new','GET');rc($status===200&&str_contains($body,'data-template="app/Views/invoices.php"'),'Eligible New Invoice uses the original form');rc(App\Controllers\InvoiceController::route('/rep/invoices/hybrid/new')===null,'Discarded alias removed');
     $off=$cfg;$off['enabled']=false;[$status]=request6d($off,'/rep/invoices/new','GET');rc($status===409,'Disabled Hybrid never opens legacy screen');
     [$status]=request6d($cfg,'/api/v1/rep/invoices/preview','POST',['customer_id'=>$f['customers']['rep1']]);rc($status===409,'Unversioned new sale denied');
     $input=hybridInput($f);$input['hybrid']['lines']=[['product_id'=>$f['products']['ordinary'],'paid_quantity'=>'1','product_discount'=>['choice'=>'0']]];$input['hybrid']['invoice_discount_percent']='0';
@@ -26,7 +26,7 @@ try{
     [$status,$body]=request6d($wrong,'/api/v1/rep/invoices/preview','POST',hybridInput($f));rc($status===409&&str_contains($body,'stable-ID'),'Incorrect stable-ID binding rejected');
     putenv('DHARMA_BENEFIT_TEST=1');putenv('DHARMA_BENEFIT_TEST_DB='.$m['database']);putenv('DHARMA_BENEFIT_TEST_PILOT_IDS='.$f['users']['rep1']);putenv('DHARMA_BENEFIT_TEST_POSTING_HOLD=1');
     [$status,$body]=request6d($cfg,'/rep/invoices/new','GET');rc($status===200&&str_contains($body,'id="invoice-form"'),'Pilot retains original contract screen');
-    rc(App\Support\HybridWorkerClient::route('/rep/invoices/new','GET',[])['action']==='create','Worker accepts unified GET');
+    rc(App\Support\HybridWorkerClient::route('/rep/invoices/new','GET',[])['action']==='create','Worker accepts original-form GET');
     try{App\Support\HybridWorkerClient::route('/rep/invoices/new','POST',$input);throw new RuntimeException('Unexpected HTML writer');}catch(RuntimeException $e){rc($e->getMessage()==='ROUTE_DENIED','Worker adds no HTML financial route');}
     echo "Stage 6D routing: $checks checks passed; no fallback, scoped zero-benefit review, pilot preservation.\n";
 }finally{

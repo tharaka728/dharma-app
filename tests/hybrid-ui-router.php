@@ -6,9 +6,18 @@ ini_set('zend.exception_ignore_args','1');
 $root=dirname(__DIR__);$manifest=getenv('HYBRID_UI_MANIFEST');$key=getenv('HYBRID_UI_TEST_KEY');
 if(!$manifest||!$key){http_response_code(503);exit;}
 $path=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH)?:'/';
+$originalPreview=getenv('HYBRID_ORIGINAL_PREVIEW')==='1';
+if($originalPreview){
+    if(($_SERVER['REMOTE_ADDR']??'')!=='127.0.0.1'){http_response_code(403);exit;}
+    header('X-Isolated-Source: hybrid-promotion-v1-stage6e2-original');
+    $allowed=['/'=>['GET'],'/rep/invoices/new'=>['GET'],'/rep/invoices/options'=>['GET'],'/api/v1/rep/invoices/options'=>['GET'],'/api/v1/rep/invoices/preview'=>['POST'],'/api/v1/rep/invoices/hybrid/eligibility'=>['POST']];
+    if(str_starts_with($path,'/assets/')){$file=realpath($root.'/public'.$path);$assets=realpath($root.'/public/assets');if(!in_array($_SERVER['REQUEST_METHOD'],['GET','HEAD'],true)||!$file||!str_starts_with($file,$assets.DIRECTORY_SEPARATOR)||!is_file($file)||!in_array(strtolower(pathinfo($file,PATHINFO_EXTENSION)),['css','js','json','woff','woff2','svg','png','ico'],true)){http_response_code(403);exit;}}
+    elseif(!in_array($_SERVER['REQUEST_METHOD'],$allowed[$path]??[],true)){http_response_code(403);header('Content-Type: application/json');echo '{"errors":{"preview":"Financial writes are disabled in this original-form owner preview."}}';exit;}
+}
 if(getenv('HYBRID_UI_PREVIEW_ONLY')==='1'){http_response_code(410);exit;}
 if(strpos($path,'/assets/')===0){$file=realpath($root.'/public'.$path);$public=realpath($root.'/public/assets');if($file&&strpos($file,$public.DIRECTORY_SEPARATOR)===0&&is_file($file))return false;http_response_code(404);exit;}
 header('Cache-Control: private, no-store');session_name('hybrid_stage3_test');session_start();
+if($originalPreview){$language=in_array($_GET['language']??'en',['en','si-LK'],true)?($_GET['language']??'en'):'en';setcookie('dharma_language',$language,['path'=>'/','samesite'=>'Lax']);$_SESSION['actor']='rep1';$_SESSION['mode']='posting-held';$_SESSION['csrf']??=bin2hex(random_bytes(32));if($path==='/'){header('Location: /rep/invoices/new?language=en',true,303);exit;}}
 if($path==='/test/session'){
     if(!hash_equals($key,$_SERVER['HTTP_X_ISOLATION_TEST_TOKEN']??'')){http_response_code(403);exit;}
     $p=json_decode(file_get_contents('php://input'),true)??[];

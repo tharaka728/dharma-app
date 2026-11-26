@@ -25,7 +25,7 @@ final class InvoiceController
     public function handle(array $route,array $user):void
     {
         if(strpos($route['action'],'hybrid-return-')===0){(new HybridReturnController($this->invoices->hybridReturns()))->handle($route,$user);return;}
-        if($route['action']==='create'&&$_SERVER['REQUEST_METHOD']==='GET'&&$route['role']==='SALES_REP'&&!\App\Services\BenefitPolicy::pilotMember($user)){$this->unavailableCheckout($user);return;}
+        if($route['action']==='create'&&$_SERVER['REQUEST_METHOD']==='GET'&&$route['role']==='SALES_REP'&&!\App\Services\BenefitPolicy::pilotMember($user)){if($route['api']){$this->unavailableCheckout($user);}else{$this->originalHybridForm($user);}return;}
         if($route['action']==='hybrid-eligibility'){$this->hybridHandle($route,$user);return;}
         $action=$route['action'];$id=$route['id'];$api=$route['api'];$admin=$route['role']==='ADMIN';$base=$admin?'/admin/invoices':'/rep/invoices';$returnTestEnabled=$this->invoices->historicalReturnAllowed($user);$returnReadOnly=!$returnTestEnabled&&!$admin&&$this->invoices->historicalReturnPreviewAllowed($user);$input=[];$errors=[];$review=null;$record=null;$listing=null;$notice=$_SESSION['invoice_notice']??'';unset($_SESSION['invoice_notice']);
         try{
@@ -54,13 +54,29 @@ final class InvoiceController
         $source=is_string($input['stock_source']??null)?$input['stock_source']:null;$selected=$action==='create'&&($_POST['catalogue_fallback']??'')!=='1'?array_column(is_array($input['items']??null)?$input['items']:[],'product_id'):null;$options=$this->invoices->options($user,$source,$action==='index',$selected);
         require APP_ROOT.'/app/Views/invoices.php';
     }
-    /** Eligible online sales stay blocked pending approved integration into the original editor. */
+    /** Same original form; availability is still a guarded, authoritative server decision. */
+    private function originalHybridForm(array $user):void
+    {
+        header('Cache-Control: private, no-store');
+        try{
+            $user=$this->invoices->actor($user);
+            if($user['role']!=='SALES_REP')throw new InventoryException(['access'=>'Sales Representative access is required.'],403);
+            $hybridAvailability=$this->invoices->hybridAvailability($user);
+            if(!$hybridAvailability['enabled']){$this->unavailableCheckout($user);return;}
+            $hybridOnline=true;$action='create';$admin=false;$base='/rep/invoices';
+            $input=['payment_type'=>'CASH','amount_received'=>'0.00'];$errors=[];$notice='';$review=null;
+            $benefitModes=$benefitRequired=$returnTestEnabled=$returnReadOnly=false;
+            $options=$this->invoices->options($user,(string)$user['id']);
+            require APP_ROOT.'/app/Views/invoices.php';
+        }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}
+    }
+    /** Disabled/unavailable checkout and unsupported HTML posting never fall back to legacy. */
     private function unavailableCheckout(array $user):void
     {
         header('Cache-Control: private, no-store');
         try{
             $this->invoices->actor($user);
-            throw new InventoryException(['hybrid'=>'New online checkout is unavailable pending approved integration into New Invoice. No legacy fallback is permitted.'],409);
+            throw new InventoryException(['hybrid'=>'New online checkout is unavailable for this request. Hybrid requires the approved original-form online runtime. No legacy fallback is permitted.'],409);
         }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}
     }
     private function hybridHandle(array $route,array $user):void

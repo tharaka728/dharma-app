@@ -36,7 +36,7 @@ $check(C::route('/rep/invoices/hybrid/new')===null,'Separate alias removed');
 $check(C::route('/api/v1/rep/invoices/hybrid/new')===null,'No API editor alias');
 foreach(['/rep/invoices/new','/api/v1/rep/invoices/new']as$path){
     $_SERVER['REQUEST_METHOD']='GET';ob_start();$controller->handle(C::route($path),$p->actor);$body=ob_get_clean();
-    $check(http_response_code()===409&&!str_contains($body,'<form')&&str_contains($body,'pending approved integration'),'Eligible GET fails closed');
+    $check(http_response_code()===409&&!str_contains($body,'<form')&&str_contains($body,'approved original-form online runtime'),'Eligible GET fails closed');
 }
 foreach(['/rep/invoices/new','/rep/invoices/preview','/api/v1/rep/invoices','/api/v1/rep/invoices/preview']as$path){
     $_SERVER['REQUEST_METHOD']='POST';$_SERVER['CONTENT_TYPE']='application/x-www-form-urlencoded';$_POST=['intent'=>'review'];ob_start();$controller->handle(C::route($path),$p->actor);$body=ob_get_clean();

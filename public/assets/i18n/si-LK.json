@@ -1657,5 +1657,9 @@
 "Price": "මිල",
 "Amount": "මුදල",
 "Return credit": "ආපසු භාණ්ඩ ගැලපීම",
-"Cheque": "චෙක්පත"
+"Cheque": "චෙක්පත",
+"Customer details": "පාරිභෝගික විස්තර",
+"Contact Details": "සම්බන්ධතා විස්තර",
+"Business Details": "ව්‍යාපාරික විස්තර",
+"Billing Settings": "බිල්පත් සැකසුම්"
 }

@@ -12,13 +12,8 @@ async function evaluate(expression){const r=await send('Runtime.evaluate',{expre
 async function until(expression,label,timeout=20000){const start=Date.now();while(Date.now()-start<timeout){if(await evaluate(expression))return;await new Promise(r=>setTimeout(r,80));}throw Error('Timed out: '+label+'; '+await evaluate('document.getElementById("return-message")?.textContent||document.body.textContent.slice(0,400)'));}
 async function navigate(route){await send('Page.navigate',{url:input.base+route});await until("document.readyState==='complete'",'document loaded');}
 async function login(actor='rep1',mode='enabled'){await evaluate(`fetch('/test/session',{method:'POST',headers:{'Content-Type':'application/json','X-Isolation-Test-Token':${JSON.stringify(input.key)}},body:JSON.stringify(${JSON.stringify({actor,mode})})}).then(r=>r.json())`);}
-async function page(actor='rep1',mode='enabled'){await login(actor,mode);await navigate('/rep/invoices/hybrid/new');if(actor!=='admin'&&actor!=='anonymous'&&mode!=='feature-disabled'){await until('document.getElementById("hybrid-editor")?.disabled===false','Hybrid initialized');await set('hybrid-customer',f.customers[actor]);}}
 async function set(id,value,event='change'){await evaluate(`(()=>{const e=document.getElementById(${JSON.stringify(id)});e.value=${JSON.stringify(value)};e.dispatchEvent(new Event(${JSON.stringify(event)},{bubbles:true}));})()`);}
 async function click(id){await evaluate(`document.getElementById(${JSON.stringify(id)}).click()`);}
-async function add(product,quantity='1'){await set('hybrid-product',f.products[product]);await click('hybrid-add');await set('hybrid-qty-'+f.products[product],quantity,'input');}
-async function preview(){await click('hybrid-preview');await until('!document.getElementById("hybrid-review").hidden||document.getElementById("hybrid-message").getAttribute("role")==="alert"','preview outcome');}
-async function total(label){return evaluate(`(()=>{const n=[...document.querySelectorAll('#hybrid-totals dt')].find(e=>e.textContent===${JSON.stringify(label)});return n?.nextElementSibling.textContent;})()`);}
-async function lineFact(product,label){return evaluate(`(()=>{const n=[...document.querySelectorAll('[data-product-id="${f.products[product]}"] dt')].find(e=>e.textContent===${JSON.stringify(label)});return n?.nextElementSibling.textContent;})()`);}
 (async()=>{
  await connect();await navigate('/admin');check(await evaluate('!document.querySelector(".dashboard-main")'),'anonymous dashboard denied');
  for(const actor of ['admin','rep1','rep2']){

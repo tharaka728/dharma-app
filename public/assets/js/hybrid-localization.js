@@ -2,7 +2,7 @@
   'use strict';
   const script = document.currentScript;
   if ((script?.dataset.hybridLocale || document.documentElement.lang) !== 'si-LK') return;
-  const root = document.querySelector('#hybrid-invoice-form, #hybrid-return-form')?.closest('main');
+  const root = document.querySelector('#hybrid-return-form')?.closest('main');
   if (!root || !script) return;
   fetch(new URL('../i18n/hybrid-si-LK.json', script.src), {credentials: 'omit', cache: 'no-cache'})
     .then(r => { if (!r.ok) throw Error('Catalogue unavailable'); return r.json(); })

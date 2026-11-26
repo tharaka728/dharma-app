@@ -2,11 +2,11 @@
 const fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),dictionary=JSON.parse(fs.readFileSync(path.join(root,'public/assets/i18n/hybrid-si-LK.json'),'utf8'));
 const items=[];
-for(const file of ['app/Views/hybrid-invoice.php','app/Views/hybrid-returns.php']){
+for(const file of ['app/Views/hybrid-returns.php']){
  const source=fs.readFileSync(path.join(root,file),'utf8').replace(/<\?[\s\S]*?\?>/g,'');
  for(const match of source.matchAll(/>([^<>]+)</g)){const text=match[1].replace(/\s+/g,' ').trim();if(/[A-Za-z]/.test(text)&&!text.startsWith('//'))items.push({file,text,status:dictionary[text]?'SCOPED_DICTIONARY':'REVIEW_REMAINING_OR_SHARED'});}
 }
-for(const file of ['public/assets/js/hybrid-invoice.js','public/assets/js/hybrid-returns.js']){
+for(const file of ['public/assets/js/hybrid-returns.js']){
  const source=fs.readFileSync(path.join(root,file),'utf8');
  for(const match of source.matchAll(/'([^'\\]*(?:\\.[^'\\]*)*)'|"([^"\\]*(?:\\.[^"\\]*)*)"/g)){const text=match[1]??match[2];if(/[A-Za-z][a-z]+\s+[A-Za-z]/.test(text)&&!/[{}<>#]|(?:querySelector|document\.)/.test(text))items.push({file,text,status:dictionary[text]?'SCOPED_DICTIONARY':'REVIEW_REMAINING_OR_TEMPLATE'});}
  for(const match of source.matchAll(/`([^`]+)`/g))if(/[A-Za-z][a-z]+\s+[A-Za-z]/.test(match[1]))items.push({file,text:match[1],status:'DYNAMIC_TEMPLATE_REVIEW'});

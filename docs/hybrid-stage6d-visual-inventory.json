@@ -1,0 +1,94 @@
+{
+  "archive_status": "HISTORICAL ? SUPERSEDED; NOT RELEASE READINESS",
+  "superseded_by": "hybrid-stage6d-ui-removal.md",
+  "archive_note": "Describes discarded UI work before removal. File entries and hashes below are historical, not a current worktree manifest.",
+  "stage": "6D-UI visual correction",
+  "branch": "hybrid-promotion-v1-stage6d-ui",
+  "head": "8477ddac2271114a1f74ff539924541eb4974df5",
+  "file_count": 13,
+  "modified_from_precorrection": 7,
+  "new": 6,
+  "previous_inventory_sha256": "be42d8bbf38a8efb0904ee755d2095eb512c52beb5e39fe7a53b0df0297f21b2",
+  "preservation_ledger": "storage/stage6d-visual-before-f2a2b8b9cfa42b805755a2f3/before.json",
+  "self_digest": "excluded to avoid circularity",
+  "files": [
+    {
+      "path": "app/Views/invoices.php",
+      "change": "modified_from_precorrection",
+      "before_sha256": "676e4e1f4545339fbfef5d61d6c5967db572efc28e5517d43ddc4b1245b2e017",
+      "after_sha256": "6ef3fce34b0df49e97007cd63298310743ac3acb9913d4207dcf9880c7f2c319"
+    },
+    {
+      "path": "app/Views/hybrid-invoice.php",
+      "change": "modified_from_precorrection",
+      "before_sha256": "ebfb99b709860c88f84585f4e9b5476b4a0de347caee9ba9174ac15495d24f92",
+      "after_sha256": "53c92db23e526054ac8cf75c1efb43182e4d33fb138ff91090baf9a9d1911725"
+    },
+    {
+      "path": "public/assets/js/hybrid-invoice.js",
+      "change": "modified_from_precorrection",
+      "before_sha256": "b150c073dc497ba9b0202a46c7db004077f56bb11172565905aac69c87d479aa",
+      "after_sha256": "89a7189c8e3e8b11b23ce6dde59e0b78f8574f22e53e3bdc6363cb910971d4c4"
+    },
+    {
+      "path": "public/assets/css/hybrid-unified.css",
+      "change": "modified_from_precorrection",
+      "before_sha256": "a3cd9851b4c8ae9d357ebbb8d9cdae8dec3e1b9dd16bc4a84ee6266c2bc8bd87",
+      "after_sha256": "8306b0a2e556eb829a8f1959a7d96f5cb20f39f4a41daa68c5462c0854020c4f"
+    },
+    {
+      "path": "public/assets/i18n/hybrid-si-LK.json",
+      "change": "modified_from_precorrection",
+      "before_sha256": "4fb68dde04748e5719a908f7bbcc1d14dc53bb53e14b8ecb405d7e156e0b32f0",
+      "after_sha256": "9849132579b7965c1fb5db39d003243739e9577af87edb0b272dda62bdcbfbfd"
+    },
+    {
+      "path": "tests/hybrid-ui-bridge.php",
+      "change": "modified_from_precorrection",
+      "before_sha256": "45a24cf359fbfbfcffa780877f5c4868832edd5d00399e869721652afe5bd255",
+      "after_sha256": "4bc8f9bbc5672422ad3cff347e64250053467f130e99153fbf9b78e16d98d95e"
+    },
+    {
+      "path": "tests/hybrid-ui-router.php",
+      "change": "modified_from_precorrection",
+      "before_sha256": "a8ea094328a3dd0166a28d1bbf4280076e2e7f18da10c337be4c17065ecf1bd0",
+      "after_sha256": "04be0d7fa1f794d7afb1ce6bc285f10c825570c0c1d5b06f6bed2dbda2e58b55"
+    },
+    {
+      "path": "app/Views/hybrid-invoice-fields.php",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "9d1786abbb14782f535f182fbac87a2aa966af8172995c0b1bc604263d3e5dc8"
+    },
+    {
+      "path": "tests/hybrid-stage6d-visual.js",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "bf3da3fad4c1337bf5baa3b48d7ae17061268130efb03aa986be0683f78d582c"
+    },
+    {
+      "path": "tests/hybrid-stage6d-visual.php",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "0475e2b84a3c3565791bfcb2195a78151df3b19293b9e151956a468d1d56fadb"
+    },
+    {
+      "path": "tests/hybrid-stage6d-visual-readers.php",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "32ed7ec4501d54364cb30cc3a106781a4b2cfa924c03e7c06a126ee42ff0df91"
+    },
+    {
+      "path": "docs/hybrid-stage6d-visual-correction.md",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "155f6ab4e139aaebd0c6dc4d3c706793e32e3c235d9743a3900f96d34edeaff0"
+    },
+    {
+      "path": "docs/hybrid-stage6d-visual-inventory.json",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": null
+    }
+  ]
+}

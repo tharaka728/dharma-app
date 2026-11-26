@@ -9,8 +9,8 @@ final class HybridWorkerClient
     public static function route(string $path,string $method,array $payload):array
     {
         $return=\App\Controllers\HybridReturnController::route($path);$route=$return??\App\Controllers\InvoiceController::route($path);
-        $allowed=$return?['hybrid-return-page','hybrid-return-options','hybrid-return-details','hybrid-return-custody','hybrid-return-preview','hybrid-return-post','hybrid-return-receive','hybrid-return-supplement','hybrid-return-manage']:['hybrid-create','hybrid-eligibility','options','preview','index','show'];
-        if(!$route||!in_array($method,$route['methods'],true)||!in_array($route['action'],$allowed,true))throw new RuntimeException('ROUTE_DENIED');
+        $allowed=$return?['hybrid-return-page','hybrid-return-options','hybrid-return-details','hybrid-return-custody','hybrid-return-preview','hybrid-return-post','hybrid-return-receive','hybrid-return-supplement','hybrid-return-manage']:['create','hybrid-eligibility','options','preview','index','show'];
+        if(!$route||($route['action']==='create'&&$method!=='GET')||!in_array($method,$route['methods'],true)||!in_array($route['action'],$allowed,true))throw new RuntimeException('ROUTE_DENIED');
         if(!$return&&$method==='POST'&&($payload['hybrid']['policy_version']??null)!=='HYBRID_PROMOTION_V1')throw new RuntimeException('ONLINE_HYBRID_REQUIRED');
         return $route;
     }

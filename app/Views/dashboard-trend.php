@@ -21,11 +21,23 @@
             return number_format($n,0,'.','');
         };
     ?>
-    <div class="dashboard-bars" role="list" aria-label="<?= $si?'දිනපතා විකුණුම්':'Daily sales' ?>">
+    <?php
+        $axisStepCandidates=[100,250,500,1000,2500,5000,10000,25000,50000,100000,250000,500000,1000000,2500000,5000000,10000000];
+        $axisStep=end($axisStepCandidates);
+        foreach($axisStepCandidates as $candidate)if($chartMax<=$candidate*6){$axisStep=$candidate;break;}
+        $axisMax=$axisStep*6;
+    ?>
+    <div class="dashboard-chart-plot">
+        <div class="dashboard-axis" aria-hidden="true">
+            <?php for($level=6;$level>=0;$level--): ?>
+            <span><?= Http::escape($compactMoney((string)($axisStep*$level))) ?></span>
+            <?php endfor; ?>
+        </div>
+        <div class="dashboard-bars" role="list" aria-label="<?= $si?'දිනපතා විකුණුම්':'Daily sales' ?>">
         <?php for($i=6;$i>=0;$i--):
             $d=$chartDay->modify('-'.$i.' days');
             $value=(string)($chartRows[$d->format('Y-m-d')]['operational_net_after_returns_lkr']??'0.00');
-            $height=$chartMax>0?max(0,(float)$value/$chartMax*100):0;
+            $height=$axisMax>0?max(0,(float)$value/$axisMax*100):0;
         ?>
         <div class="dashboard-bar" role="listitem">
             <span class="dashboard-bar-value" title="LKR <?= Http::escape($value) ?>"><?= Http::escape($compactMoney($value)) ?></span>
@@ -33,6 +45,7 @@
             <span><?= Http::escape($d->format('d M')) ?></span>
         </div>
         <?php endfor; ?>
+        </div>
     </div>
     <?php else: ?>
     <p><?= $si?'විකුණුම් දත්ත ලබාගත නොහැක.':'Sales data is unavailable.' ?></p>

@@ -1,0 +1,13 @@
+# Canonical LF release packaging for the hybrid fresh-install Contract V2.
+# These files are authenticated by raw-byte SHA-256 checksums, so every
+# checkout must produce identical LF bytes regardless of platform or the
+# client's core.autocrlf setting.
+#
+# contract-v1.json is a preserved historical artifact: `-text` disables any
+# end-of-line conversion so its exact released bytes (and recorded hash)
+# survive every checkout unchanged. It is intentionally not given eol=lf.
+/database/migrations/*.sql text eol=lf
+/database/fresh-install/*.sql text eol=lf
+/database/fresh-install/contract-v2.json text eol=lf
+/database/fresh-install/contract-v1.json -text
+/tests/hybrid-stage6b-install-contract.json text eol=lf

@@ -1,0 +1,54 @@
+{
+    "files": {
+        "001_foundation.sql": "74f996f6e60d0706b3c1be3b6a78424d099c1bd64c0b2a12c75f51f9d327dde0",
+        "002_immutability.sql": "76b0beffb1259a3e7dad119ca5860c9c6cd37c53017e603ff776297de9c7b435",
+        "003_authentication.sql": "100d7bd6bcf381dd8130c18a765d32b22e4585bc9d5ff36fead7d2269947d9ef",
+        "004_product_management.sql": "ba3483da62aa3c95adc0a958ef5048a26850d314208f3ca4e512faae6a035e36",
+        "005_product_cost_constraint.sql": "71eadc20113a33370d3c9e5cec01ce680ea48de327b9d7c8d763063b13864d4a",
+        "006_customer_management.sql": "26aa5fcec860a5453e300018eb4704a691f1d5cbb40a08d5bb684a579d04010b",
+        "007_customer_locations.sql": "161effa594c58f45223bf68161ba3a6f3b623dc34bafff0a33080008a337fa9c",
+        "008_location_mapping_collation.sql": "ba02cf6cfc34bf0a8b921263b95a9db4cd71a4616d444e8d321885646a9a559d",
+        "009_admin_inventory.sql": "0b4450947d069c9a6d502bdcba59a5e42e3a4a5f903379ec239bfa6ae6053fcd",
+        "010_product_stock.sql": "a64049a4d58d615ea67d958867ca88f7e62b29de0a658d611e3e3d2a49832dd6",
+        "011_representative_stock.sql": "52887f1456ff7df45eb7a646f7362016be2fb828706b283ef8cf4d7f4d3197fb",
+        "012_promotions.sql": "3fb33a6d8392ba1408d35062b63d50ce63fad2b155bde52427bb9737e2584188",
+        "013_online_invoices.sql": "2e9e611416e4f78c69e7fe487d0e9faeeb229d837f113d19a0dad1ac6c3b6ca4",
+        "014_offline_sales.sql": "e9b2a42d2e63ababd0f00857a8d81aff5577d1f2c5c9639e2e64f4baf06855c4",
+        "015_short_business_codes.sql": "7755f94871a988a57e5ab69836abb5e66af5a92053dcb17adab5715b0bd0b96a",
+        "016_invoice_discount_snapshots.sql": "392bc3cb329e8fdd5f721cf6fb83b36680aff3d2fbc3e850059b5d8ca58c049f",
+        "017_mixed_oil_promotions.sql": "b0bf520562934731cd04126ff3086664d4def485fd36926d3771ec81d5a9f071",
+        "018_sinhala_localization.sql": "5ce97635d0fcb39b784ed8847bd5eb9acfda376e694c600f9e95b1e7ff5ed604",
+        "019_sinhala_company_settings.sql": "09df8ff654bc2c87ad451c8bacbc6cd9f7d5a078e2877fee320285eb41078748",
+        "020_historical_return_prices.sql": "9703d2179b982dd119f68799fa82d46123968384684b514287a24589bb01b790",
+        "021_historical_customer_returns.sql": "e9806d18d7cba5b10683bf18e1188eb2e8b09f75736a34427c2985ec103c28ab",
+        "022_historical_return_identity.sql": "b985149762345963727c4a622e74c54988e0edd5adcffe89c949213669d7e9e1",
+        "023_historical_return_intents.sql": "629cf3d316ff2de1d0f6e6c8e17dced69487ade29d572465dd74128946c44ee7",
+        "024_promotion_benefit_modes.sql": "769772243ee457c79be4c033754fb41ffb35b37b04a68215b4ce5fb97127c52d",
+        "025_hybrid_invoice_snapshots.sql": "662054eb3025354eff03c9da928e3b618fa433a4ca69a8b6632342924d45f2c1",
+        "026_hybrid_linked_returns.sql": "912b831ea2d3674bee50ef7b6dfd3852683fec2b00c921c5f419f5457a137d5f",
+        "027_hybrid_custody_dispositions.sql": "1e00ad4388f60c4b130d560d6cbcebb83489e8d43c9033bfc4d6e54faca24fac"
+    },
+    "step": "1ec24563527db3162cf7630390a911389151cc765039a59df2d4880f2fd599c0",
+    "states": [
+        {
+            "before": {
+                "schema": "2e632b024b4cb56ba9baf12f31aa544a95d95356b8245fe55097a0f3a33032b0",
+                "data": "15621762904cf061fc33f0a7d8c0c8aee8fa24c8fe3635e75aadd307909a6f73"
+            },
+            "after": {
+                "schema": "1872f31e283acbba5cd5e2a521a97b70f285c1b5f850cc0502a3eff3762c7c59",
+                "data": "15621762904cf061fc33f0a7d8c0c8aee8fa24c8fe3635e75aadd307909a6f73"
+            }
+        },
+        {
+            "before": {
+                "schema": "e8c587e6a90c774de194863aad986919674c64a194fd9e96695db93bda2a509a",
+                "data": "15621762904cf061fc33f0a7d8c0c8aee8fa24c8fe3635e75aadd307909a6f73"
+            },
+            "after": {
+                "schema": "51c0dc50d34d4625c6ef259c51e6c25337148fd443d0814e0a77339218a4e0f6",
+                "data": "15621762904cf061fc33f0a7d8c0c8aee8fa24c8fe3635e75aadd307909a6f73"
+            }
+        }
+    ]
+}

@@ -4,10 +4,14 @@ namespace App\Support;
 use PDO;use Closure;use RuntimeException;
 // Explicit fresh-install workflow; normal bin/migrate.php is unchanged.
 // The caller must prove a disposable physical server before passing a DDL connection.
+// Contract V2 pins canonical LF release bytes (see .gitattributes). The historical
+// contract-v1.json is preserved unchanged for V1 release histories; new disposable
+// installs use contract-v2.json only. V2 does not repair interrupted or populated
+// installations and never rewrites migration journals.
 final class HybridFreshInstaller
 {
     private const STEP='006a_customer_locations_compat_v1.sql';
-    public const CONTRACT_SHA256='a9e8f370fc2719d6e4476467d9e218e6edead003f96ce5399927bb959c9eb251';
+    public const CONTRACT_SHA256='77d769dba3a6658313d9260a1fe52eb885a6a736dc8203efb4d43ab1a1c96520';
     private static ?array $scope=null;
     public static function bindScope(array $scope):void
     {
@@ -34,8 +38,8 @@ final class HybridFreshInstaller
         $norm=static fn($path)=>strtolower(rtrim(str_replace('\\','/',$path),'/'));
         if((int)$identity['port']!==$scope['port']||$norm($identity['datadir'])!==$norm(realpath($scope['datadir']))||($identity['db']!==$scope['database']&&$identity['db']!=='dharma_sales_phase12_restore_20261118154343'&&!preg_match('/^dharma_stage6[bc]_(?:foundation_)?[a-f0-9]+_test$/D',$identity['db'])))throw new RuntimeException('Disposable installation target mismatch.');
         if(!str_starts_with((string)$p->query('SELECT VERSION()')->fetchColumn(),'10.11.16-MariaDB'))throw new RuntimeException('Unsupported fresh-install server version.');
-        if(!hash_equals(self::CONTRACT_SHA256,hash_file('sha256',APP_ROOT.'/database/fresh-install/contract-v1.json')))throw new RuntimeException('Fresh-install contract changed.');
-        $expected=json_decode(file_get_contents(APP_ROOT.'/database/fresh-install/contract-v1.json'),true,512,JSON_THROW_ON_ERROR);
+        if(!hash_equals(self::CONTRACT_SHA256,hash_file('sha256',APP_ROOT.'/database/fresh-install/contract-v2.json')))throw new RuntimeException('Fresh-install contract changed.');
+        $expected=json_decode(file_get_contents(APP_ROOT.'/database/fresh-install/contract-v2.json'),true,512,JSON_THROW_ON_ERROR);
         $files=glob(APP_ROOT.'/database/migrations/*.sql');sort($files,SORT_STRING);
         if(array_map('basename',$files)!==array_keys($expected['files']))throw new RuntimeException('Migration sequence differs from contract.');
         foreach($files as $file)if(!hash_equals($expected['files'][basename($file)]??'',hash_file('sha256',$file)))throw new RuntimeException('Original migration bytes differ: '.basename($file));
@@ -48,10 +52,10 @@ final class HybridFreshInstaller
             if(!in_array('fresh_install_authorization',$tables,true)){
                 if(array_diff($tables,['hybrid_test_identity'])!==[])throw new RuntimeException('Explicit new empty installation required.');
                 $p->exec('CREATE TABLE fresh_install_authorization (id INT PRIMARY KEY, contract_checksum CHAR(64) NOT NULL, database_name VARCHAR(150) NOT NULL) ENGINE=InnoDB');
-                $p->prepare('INSERT INTO fresh_install_authorization VALUES (1,?,DATABASE())')->execute([hash_file('sha256',APP_ROOT.'/database/fresh-install/contract-v1.json')]);
+                $p->prepare('INSERT INTO fresh_install_authorization VALUES (1,?,DATABASE())')->execute([hash_file('sha256',APP_ROOT.'/database/fresh-install/contract-v2.json')]);
             }
             $auth=$p->query('SELECT * FROM fresh_install_authorization')->fetchAll(PDO::FETCH_ASSOC);
-            if(count($auth)!==1||$auth[0]['database_name']!==$p->query('SELECT DATABASE()')->fetchColumn()||!hash_equals($auth[0]['contract_checksum'],hash_file('sha256',APP_ROOT.'/database/fresh-install/contract-v1.json')))throw new RuntimeException('Fresh-install authorization mismatch.');
+            if(count($auth)!==1||$auth[0]['database_name']!==$p->query('SELECT DATABASE()')->fetchColumn()||!hash_equals($auth[0]['contract_checksum'],hash_file('sha256',APP_ROOT.'/database/fresh-install/contract-v2.json')))throw new RuntimeException('Fresh-install authorization mismatch.');
             $p->exec('CREATE TABLE IF NOT EXISTS schema_migrations (version VARCHAR(150) PRIMARY KEY, checksum CHAR(64) NOT NULL, status VARCHAR(10) NOT NULL, applied_at_utc DATETIME(6) NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
             $all=$files;array_splice($all,6,0,[$step]);
             $known=array_map('basename',$all);

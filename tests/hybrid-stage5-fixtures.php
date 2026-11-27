@@ -18,6 +18,7 @@ function stage5Prepare(PDO $pdo,array $m):array
   $request=stage5Request($id,[]);$request['custody_id']=$custody;$request['custody_version']='2';$request['review_hash']=$returns->preview($rep,$request)['review_hash'];$returned=$returns->post($rep,$request);
   $returns->manageCustody($admin,['policy_version'=>'HYBRID_RETURN_V1','request_id'=>hybridUuid(),'invoice_id'=>$id,'custody_id'=>$custody,'custody_version'=>'3','reason'=>'Synthetic manager release after inspection','action'=>'RELEASE','line_number'=>'1','unit_kind'=>'paid','from'=>'QUARANTINE','quantity'=>'1']);
   $void=stage5Request($id,[stage5Line(1,'5'),stage5Line(2,'18','1'),stage5Line(3,'24'),stage5Line(4,'3'),stage5Line(5,'5')]);$void['operation']='VOID';$void['review_hash']=$returns->preview($admin,$void)['review_hash'];$voided=$returns->post($admin,$void);
-  return ['fixtures'=>$f,'invoice'=>$id,'return'=>$returned['return_id'],'void'=>$voided['return_id'],'rep'=>$rep,'admin'=>$admin];
+  // Metadata for future artifacts only; never relabel an existing stored invoice.
+  return ['invoice_discount_eligibility'=>'UNPROMOTED_LINES_V1','fixtures'=>$f,'invoice'=>$id,'return'=>$returned['return_id'],'void'=>$voided['return_id'],'rep'=>$rep,'admin'=>$admin];
  }finally{stage5Controls($pdo,$admin['id'],0);}
 }

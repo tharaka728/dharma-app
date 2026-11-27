@@ -17,7 +17,7 @@ final class PdoHybridInvoiceSnapshots
     {
         if (!$this->pdo->inTransaction()) { throw new \LogicException('Snapshot insertion requires the owning invoice transaction.'); }
         HybridDatabaseScope::verify($this->pdo,$this->databaseScope);
-        HybridInvoiceSnapshots::reconcile($snapshot);
+        HybridInvoiceSnapshots::requireCurrent($snapshot);
         if (!isset($snapshot['seal'])) { throw new \LogicException('A verified seal is required.'); }
         $r = $snapshot['review']; $c = $r['calculation'];
         if ($r['request_id'] !== $invoice) { throw new \LogicException('Invoice/command identity mismatch.'); }

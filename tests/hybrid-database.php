@@ -50,10 +50,10 @@ dbCase('physical scope, schema grants and migration 025 checksum',function () us
     $bad=$m; $bad['port']=3309; dbReject(fn()=>HybridDatabaseScope::verify($pdo,$bad),'wrong server');
 });
 dbCase('real authoritative review and atomic official invoice posting',function () use ($pdo,$service,$rep,$f,&$first) {
-    $before=businessDigest($pdo); $input=hybridInput($f); $review=$service->review($rep,$input); dbSame(businessDigest($pdo),$before,'review has no writes'); dbSame($review['calculation']['final_payable_total'],'675.00');
+    $before=businessDigest($pdo); $input=hybridInput($f); $review=$service->review($rep,$input); dbSame(businessDigest($pdo),$before,'review has no writes'); dbSame($review['calculation']['final_payable_total'],'750.00');
     $input['review_hash']=$review['review_hash']; $first=$service->issue($rep,$input); dbSame($first['replayed'],false);
-    $record=$service->get($rep,$first['invoice_id']); dbSame($record['grand_total'],'675.00'); dbSame($record['hybrid']['policy_version'],'HYBRID_PROMOTION_V1'); dbSame($record['items'][0]['free_quantity'],'1');
-    dbSame($record['receipts'][0]['change_amount'],'9325.00'); dbSame($record['hybrid']['financial']['outstanding'],'0.00');
+    $record=$service->get($rep,$first['invoice_id']); dbSame($record['grand_total'],'750.00'); dbSame($record['hybrid']['policy_version'],'HYBRID_PROMOTION_V1'); dbSame($record['items'][0]['free_quantity'],'1');
+    dbSame($record['receipts'][0]['change_amount'],'9250.00'); dbSame($record['hybrid']['financial']['outstanding'],'0.00');
     $proof=(new HybridInvoiceReconciliation($pdo))->verify($rep,$first['invoice_id']); dbSame($proof['sealed'],true);
     $once=businessDigest($pdo); dbSame($service->issue($rep,$input)['replayed'],true); dbSame(businessDigest($pdo),$once);
     $input['amount_received']='9999.00'; dbReject(fn()=>$service->issue($rep,$input),'payload collision'); dbSame(businessDigest($pdo),$once);
@@ -69,7 +69,11 @@ dbCase('limited complete replacement, partial shortage, conflicts and strict com
     [$out,$posted,$review]=issueSynthetic($service,$rep,$in); dbSame($review['calculation']['replacement_discount_total'],'600.00'); dbSame($review['calculation']['lines'][0]['actual_free_quantity'],'0'); dbSame((new HybridInvoiceReconciliation($pdo))->verify($rep,$out['invoice_id'])['money'],true);
     $in=hybridInput($f,'partial','12'); $in['hybrid']['lines'][0]['product_discount']=['choice'=>'0']; $in['hybrid']['lines'][0]['replace_free_entitlement']=true; $in['hybrid']['replacement_discount']=['choice'=>'25']; dbReject(fn()=>$service->review($rep,$in),'partial entitlement shortage');
     foreach (['monetary','oil1'] as $product) { dbReject(fn()=>$service->review($rep,hybridInput($f,$product,'6')),$product); }
-    $in=hybridInput($f,'ordinary','1'); $in['hybrid']['lines'][0]['product_discount']=['choice'=>'other','percent'=>'50']; $in['hybrid']['invoice_discount_percent']='50'; dbReject(fn()=>$service->review($rep,$in),'combined cap');
+    // Rep1 already consumed replacement stock above; rep2 still has all 24 paid units.
+    // Gross 2400, replacement 75%=1800, invoice 0: exceeds the 1200 monetary cap.
+    $in=hybridInput($f,'replacement','24','rep2'); $in['hybrid']['lines'][0]['product_discount']=['choice'=>'0']; $in['hybrid']['lines'][0]['replace_free_entitlement']=true; $in['hybrid']['replacement_discount']=['choice'=>'custom','percent'=>'75'];
+    try { $service->review(['id'=>$f['users']['rep2']],$in); throw new RuntimeException('Expected combined cap rejection.'); }
+    catch (App\Support\InventoryException $e) { dbSame(str_contains(implode(' ',$e->errors),'Combined monetary discount'),true,'strict cap, not a stock or rate rejection'); }
 });
 dbCase('multiple representatives, source spoofing and customer reassignment',function () use ($pdo,$service,$rep,$f) {
     $other=['id'=>$f['users']['rep2']]; [$out]=issueSynthetic($service,$other,hybridInput($f,'glucose','8','rep2')); dbSame($service->get($other,$out['invoice_id'])['rep_id'],$other['id']);
@@ -100,11 +104,11 @@ dbCase('immutable SQL evidence, late-child insertion and foreign keys reject',fu
 });
 dbCase('current payments, outstanding and Refund Due use posted collections only',function () use ($pdo,$service,$rep,$admin,$f) {
     $in=hybridInput($f); $in['payment_type']='CREDIT'; $in['amount_received']='100.00'; [$out]=issueSynthetic($service,$rep,$in); $id=$out['invoice_id'];
-    dbSame($service->get($rep,$id)['hybrid']['financial']['outstanding'],'575.00');
-    $service->pay($rep,$id,['request_id'=>hybridUuid(),'amount_received'=>'200.00']); dbSame($service->get($rep,$id)['hybrid']['financial']['outstanding'],'375.00');
-    dbSame($service->outstanding($rep,$f['customers']['rep1']),'375.00');
+    dbSame($service->get($rep,$id)['hybrid']['financial']['outstanding'],'650.00');
+    $service->pay($rep,$id,['request_id'=>hybridUuid(),'amount_received'=>'200.00']); dbSame($service->get($rep,$id)['hybrid']['financial']['outstanding'],'450.00');
+    dbSame($service->outstanding($rep,$f['customers']['rep1']),'450.00');
     dbReject(fn()=>$service->void($admin,$id,['request_id'=>hybridUuid(),'reason'=>'Synthetic unreturned full void']),'Hybrid requires explicit residual return conditions');
-    $r=$service->get($rep,$id); dbSame($r['hybrid']['financial']['refund_due'],'0.00'); dbSame($r['hybrid']['financial']['outstanding'],'375.00'); dbSame($r['hybrid']['financial']['actual_cash_refunds'],'UNAVAILABLE');
+    $r=$service->get($rep,$id); dbSame($r['hybrid']['financial']['refund_due'],'0.00'); dbSame($r['hybrid']['financial']['outstanding'],'450.00'); dbSame($r['hybrid']['financial']['actual_cash_refunds'],'UNAVAILABLE');
     dbSame((new HybridInvoiceReconciliation($pdo))->verify($rep,$id)['money'],true);
 });
 dbCase('disabled gates reject new commands but scoped accepted replay remains safe',function () use ($pdo,$m,$f,$rep,$service) {
@@ -161,7 +165,7 @@ dbCase('concurrent different requests cannot oversell paid-plus-free stock',func
 dbCase('immutable reader ignores current offers/prices and rejects deactivated actors',function () use ($pdo,$service,$rep,$f,$first) {
     $pdo->beginTransaction(); try {
         $pdo->prepare('UPDATE products SET selling_price=999.99,is_active=0,version=version+1 WHERE id=?')->execute([$f['products']['glucose']]);
-        $record=$service->get($rep,$first['invoice_id']); dbSame($record['hybrid']['calculation']['final_payable_total'],'675.00'); dbSame($record['hybrid']['financial']['linked_return_status'],App\Services\HybridInvoiceBalances::schema($pdo)?'AVAILABLE':'NOT_IMPLEMENTED');
+        $record=$service->get($rep,$first['invoice_id']); dbSame($record['hybrid']['calculation']['final_payable_total'],'750.00'); dbSame($record['hybrid']['financial']['linked_return_status'],App\Services\HybridInvoiceBalances::schema($pdo)?'AVAILABLE':'NOT_IMPLEMENTED');
         $pdo->prepare('UPDATE users SET is_active=0 WHERE id=?')->execute([$rep['id']]); dbReject(fn()=>$service->get($rep,$first['invoice_id']),'deactivated actor');
     } finally { $pdo->rollBack(); }
 });

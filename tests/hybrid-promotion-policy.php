@@ -127,10 +127,10 @@ runCase('Other accepts exact zero, maximum and two decimal rates; invalid rates 
         $line=item();$line['product_discount']=$choice;rejected(request([$line]),[product()],is_array($choice)&&($choice['choice']??'')==='other'?'INVALID_RATE':'INVALID_PRODUCT_DISCOUNT');
     }
 });
-runCase('segment half-up rounding precedes sequential invoice rounding', function (): void {
+runCase('product rounding is retained while promoted lines receive no invoice discount', function (): void {
     $r=calculate(request([item('101','1','25')],'10'),[product('101','251.00',null)]);
-    same($r['product_discount_total'],'62.75');same($r['invoice_discount_base'],'188.25');same($r['invoice_discount_amount'],'18.83');same($r['final_payable_total'],'169.42');assertReconciles($r);
-    $r=calculate(request([item('101','8','25')],'10'),[product()]);same($r['final_payable_total'],'675.00');same(array_column($r['lines'][0]['segments'],'invoice_discount_amount'),['60.00','15.00']);assertReconciles($r);
+    same($r['product_discount_total'],'62.75');same($r['invoice_discount_base'],'0.00');same($r['invoice_discount_amount'],'0.00');same($r['final_payable_total'],'188.25');assertReconciles($r);
+    $r=calculate(request([item('101','8','25')],'10'),[product()]);same($r['final_payable_total'],'750.00');same(array_column($r['lines'][0]['segments'],'invoice_discount_amount'),['0.00','0.00']);assertReconciles($r);
     $r=calculate(request([item('101','1','25')]),[product('101','0.02',null)]);same($r['product_discount_total'],'0.01');assertReconciles($r);
 });
 runCase('strict cap permits exactly/below and rejects one cent above; odd cents do not round ceiling up', function (): void {
@@ -140,16 +140,18 @@ runCase('strict cap permits exactly/below and rejects one cent above; odd cents 
     $r=calculate(request([item('101','1','50'),item('102','1')]),[product('101','100.00',null),product('102','0.01',null)]);same($r['original_paid_subtotal'],'100.01');same($r['combined_monetary_discount'],'50.00');same($r['monetary_cap_limit'],'50.00');assertReconciles($r);
     rejected(request([item('101','1','50')]),[product('101','100.01',null)],'COMBINED_DISCOUNT_CAP_EXCEEDED');
     rejected(request([item('101','1')],'50'),[product('101','100.01',null)],'COMBINED_DISCOUNT_CAP_EXCEEDED');
-    rejected(request([item('101','1','50')],'0.02'),[product('101','100.00',null)],'COMBINED_DISCOUNT_CAP_EXCEEDED');
-    rejected(request([item('101','1','50')],'50'),[product('101','100.00',null)],'COMBINED_DISCOUNT_CAP_EXCEEDED');
+    foreach (['0.02','50'] as $rate) {
+        $r=calculate(request([item('101','1','50')],$rate),[product('101','100.00',null)]);
+        same($r['combined_monetary_discount'],'50.00');same($r['invoice_discount_amount'],'0.00');assertReconciles($r);
+    }
 });
 runCase('actual free-unit value is excluded from the monetary cap', function (): void {
-    $r=calculate(request([item('101','6')],'50'),[product()]);same($r['combined_monetary_discount'],'300.00');same($r['lines'][0]['actual_free_quantity'],'1');assertReconciles($r);
+    $r=calculate(request([item('101','6')],'50'),[product()]);same($r['combined_monetary_discount'],'0.00');same($r['lines'][0]['actual_free_quantity'],'1');assertReconciles($r);
 });
-runCase('replacement reuses the explicit legacy rate, full line and sequential invoice base', function (): void {
+runCase('replacement retains its full-line discount and is excluded from invoice discount', function (): void {
     $req=request([item('102','12',null,true)],'10');$req['replacement_discount']=['choice'=>'25'];
     $r=calculate($req,[product('102','100.00','12','12')]);
-    same($r['replacement_discount_total'],'300.00');same($r['invoice_discount_amount'],'90.00');same($r['final_payable_total'],'810.00');
+    same($r['replacement_discount_total'],'300.00');same($r['invoice_discount_amount'],'0.00');same($r['final_payable_total'],'900.00');
     same($r['lines'][0]['actual_free_quantity'],'0');same($r['lines'][0]['substituted_free_quantity'],'1');same($r['lines'][0]['required_stock'],'12');
     same($r['replacement_policy'],BenefitPolicy::POLICY);same($r['replacement_mode'],BenefitPolicy::MODE_PROMO_DISCOUNT);same($r['replacement_discount_percent'],'25.00');
     same($r['validation_findings'][0]['code'],'FULL_ENTITLEMENT_REPLACED');assertReconciles($r);
@@ -166,7 +168,7 @@ runCase('replacement preserves unrelated free lines and separate manual discount
     $req=request([item('101','8','25'),item('102','12',null,true),item('103','1','30')],'10');$req['replacement_discount']=['choice'=>'25'];
     $r=calculate($req,[product(),product('102','100.00','12','12'),product('103','100.00',null)]);
     same(array_column($r['lines'],'actual_free_quantity'),['1','0','0']);same($r['product_discount_total'],'80.00');same($r['replacement_discount_total'],'300.00');
-    same($r['invoice_discount_amount'],'172.00');same($r['final_payable_total'],'1548.00');assertReconciles($r);
+    same($r['invoice_discount_amount'],'0.00');same($r['final_payable_total'],'1720.00');assertReconciles($r);
 });
 runCase('replacement selection has no default and validates existing options independently', function (): void {
     $base=request([item('101','6',null,true)]);$products=[product('101','100.00','6','6')];
@@ -181,7 +183,7 @@ runCase('replacement selection has no default and validates existing options ind
 });
 runCase('replacement money counts in cap, including retained legacy custom rate semantics', function (): void {
     $req=request([item('101','6',null,true)],'0.02');$req['replacement_discount']=['choice'=>'custom','percent'=>'50'];
-    rejected($req,[product('101','100.00','6','6')],'COMBINED_DISCOUNT_CAP_EXCEEDED');
+    same(calculate($req,[product('101','100.00','6','6')])['combined_monetary_discount'],'300.00');
     $req['invoice_discount_percent']='0';same(calculate($req,[product('101','100.00','6','6')])['combined_monetary_discount'],'300.00');
     $req['replacement_discount']=['choice'=>'custom','percent'=>'75'];rejected($req,[product('101','100.00','6','6')],'COMBINED_DISCOUNT_CAP_EXCEEDED');
     // No invented replacement-rate cap: the original legacy custom rate remains unchanged,
@@ -229,10 +231,73 @@ runCase('authoritative identities, quantities and strict request fields reject a
 runCase('zero prices, huge exact amounts and quantity overflow are bounded', function (): void {
     $r=calculate(request([item('101','8','50')],'50'),[product('101','0.00')]);same($r['final_payable_total'],'0.00');assertReconciles($r);
     $r=calculate(request([item('101','1','12.5')],'12.5'),[product('101','9999999999999.99',null)]);
-    same($r['product_discount_total'],'1250000000000.00');same($r['invoice_discount_amount'],'1093750000000.00');same($r['final_payable_total'],'7656249999999.99');
+    same($r['product_discount_total'],'1250000000000.00');same($r['invoice_discount_amount'],'0.00');same($r['final_payable_total'],'8749999999999.99');
     rejected(request([item('101','2')]),[product('101','9999999999999.99',null)],'QUANTITY_OR_AMOUNT_LIMIT');
     rejected(request([item('101','1'),item('102','1')]),[product('101','9999999999999.99',null),product('102','0.01',null)],'AMOUNT_LIMIT');
     rejected(request([item('101',(string)PHP_INT_MAX)]),[product('101','0.00','1',(string)PHP_INT_MAX)],'QUANTITY_OR_AMOUNT_LIMIT');
+});
+runCase('approved Glucose and unpromoted Replacement example totals LKR 1200', function (): void {
+    $r=calculate(request([item('101','8','25'),item('102','5')],'10'),[product(),product('102','100.00',null)]);
+    same(array_column($r['lines'],'product_id'),['101','102']);same(array_column($r['lines'],'line_number'),[1,2]);
+    same(array_column($r['lines'],'invoice_discount_amount'),['0.00','50.00']);
+    same(array_column($r['lines'],'payable_amount'),['750.00','450.00']);
+    same($r['invoice_discount_base'],'500.00');same($r['final_payable_total'],'1200.00');assertReconciles($r);
+});
+runCase('free-only, discount-only, both and no-promotion lines have independent eligibility', function (): void {
+    $r=calculate(request([item('101','6'),item('102','2','25'),item('103','8','25'),item('104','5')],'10'),
+        [product(),product('102','100.00',null),product('103'),product('104','100.00',null)]);
+    same(array_column($r['lines'],'invoice_discount_amount'),['0.00','0.00','0.00','50.00']);
+    same(array_column($r['lines'],'payable_amount'),['600.00','150.00','750.00','450.00']);assertReconciles($r);
+});
+runCase('zero selections permit invoice discount only without free entitlement', function (): void {
+    foreach ([['choice'=>'0'],['choice'=>'other','percent'=>'0.00']] as $selection) {
+        $lines=[item('101','6'),item('102','5'),item('103','5')];
+        foreach ($lines as &$line) { $line['product_discount']=$selection; } unset($line);
+        $r=calculate(request($lines,'10'),[product(),product('102'),product('103','100.00',null)]);
+        same(array_column($r['lines'],'invoice_discount_amount'),['0.00','50.00','50.00']);assertReconciles($r);
+    }
+    $req=request([item('101','6',null,true),item('102','5')],'10');$req['replacement_discount']=['choice'=>'custom','percent'=>'0'];
+    $r=calculate($req,[product('101','100.00','6','6'),product('102','100.00',null)]);
+    same(array_column($r['lines'],'invoice_discount_amount'),['0.00','50.00']);assertReconciles($r);
+});
+runCase('sparse eligible indexes preserve half-up rounding, remainder priority and original-order ties', function (): void {
+    $req=request([item('101','6'),item('104','1'),item('102','1','25'),item('103','1')],'50');
+    $products=[product(),product('102','1.00',null),product('103','0.01',null),product('104','0.01',null)];
+    $r=calculate($req,$products);same(array_column($r['lines'],'line_number'),[1,2,3,4]);
+    same(array_column($r['lines'],'invoice_discount_amount'),['0.00','0.01','0.00','0.00']);
+    same($r['invoice_discount_base'],'0.02');assertReconciles($r);same(calculate($req,array_reverse($products)),$r);
+    $products[2]['unit_price']='0.02';
+    $r=calculate($req,$products);same($r['invoice_discount_amount'],'0.02');
+    same(array_column($r['lines'],'invoice_discount_amount'),['0.00','0.01','0.00','0.01']);assertReconciles($r);
+});
+runCase('mixed replacement and invoice amounts still enforce strict combined 50 percent cap', function (): void {
+    $req=request([item('101','6',null,true),item('102','6')],'25');$req['replacement_discount']=['choice'=>'custom','percent'=>'75'];
+    $products=[product('101','100.00','6','6'),product('102','100.00',null)];
+    $r=calculate($req,$products);same($r['combined_monetary_discount'],'600.00');assertReconciles($r);
+    $req['invoice_discount_percent']='25.01';rejected($req,$products,'COMBINED_DISCOUNT_CAP_EXCEEDED');
+});
+runCase('synthetic Buy 6 Get 1 and Buy 12 Get 2 exclude whole entitled lines', function (): void {
+    // Generic pure-policy fixtures only; do not change approved product bindings.
+    foreach ([['6','1'],['12','2']] as [$buy,$gift]) {
+        foreach ([(int)$buy-1,(int)$buy,(int)$buy+2,2*(int)$buy] as $paid) {
+            foreach (['0','25'] as $rate) {
+                $r=calculate(request([item('101',(string)$paid,$rate),item('102','5')],'10'),
+                    [product('101','100.00',$buy,'1000',$gift),product('102','100.00',null)]);
+                $entitled=$paid >= (int)$buy;
+                $product=roundedPercent(($paid % (int)$buy)*10000,(int)$rate*100);
+                $invoice=(!$entitled && $product===0) ? $paid*1000 : 0;
+                same($r['lines'][0]['free_entitlement'],(string)(intdiv($paid,(int)$buy)*(int)$gift));
+                same($r['lines'][0]['actual_free_quantity'],$r['lines'][0]['free_entitlement']);
+                same($r['lines'][0]['product_discount_amount'],money($product));
+                same($r['lines'][0]['invoice_discount_amount'],money($invoice));
+                same($r['lines'][0]['payable_amount'],money($paid*10000-$product-$invoice));
+                same($r['lines'][1]['invoice_discount_amount'],'50.00');
+                same($r['invoice_discount_base'],money(50000+((!$entitled && $product===0)?$paid*10000:0)));
+                if ($entitled) { same(array_unique(array_column($r['lines'][0]['segments'],'invoice_discount_amount')),['0.00']); }
+                assertReconciles($r);
+            }
+        }
+    }
 });
 runCase('input-order allocation ties are deterministic across repeated runs', function (): void {
     $req=request([item('102','1'),item('101','1')],'50');$products=[product('101','0.01',null),product('102','0.01',null)];
@@ -241,7 +306,7 @@ runCase('input-order allocation ties are deterministic across repeated runs', fu
 });
 runCase('independent integer oracle: quantity/rate/rounding/cap matrix', function (): void {
     foreach ([6,12] as $buy) foreach ([1,5,6,8,11,12,18,24,36] as $paid) foreach ([0,1250,2500,3500,5000] as $rate) foreach ([0,1000,2500,5000] as $invoiceRate) {
-        $price=137;$eligible=$paid%$buy;$s=$price*$paid;$p=roundedPercent($price*$eligible,$rate);$i=roundedPercent($s-$p,$invoiceRate);
+        $price=137;$eligible=$paid%$buy;$s=$price*$paid;$p=roundedPercent($price*$eligible,$rate);$i=($paid >= $buy || $p > 0) ? 0 : roundedPercent($s,$invoiceRate);
         $req=request([item('101',(string)$paid,money($rate))],money($invoiceRate));$products=[product('101','1.37',(string)$buy)];
         if (2*($p+$i)>$s) { rejected($req,$products,'COMBINED_DISCOUNT_CAP_EXCEEDED');continue; }
         $r=calculate($req,$products);same($r['product_discount_total'],money($p));same($r['invoice_discount_amount'],money($i));
@@ -256,7 +321,7 @@ runCase('independent multi-line oracle: replacement cohorts and sequential amoun
         $s=$paidA*$priceA+$paidB*$priceB+$paidC*$priceC;
         $p=roundedPercent($paidC*$priceC,$productRate);
         $replacementBase=($replaceA?$paidA*$priceA:0)+($replaceB?$paidB*$priceB:0);
-        $r=roundedPercent($replacementBase,$replacementRate);$i=roundedPercent($s-$p-$r,$invoiceRate);
+        $r=roundedPercent($replacementBase,$replacementRate);$i=$p > 0 ? 0 : roundedPercent($paidC*$priceC,$invoiceRate);
         $lines=[item('101',(string)$paidA,null,$replaceA),item('102',(string)$paidB,null,$replaceB),item('103',(string)$paidC,money($productRate))];
         if($seed%2===1)$lines=array_reverse($lines);
         $req=request($lines,money($invoiceRate));if($replaceA||$replaceB)$req['replacement_discount']=['choice'=>'custom','percent'=>money($replacementRate)];

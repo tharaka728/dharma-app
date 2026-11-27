@@ -1,0 +1,41 @@
+{
+    "pinned_commit":  "ed147d41894b109fae277e8e69b40e8a3dfecb57",
+    "files":  {
+                  "BenefitPolicy.php":  {
+                                            "original_blob":  "2c260e51a2bd7a948f625328587dd62e9bcbc1a9",
+                                            "frozen_sha256_lf":  "2aebc3b614df2255a41cd16fb8434761b349b3b9ab7f2f8351bd4a1a72d7c653"
+                                        },
+                  "HybridInvoiceRequest.php":  {
+                                                   "original_blob":  "10b1dd209d8d58430bc95096899a12ec71916b2b",
+                                                   "frozen_sha256_lf":  "07016ee1bc3772d44b816a2cd9957af64e5cd4e9fd41dfe7785701052069c497"
+                                               },
+                  "HybridPromotionPolicy.php":  {
+                                                    "original_blob":  "cddfcd862909f096f06a26d7e80a626ce3d44916",
+                                                    "frozen_sha256_lf":  "55d353f055ec3b63f229088160bd86a4f7d0c2e77e5695abb67cd38244d1df47"
+                                                },
+                  "HybridUnitAllocations.php":  {
+                                                    "original_blob":  "0f6d5136b331987e7d21d628079d0c443ee9679c",
+                                                    "frozen_sha256_lf":  "9fd46b278dfafbfbc69cf7c7b11c8a78c361405748724765721404bcf5e24d39"
+                                                },
+                  "Inventory.php":  {
+                                        "original_blob":  "2a810a90c973dd7e8c7a1e44a16039fd74c08906",
+                                        "frozen_sha256_lf":  "0727bf2811d36d70255946ba87a6f7e6fd94be4158b07ff7ce83a64da5a3a0cb"
+                                    },
+                  "InvoiceDiscount.php":  {
+                                              "original_blob":  "eb5dfd2b620cc750efe06589426f7b3785a657c1",
+                                              "frozen_sha256_lf":  "2d98d4e7bc1616f2983f147ba856148617fe7f70816bf588ca572814fee3fb74"
+                                          },
+                  "MixedOil.php":  {
+                                       "original_blob":  "2dca00a3e49652c8b5e381c756d0bf646c38dcf1",
+                                       "frozen_sha256_lf":  "93f4659b584fc0825a0b49f8d8f7dcda2213af10910e12af1253c9328bd8dedc"
+                                   },
+                  "Products.php":  {
+                                       "original_blob":  "6b03ffcd4b842ea2ec28eaf3bd4dec59e2f28b6f",
+                                       "frozen_sha256_lf":  "40b31240b14766e16e003de71b1662fccd467dc9060b83b9bef940339f3ca946"
+                                   },
+                  "PromotionCalculator.php":  {
+                                                  "original_blob":  "b5e5e585824fc49733216a4765ac85c683d117bd",
+                                                  "frozen_sha256_lf":  "608a96e5d909bfe289bdba49749c6f42e1c80ae7bf0aabad54ded594e5e7663b"
+                                              }
+              }
+}

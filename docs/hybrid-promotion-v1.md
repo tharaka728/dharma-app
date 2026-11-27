@@ -2,6 +2,12 @@
 
 Status: **design requirements only**, corrected by the owner on 24 November 2026, including the three financial decisions, five core partial-return principles and final A1-E1 edge-case decisions below. No implementation, activation, live posting, removal of financial holds or operational data changes are authorized by this correction.
 
+## Invoice eligibility amendment - 27 November 2026
+
+This amendment supersedes the previous permission to stack invoice discounts on promoted lines. Any free entitlement (including replaced entitlement), nonzero product discount amount or nonzero replacement discount amount excludes the entire line from invoice discount. A 0% product selection alone does not exclude a line. Excluded lines and segments receive invoice discount `0.00` while retaining their product/replacement discounts and payable. Eligible payables alone form the invoice discount base. Shared legacy policies, immutable historical snapshots, exact allocation and the strict combined 50% cap are unchanged.
+
+Owner-reported Original Invoice browser verification: Glucose 8 x 100, free 1, product discount 50, invoice discount 0, payable 750; Ordinary 5 x 100 without product benefits, invoice discount 50 at 10%, payable 450. Eligible subtotal 500 and final payable 1,200 match the server and UI. No new browser/database run is claimed here.
+
 ## Final product promotion quantities
 
 | Product | Paid units per qualifying group | Free units per complete group |
@@ -33,8 +39,8 @@ These quantities replace every earlier Hybrid example or specification stating *
 - Other Discount requires an explicitly entered decimal percentage from **0% through 50%**, inclusive, with at most two decimal places under existing rate-format conventions. Client and server independently reject invalid, negative, nonnumeric, nonfinite and above-50% values; reject unsupported choices and mismatched choice/rate fields. Browser-submitted totals are never authoritative.
 - The Hybrid whole-invoice percentage is also limited to **0% through 50%**. This is a Hybrid-specific validation requirement, not a change to historical `INVOICE_PERCENT_V1` or `PROMO_CHOICE_V1` rate semantics.
 - Free promotion, product discount and whole-invoice discount may coexist on an invoice.
-- Apply the whole-invoice discount **sequentially after product discounts**, to the resulting payable amounts. Do not add the rates and apply their sum to the original amount. For example, an eligible LKR 100.00 paid amount with a 25% product discount followed by a 25% invoice discount leaves LKR 56.25. This arithmetic example does not authorize an otherwise disallowed product-benefit combination.
-- Preserve **no double benefit on the same paid quantity**. Paid quantity qualifying for the free promotion must not also receive the alternative product discount. Where both product benefits appear, their qualifying paid quantities must be distinct and explicitly accounted for. The separately approved sequential whole-invoice discount remains permitted; free units have no discountable payable amount.
+- Apply the invoice percentage only to lines without free entitlement or nonzero product/replacement discounts. The former LKR 100 less product 25% then invoice 25% = 56.25 example is superseded: that product-discounted line now remains payable 75.00 with invoice discount 0.00.
+- Preserve **no double benefit on the same paid quantity**. Paid quantity qualifying for free promotion cannot receive the alternative product discount. Product discounts may apply to distinct remainder quantities, but any such benefit or free entitlement excludes the entire line from invoice discount.
 - **ONLINE ONLY initially.** Do not convert legacy signed offline sales to Hybrid V1, rewrite signed bodies or add Hybrid offline posting through this amendment.
 - Preserve historical financial records and existing operational data: immutable invoice/line/promotion snapshots, official invoice/payment/stock/sync identities, append-only history and exactly-once posting remain unchanged.
 
@@ -55,13 +61,13 @@ Keep one aggregate paid product line, with explicit benefit segments; do not dup
 
 Reject pooled mixed-oil rules/rewards in Hybrid rather than silently suppressing or stacking them. Existing mixed-oil legacy workflows remain unchanged. Preserve admin offer enable/disable controls, immutable revisions and non-overlapping active free offers. Apply the same configured eligibility to eligible customers; do not create customer-specific exceptions.
 
-## Sequential discounts and mandatory monetary cap
+## Eligible-line invoice discount and mandatory monetary cap
 
 Let S be the original paid merchandise subtotal before any discounts, P the sum of rounded product-segment discounts, R the compatible approved shortage-replacement monetary discount, and I the whole-invoice monetary discount. Actual free units have zero discountable selling amount; their notional value is excluded from this monetary cap.
 
 1. Resolve free entitlements, stock feasibility and any compatible replacement benefit; reject ambiguous cases.
 2. Compute P only on discount-eligible paid segments. Keep P and R separate and prevent overlapping product benefits.
-3. Remaining base B = S - P - R. Require a nonnegative base.
+3. Invoice base B is the sum of post-product/replacement payables only for lines with no free entitlement and zero product and replacement discount amounts. It is not the whole invoice's S - P - R when excluded lines exist. Require nonnegative payables.
 4. Calculate I once on B using the explicitly selected Hybrid invoice rate, limited to 50%, with half-up invoice-cent rounding. Allocate I proportionally using largest remainders and original input order for ties, preserving the existing approved invoice allocation behavior.
 5. Combined monetary discount D = P + R + I. In exact integer cents, accept only when **2 × D_cents <= S_cents**.
 6. Merchandise payable = S - D. Preserve separately authorized settlement, cash/change, credit and reversal rules afterward.
@@ -74,7 +80,9 @@ Keep rounding and allocation distinct: segment product discounts are rounded hal
 
 Excess discounts **reject the financial preview/posting request** with the component amounts, combined requested amount, permitted ceiling and a clear instruction to reduce selections. Do not silently reduce selected rates or automatically choose a compliant combination. Representatives must explicitly adjust their selections and obtain a new review.
 
-Actual free units remain separate benefits, with no additional notional-value ceiling introduced. Replacement money is never exempt from the cap merely because it replaces free units. A 50% product discount followed by a 50% invoice discount produces a 75% monetary reduction and must be blocked.
+Actual free units remain separate benefits, with no additional notional-value ceiling introduced. Replacement money is never exempt from the cap merely because it replaces free units. A line with product discount 50% receives invoice discount 0.00 even if invoice rate 50% is selected; its monetary reduction remains 50%. Mixed cohorts must still pass the combined cap, including replacement rates retained from the existing policy.
+
+The following legacy cap-only illustrations are retained as historical arithmetic, not valid current benefit-cohort examples. Current calculations must first establish eligible invoice lines under the 27 November amendment; the cap test itself is unchanged.
 
 | S | P | R | I | Combined monetary discount | Outcome |
 | ---: | ---: | ---: | ---: | ---: | --- |
@@ -102,9 +110,9 @@ The owner now approves adapting this calculation to an explicit cohort of affect
 3. For same-product stock, evaluate available stock after reserving paid demand: insufficient paid demand blocks checkout; no residual stock for a positive free entitlement is a complete free-stock shortage; residual stock sufficient for only part of the entitlement is a partial shortage and blocks this path. Revalidate under the existing posting locks; never permit negative balances.
 4. The representative explicitly selects the existing replacement rate. Preserve the full gross paid-line base, original non-mixed Buy-X-Get-Y eligibility and approved half-up aggregate discount/largest-remainder allocation. With multiple affected lines, retain the existing single selected replacement rate and aggregate calculation across that cohort; independently rated replacement cohorts or different rounding scopes are not implicitly authorized.
 5. Do not call the invoice-wide suppress-all mode on the whole Hybrid basket. Scope the approved arithmetic to the replaced lines, preserving unrelated free entitlements and separate manual discounts on other eligible lines. Any implementation that cannot preserve this scope must fail closed. Keep the existing `PROMO_CHOICE_V1` policy and operational offers unchanged.
-6. Compute sequential whole-invoice discount after P and R. Count the full R in the strict combined cap. Exceeding it rejects preview/posting; no automatic rate reduction, guessed replacement rate or fallback into legacy posting is allowed.
+6. Compute invoice discount only on eligible other lines after resolving P and R; exclude every replaced-entitlement line. Count the full R in the strict combined cap. Exceeding it rejects preview/posting; no automatic rate reduction, guessed replacement rate or fallback into legacy posting is allowed.
 
-Example: Suwada Kudu 12 paid at LKR 100 has full-line gross 1,200 and entitlement 1. With paid stock available but no residual free stock, an explicitly selected existing 25% replacement gives R = 300, zero free delivered and paid-only stock demand 12. With P = 0 and invoice rate 10%, I = 90, D = 390 and payable = 810; the 600 cap is satisfied. This illustration does not preselect 25%. Suwada Kudu 18 is not eligible for this initial replacement path because it contains a remainder. For Glucose 12 with entitlement 2 and residual free stock 1, the partial-entitlement shortage blocks substitution.
+Example: Suwada Kudu 12 paid at LKR 100 has full-line gross 1,200 and entitlement 1. With paid stock available but no residual free stock, an explicitly selected existing 25% replacement gives R = 300, zero free delivered and paid-only stock demand 12. With P = 0 and invoice rate 10%, I = 0, D = 300 and payable = 900; the 600 cap is satisfied. The former I=90/payable=810 illustration is superseded. This illustration does not preselect 25%. Suwada Kudu 18 is not eligible for this initial replacement path because it contains a remainder. For Glucose 12 with entitlement 2 and residual free stock 1, the partial-entitlement shortage blocks substitution.
 
 Preview and immutable snapshots must show free entitlement, actual free units, fully substituted entitlement, stock-shortage reason, explicitly selected replacement rate, full-line eligible base, original calculation policy, Hybrid scope/policy version, amount and allocations separately from P and I. Unsupported cases remain blocked by the confirmed rules rather than awaiting an invented alternative. This approval resolves the limited forward-sale design; it does not resolve return/recovery of replacement benefits or authorize implementation/activation.
 
@@ -163,6 +171,8 @@ Snapshot fields must reproduce: original paid subtotal; policy and rounding vers
 Linked returns additionally need append-only references to original Hybrid invoice/line/benefit allocations, original and return stock movements, prior return quantities and value, paid/free unit attribution, recovered entitlement, physical receipt and disposition, condition reason, actor, policy version, request identity/payload hash, debt reduction and Refund Due. This is a schema proposal only. Preserve original invoice totals, payments and numbering; do not reuse or modify historical-return flags, intents or snapshots.
 
 ## Owner-approved linked partial-return policy
+
+**Historical numerical examples below:** examples that stack invoice discount onto free/product/replacement-benefit lines describe the pre-27-November policy and are superseded for new invoices. Preserve their original-net amounts only when consuming existing immutable snapshots; never recalculate historical invoices. Under the current rule, Glucose 8 with remainder discount 50 has net 750 (first two remainder positions 75 each; qualifying positions 100 each). Replacement gross 1,200 at 25% has net 900 (two returned units credit 150, retained discount 250). The old retained-cap example relying on invoice allocation to a replacement line is superseded; the retained-cap rule itself remains mandatory. A synthetic replacement rate 60% gives retained R=720 on gross 1,200 and still demonstrates that failure without stacking. Return, custody and noncash safeguards below remain unchanged.
 
 The following five decisions are confirmed. They authorize design only; linked Hybrid returns are not implemented or activated by this document.
 

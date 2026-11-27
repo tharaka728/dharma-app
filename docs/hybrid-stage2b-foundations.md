@@ -1,5 +1,7 @@
 # Hybrid Promotion V1 — Stage 2B source foundations
 
+> **Superseded discount behavior - 27 November 2026:** This historical stage record retains its original examples, test counts and evidence. Any instruction or example applying invoice discount to a line with free entitlement or nonzero product/replacement discount is superseded by the [approved eligibility correction](hybrid-stage6e2-original-invoice.md#approved-eligibility-correction-and-owner-verification---27-november-2026). Such lines now receive invoice discount 0.00; a 0% product selection alone does not exclude a line. Glucose 8 at 100 with remainder discount 50 remains payable 750 even at invoice rate 10%; adding 5 ordinary unpromoted units at 100 gives eligible subtotal 500, invoice discount 50 and total 1,200. Existing immutable snapshots and historical results are not rewritten; the strict combined 50% cap remains. Old screenshots and PASS counts do not verify the new rule.
+
 Completed 26 November 2026 in the existing `hybrid-promotion-v1-stage1` branch and
 isolated worktree `storage/hybrid-stage1`, based on commit `80331eb` and the
 owner-supplied Stage 2A handoff. **Development foundations only; no activation or

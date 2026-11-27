@@ -24,13 +24,19 @@ First milestone screenshots: [desktop](../storage/stage2c-10dec2fdf18c4263b96843
 
 Final actual controls/review: [English desktop](../storage/stage2c-10dec2fdf18c4263b96843c7c58c17f1/final-original/review-1440-en.png), [Sinhala mobile](../storage/stage2c-10dec2fdf18c4263b96843c7c58c17f1/final-original/review-390-si-LK.png). These are focused evidence, not a redesign/gallery.
 
-Select the synthetic assigned customer, add the synthetic Glucose card, enter paid quantity 8 and product discount 25%, then click Review invoice. Leave whole-invoice discount 0% for LKR 750.00; choose Other invoice discount and 10% for LKR 675.00. Confirmation is disabled in this owner preview. All customer/product/stock values are synthetic and come through existing authorized services; the preview catalogue scopes the retained fixture before pagination.
+Select the synthetic assigned customer, add the synthetic Glucose card, enter paid quantity 8 and product discount 25%, then click Review invoice. Both invoice rates 0% and 10% leave Glucose payable LKR 750.00 with invoice discount 0.00. Add 5 ordinary unpromoted units at LKR 100 with product discount 0%: invoice rate 10% applies only to their LKR 500.00 subtotal, allocating LKR 50.00 and leaving LKR 450.00. Final payable is LKR 1,200.00. Confirmation remains disabled. All customer/product/stock values are synthetic and come through existing authorized services; the preview catalogue scopes the retained fixture before pagination.
+
+## Approved eligibility correction and owner verification - 27 November 2026
+
+Any free-product entitlement, nonzero product discount or nonzero replacement promotion discount excludes the entire product line from invoice percentage discount. Replaced entitlement also excludes the line even when no free units are delivered. A 0% product selection alone does not exclude a line without these benefits. Excluded lines retain product/replacement amounts and payable, with invoice discount exactly `0.00` on the line and its segments. Only eligible payables enter `invoice_discount_base`; original indexes, rounding, largest-remainder ties and the strict combined 50% monetary cap remain unchanged. Shared legacy policies are unchanged.
+
+The owner reports successful visual verification of the existing Original Invoice UI with the Glucose/Ordinary basket above: Glucose free quantity 1, product discount 50.00, invoice discount 0.00 and payable 750.00; Ordinary invoice discount 50.00 and payable 450.00; eligible subtotal 500.00; server-verified payable and UI grand total both 1,200.00. This is owner-supplied evidence, not a new automated browser run. This documentation/regression task connects to no database or HTTP service.
 
 ## Implemented behavior
 
 Product intent stays in original cart rows: default 0%, preset/custom selection and explicit eligible complete-shortage replacement. Server eligibility controls whether replacement may be selected. Paid, qualified, eligible remainder, actual free quantities and P/R/I/payable values come from authoritative review. Replacement retains its existing approved rate contract; it is never an inferred substitute for a partial shortage.
 
-The original invoice-discount fieldset branches only for Hybrid (0-50%, sequential server policy); legacy INVOICE_PERCENT_V1 and PROMO_CHOICE_V1 retain their existing contracts. Original POS totals consume a presentation mapping of server review values. There is no new JavaScript money calculator. Existing reviewed input, UUID, exact financial engine, immutable snapshots, writer and linked returns remain authoritative.
+The original invoice-discount fieldset branches only for Hybrid (0-50%, eligible-line server policy); legacy INVOICE_PERCENT_V1 and PROMO_CHOICE_V1 retain their existing contracts. Original POS totals consume a presentation mapping of server review values. There is no new JavaScript money calculator. Existing reviewed input, UUID, exact financial engine, immutable snapshots, writer and linked returns remain authoritative.
 
 Every financial input invalidates the review; stale responses are ignored. The original Review area displays server evidence. During unresolved confirmation the cart/payment/discount controls and customer/catalogue are locked. Uncertain replies keep the original command in memory and require an identical retry; no silent new UUID is generated. There is no Hybrid sale IndexedDB/local-storage/offline queue. Leaving/reloading while a command is unresolved triggers the browser leave warning; no persistent Hybrid recovery mechanism is claimed.
 
@@ -41,14 +47,30 @@ Disabled/unavailable runtime and unsupported eligible HTML posting remain HTTP 4
 | Selection | Qualified / remainder / actual free | Product discount | Payable |
 | --- | --- | --- | --- |
 | Glucose 8, product 25%, invoice 0% | 6 / 2 / 1 | 50.00 | 750.00 |
-| Glucose 8, product 25%, invoice 10% | 6 / 2 / 1 | 50.00 | 675.00 |
+| Glucose 8, product 25%, invoice 10% | 6 / 2 / 1 | 50.00; invoice 0.00 | 750.00 |
 | Glucose 6 / 12, invoice 0% | 6/0/1; 12/0/2 | 0.00 | 600.00 / 1200.00 |
 | Suwada Kudu 12, invoice 0% | 12 / 0 / 1 | 0.00 | 1200.00 |
 | Ordinary 2, no benefits | 0 / 2 / 0 | 0.00 | 200.00 |
 
-Multiline: ordinary 2 at 12.50%, Glucose 8 at 25%, invoice 10% = 832.50. Explicit eligible replacement 24 at 25%, invoice 0% = 1800.00. Strict cap, partial/paid/free shortages and unsupported offer conflicts reject without clamping or repricing.
+Multiline: ordinary 2 at product 12.50%, Glucose 8 at product 25%, invoice 10% = 925.00; both lines are excluded and invoice discount is 0.00. Ordinary 5 at product 0% plus Glucose 8 at product 25%, invoice 10% = 1,200.00. Explicit eligible replacement 24 at 25% remains payable 1800.00 at invoice rates 0% or 10%, with invoice discount 0.00. Strict cap, partial/paid/free shortages and unsupported offer conflicts reject without clamping or repricing.
 
 ## Focused acceptance
+
+Current 27 November database-independent regression verification:
+
+| Suite | Result |
+| --- | --- |
+| `tests/hybrid-promotion-policy.php` | 26 cases / 15,348 assertions PASS: free-only, product-only, both, unpromoted/mixed lines, replacement exclusions, zero selections, sparse indexes, rounding/ties and strict cap |
+| `tests/hybrid-invoice-foundations.php` | 18 cases / 2,642 assertions PASS: in-memory preview/server revalidation, exact 1,200 basket, snapshots, unit allocations, scope/holds and failure rollback; existing PHP 8.5 reflection deprecation only |
+| `tests/hybrid-return-domain.php` | 34 checks PASS; pure synthetic original-net/retained-cap calculations |
+| `tests/run.php` | 12 foundation checks PASS |
+| Syntax and whitespace | PHP lint PASS for policy and three Hybrid test files; `git diff --check` PASS |
+
+PHP runs used `-n` (no php.ini/database drivers), with only `mbstring` explicitly loaded for the checkout and return suites. No database connection, provisioning, migration, HTTP integration or real financial posting was performed. The new generic Buy 6 Get 1 / Buy 12 Get 2 matrix checks below-threshold, exact-group, remainder and repeated-group cases at product rates 0% and 25%, with invoice rate 10% and an eligible ordinary line. Buy 12 Get 2 is a synthetic policy input only: approved Glucose 6/1 and Suwada Kudu 12/1 live bindings are not changed or newly authorized.
+
+Remaining integration gap: `tests/hybrid-database.php`, `tests/hybrid-returns-database.php`, `tests/hybrid-stage5-reporting.php`, `tests/hybrid-stage6b-http.php` and `tests/hybrid-stage6c-http.php` still contain pre-correction stacked-discount figures. They were neither edited nor executed in this database-independent task. A separately authorized integration follow-up must distinguish historical stored-snapshot expectations from newly calculated fixtures before updating and running those suites; their earlier PASS evidence does not validate the new rule.
+
+Historical 26 November evidence follows. Its stacked-discount figures (including the sealed cash invoice 675.00) and previous test counts describe that run only and are superseded for new calculations by the 27 November rule above. Stored invoices, snapshots, screenshots and historical evidence are not rewritten or revalidated here.
 
 Counts are per suite, not a deduplicated grand total.
 

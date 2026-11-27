@@ -15,7 +15,7 @@ The source candidate inventory and rendered residual inventory are recorded in t
 
 - [ ] Confirm the wording distinguishes paid units, promotion-qualified units, discount-eligible remainder, free entitlement and actual free delivery.
 - [ ] Confirm “Paid quantity” describes units charged for; it must not imply that cash has already been collected.
-- [ ] Glucose 8 at LKR 100, product discount 25%, invoice discount 0%: qualified 6, remainder 2, free 1, product discount 50.00, payable 750.00. Repeat with invoice discount 10%: invoice discount 75.00, payable 675.00.
+- [ ] Glucose 8 at LKR 100, product discount 25%, invoice discount 0%: qualified 6, remainder 2, free 1, product discount 50.00, payable 750.00. Under the 27 November eligibility correction, invoice rate 10% still gives invoice discount 0.00 and payable 750.00. Add 5 unpromoted units at 100 with product discount 0%: eligible subtotal 500.00, invoice discount 50.00, ordinary payable 450.00 and final payable 1,200.00. Any free entitlement or nonzero product/replacement discount excludes the whole line; a 0% selection alone does not.
 - [ ] Glucose 6/12: remainder 0, free 1/2. Suwada Kudu 12: qualified 12, remainder 0, free 1. No product discount on qualified units.
 - [ ] Confirm independent 25%, 30%, 35% and Other labels and two-decimal custom percentages.
 - [ ] Confirm strict combined 50% cap wording includes product, replacement and invoice money, but excludes the notional value of actual free units.

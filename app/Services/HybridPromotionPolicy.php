@@ -180,13 +180,19 @@ final class HybridPromotionPolicy
         } elseif (array_key_exists('replacement_discount', $request)) {
             self::reject('UNUSED_REPLACEMENT_SELECTION', 'replacement_discount', 'No affected line supports a replacement selection.');
         }
-        $discountLines = [];
-        foreach ($lines as $line) {
+        $discountLines = []; $invoiceEligibleLines = [];
+        foreach ($lines as $index => $line) {
             $beforeInvoice = self::sum($line['product_discount_amount'], $line['replacement_discount_amount']);
-            $discountLines[] = ['discount_amount' => $beforeInvoice,
+            $discountLines[$index] = ['discount_amount' => $beforeInvoice,
                 'payable_amount' => PromotionCalculator::subtractMoney($line['gross_amount'], $beforeInvoice)];
+            // Entitlement excludes the entire line even when replaced rather than delivered.
+            // A zero-rate selection alone does not exclude an otherwise unpromoted line.
+            if ($line['free_entitlement'] === '0' && $beforeInvoice === '0.00') {
+                $invoiceEligibleLines[$index] = $discountLines[$index];
+            }
         }
-        $invoice = InvoiceDiscount::apply($discountLines, $invoiceRate);
+        // Keep original indexes for largest-remainder ties; leave the shared policy unchanged.
+        $invoice = InvoiceDiscount::apply($invoiceEligibleLines, $invoiceRate);
         $combined = self::sum($productTotal, $replacementTotal, $invoice['invoice_discount_amount']);
         if (PromotionCalculator::compare(PromotionCalculator::multiply(PromotionCalculator::cents($combined), '2'), PromotionCalculator::cents($subtotal)) > 0) {
             [$maximum] = InvoiceDiscount::divide(PromotionCalculator::cents($subtotal), '2');
@@ -195,9 +201,10 @@ final class HybridPromotionPolicy
         }
         foreach ($lines as $index => &$line) {
             $line['post_product_replacement_subtotal'] = $discountLines[$index]['payable_amount'];
-            $line['invoice_discount_amount'] = $invoice['lines'][$index]['invoice_discount_amount'];
-            $line['discount_amount'] = $invoice['lines'][$index]['discount_amount'];
-            $line['payable_amount'] = $invoice['lines'][$index]['payable_amount'];
+            $allocated = $invoice['lines'][$index] ?? ($discountLines[$index] + ['invoice_discount_amount' => '0.00']);
+            $line['invoice_discount_amount'] = $allocated['invoice_discount_amount'];
+            $line['discount_amount'] = $allocated['discount_amount'];
+            $line['payable_amount'] = $allocated['payable_amount'];
             $weights = [];
             foreach ($line['segments'] as $segment) {
                 $weights[] = PromotionCalculator::subtractMoney($segment['gross_amount'], self::sum($segment['product_discount_amount'], $segment['replacement_discount_amount']));

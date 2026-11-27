@@ -1,5 +1,29 @@
 # Hybrid V1 Stage 1 calculation engine
 
+## Owner-approved invoice eligibility correction - 27 November 2026
+
+This correction supersedes the earlier Hybrid sequential invoice-discount rule.
+An entire product line is excluded from invoice percentage discount when it has
+any free entitlement (including replaced entitlement), nonzero product discount
+amount or nonzero replacement discount amount. A selected 0% product rate alone
+does not exclude a line. Excluded lines retain their product/replacement amounts
+and payable, with exactly `0.00` invoice discount on every segment.
+
+Only eligible line payables form `invoice_discount_base`. Original line indexes,
+half-up invoice cents, largest-remainder allocation with original-order ties,
+segment reconciliation and the strict combined monetary cap of 50% of original
+paid subtotal are preserved. Shared `InvoiceDiscount::apply()` is unchanged.
+The approved 8 x LKR 100 Glucose example retains LKR 750 payable and no invoice
+discount; the unpromoted 5 x LKR 100 line receives LKR 50 invoice discount at 10%,
+giving LKR 1,200 payable. UI preview renders the server calculation; checkout
+revalidates it. Existing immutable snapshots are not recalculated or rewritten.
+
+Verification uses only standalone policy, in-memory checkout, pure return-domain
+and foundation tests. No database-backed or live browser/HTTP test is authorized
+by this correction. Financial holds and activation configuration are unchanged.
+
+## Historical Stage 1 scope
+
 This worktree contains only a new pure calculation service, its exception and
 synthetic unit tests. It does not connect to any database, read operational
 configuration, modify feature gates, post invoices, store snapshots or integrate
@@ -40,7 +64,7 @@ $products = [[
     ],
 ]];
 $result = HybridPromotionPolicy::calculate($request, $products);
-// Qualifying paid 6, remainder 2, actual free 1; P=50, I=75, payable=675.
+// Qualifying paid 6, remainder 2, actual free 1; P=50, I=0, payable=750.
 ```
 
 All IDs, quantities, prices and rates are decimal strings. Paid quantities must
@@ -107,7 +131,7 @@ is empty. No time, random ID, persistence or mutable system state enters the res
 
 Product discount is rounded half-up once per eligible remainder segment.
 Replacement uses the original aggregate legacy calculation. `InvoiceDiscount::apply()`
-calculates the sequential invoice discount and line allocation without modifying
+calculates invoice discount and line allocation only for the eligible cohort without modifying
 that service. A fixed line allocation is further distributed to its segments by
 largest remainders (original segment order for ties), without creating/removing a
 cent. Segment/line/header components reconcile exactly. The return-position and
@@ -115,7 +139,7 @@ bounded unit-component algorithm from B1 is not implemented in this forward-sale
 Stage 1 engine; it remains a later integration deliverable.
 
 Let S/P/R/I be original subtotal, product, replacement and invoice discount cents.
-Calculate I on S-P-R, then reject unless `2*(P+R+I) <= S`. The diagnostic maximum
+Calculate I on the sum of payables of lines without free entitlement, product discount or replacement discount, then reject unless `2*(P+R+I) <= S`. The diagnostic maximum
 is floor(S/2) cents. Actual free value does not enter the monetary cap. A 50%
 request that rounds upward past an odd-cent ceiling is rejected, not clamped.
 

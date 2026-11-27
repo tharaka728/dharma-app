@@ -91,7 +91,8 @@ final class HybridInvoiceResolver
         $customerSnapshot = array_intersect_key($customer, array_flip(['id','version','assigned_rep_id','customer_code','shop_name','contact_person','phone','address','city_town','district','allow_credit_sales','credit_limit_enabled','credit_limit','credit_terms_days']));
         $terms=$request['payment_type']==='CREDIT' ? (int)$customer['credit_terms_days'] : 0;
         $date=Inventory::today($instant);
-        $review = ['policy_version' => HybridPromotionPolicy::POLICY, 'configuration_version' => $this->config['configuration_version'],
+        $review = ['policy_version' => HybridPromotionPolicy::POLICY, 'calculation_revision' => HybridInvoiceSnapshots::CURRENT_REVISION,
+            'configuration_version' => $this->config['configuration_version'],
             'control_version' => (string)$controls['version'], 'actor' => ['id' => (string)$a['id'], 'role' => $a['role'], 'name'=>$a['name'], 'version'=>(string)($a['version']??'1')],
             'number_owner'=>$source==='warehouse' ? (string)$a['id'] : $source,
             'rep_name'=>$source==='warehouse' ? mb_substr('Central warehouse — '.$a['name'],0,150,'UTF-8') : $sourceActor['name'],

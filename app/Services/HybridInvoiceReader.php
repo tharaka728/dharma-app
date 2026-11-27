@@ -72,7 +72,7 @@ final class HybridInvoiceReader
         self::equalRows($this->rows('SELECT * FROM hybrid_unit_allocation_runs WHERE invoice_id=? ORDER BY line_number,segment_number,position_start',[$invoice]),$runs);
         $balances=(new HybridInvoiceBalances($this->pdo))->read($invoice,$snapshot);
         $receipts=$this->rows('SELECT r.request_id,r.received_amount,r.applied_amount,r.change_amount,r.created_at_utc,u.name received_by FROM invoice_receipts r JOIN users u ON u.id=r.actor_user_id WHERE r.invoice_id=? ORDER BY r.created_at_utc,r.request_id',[$invoice]);
-        return ['snapshot'=>$snapshot,'receipts'=>$receipts,'policy_version'=>HybridPromotionPolicy::POLICY,'financial'=>$balances['financial'],'adjustments'=>$balances];
+        return ['snapshot'=>$snapshot,'receipts'=>$receipts,'policy_version'=>$c['policy_version'],'financial'=>$balances['financial'],'adjustments'=>$balances];
     }
     private static function amounts(array $line): array { return array_intersect_key($line,array_flip(['gross_amount','product_discount_amount','replacement_discount_amount','invoice_discount_amount','payable_amount'])); }
 }

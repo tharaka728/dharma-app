@@ -71,9 +71,35 @@ function reviewed(MemoryHybridStore $s,array $in): array { $in['review_hash'] = 
 
 scenario('authoritative prices, paid/free stock, default selections, safe metadata and lock order',function () {
     $s = new MemoryHybridStore; $before = $s->state; $r = checkout($s)->review(['id'=>'7','role'=>'ADMIN'],input());
-    eq($r['calculation']['final_payable_total'],'675.00'); eq($r['calculation']['lines'][0]['required_stock'],'9'); eq($r['applied_amount'],'675.00'); eq($r['change_amount'],'25.00'); eq($s->state,$before);
+    eq($r['calculation_revision'],Snapshots::CURRENT_REVISION);
+    eq($r['calculation']['final_payable_total'],'750.00'); eq($r['calculation']['lines'][0]['required_stock'],'9'); eq($r['applied_amount'],'700.00'); eq($r['change_amount'],'0.00'); eq($s->state,$before);
     eq(strpos(Request::json($r),'SECRET-COST'),false); eq($s->locks,['inventory','hybrid','actor','source','customer','promotions','product:101','balance:101']);
     $in = input(); unset($in['hybrid']['lines'][0]['product_discount'],$in['hybrid']['invoice_discount_percent']); eq(checkout($s)->review(['id'=>'7'],$in)['calculation']['combined_monetary_discount'],'0.00');
+});
+scenario('mixed UI preview calculation matches server revalidation and sealed in-memory snapshot',function () {
+    $s=new MemoryHybridStore; unset($s->offers['102']); $c=config(); unset($c['bindings']['102']);
+    $in=input(); $in['amount_received']='1200.00'; $in['hybrid']['lines'][]=['product_id'=>'102','paid_quantity'=>'5'];
+    $before=$s->state; $preview=checkout($s,$c)->review(['id'=>'7'],$in); eq($s->state,$before);
+    eq($preview['calculation']['final_payable_total'],'1200.00');
+    eq(array_column($preview['calculation']['lines'],'invoice_discount_amount'),['0.00','50.00']);
+    $in['review_hash']=$preview['review_hash']; $out=checkout($s,$c)->issue(['id'=>'7'],$in);
+    $snapshot=$s->state['snapshots'][$out['invoice_id']]; Snapshots::reconcile($snapshot);
+    eq($snapshot['review']['calculation'],$preview['calculation']);
+    eq($s->state['invoices'][$out['invoice_id']]['grand_total'],'1200.00');
+    // Browser renders server-returned amounts rather than calculating a separate discount.
+    $js=file_get_contents(dirname(__DIR__).'/public/assets/js/invoices.js');
+    eq(str_contains($js,"request('/preview',body,aborter.signal)"),true);
+    eq(str_contains($js,"['Invoice discount',line.invoice_discount_amount]"),true);
+});
+scenario('accepted historical sealed command replays original result while posting remains held',function () {
+    $s=new MemoryHybridStore; $snap=json_decode(file_get_contents(__DIR__.'/fixtures/hybrid-snapshot-compatibility/legacy-675.json'),true,64,JSON_THROW_ON_ERROR);
+    $in=input(); $in['amount_received']='675.00'; $in['review_hash']=$snap['review']['review_hash']; $n=Request::normalize($in,true); $id=$in['request_id'];
+    $s->state['commands'][$id]=['request_id'=>$id,'customer_id'=>'20','actor'=>'7','operation'=>'HYBRID_SALE_V1','payload_hash'=>Request::digest(['operation'=>'HYBRID_SALE_V1','request'=>$n])];
+    $s->state['results'][$id]=['invoice_id'=>$id,'invoice_number'=>'SYNTHETIC-HISTORICAL']; $s->state['snapshots'][$id]=$snap;
+    $c=config(); $c['enabled']=false; $c['financial_posting_hold']=true; $s->held=true; $s->control['enabled']='0'; $before=$s->state;
+    eq(checkout($s,$c)->issue(['id'=>'7'],$in),$s->state['results'][$id]+['replayed'=>true]); eq($s->state,$before);
+    eq($s->state['snapshots'][$id]['review']['calculation']['final_payable_total'],'675.00');
+    $forged=input(); $forged['hybrid']['calculation_revision']='LEGACY'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$forged),'Unsupported');
 });
 scenario('different active representatives, reassignment, source spoofing and inactive accounts',function () {
     $s = new MemoryHybridStore; rejects(fn()=>checkout($s)->review(['id'=>'8'],input()),'Customer');
@@ -88,7 +114,7 @@ scenario('strict versioned input rejects forged financial fields and JSON normal
     $in=input(); $in['benefit_policy']='PROMO_CHOICE_V1'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'Unsupported');
     $in=input(); $in['hybrid']['channel']='ONLINE'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'Unsupported');
     $in=input(); $in['hybrid']['policy_version']='UNKNOWN'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'version');
-    $json = (array)json_decode(json_encode(input())); eq(checkout($s)->review(['id'=>'7'],$json)['calculation']['final_payable_total'],'675.00');
+    $json = (array)json_decode(json_encode(input())); eq(checkout($s)->review(['id'=>'7'],$json)['calculation']['final_payable_total'],'750.00');
     $in=input(); $in['hybrid']['lines'][]=$in['hybrid']['lines'][0]; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'aggregate');
 });
 scenario('stable offer IDs, quantity expectations, monetary conflicts and mixed-oil exclusion',function () {
@@ -105,18 +131,18 @@ scenario('replacement restrictions, multi-product independent benefits and combi
     $in['hybrid']['lines'][1]['paid_quantity']='18'; $s->state['stock']['102']='18'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'remainder');
     $in=input(); $in['hybrid']['lines'][0]=['product_id'=>'101','paid_quantity'=>'12','replace_free_entitlement'=>true]; $in['hybrid']['replacement_discount']=['choice'=>'25']; $s->state['stock']['101']='13'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'partially');
     $s->state['stock']['101']='11'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'paid');
-    $s=new MemoryHybridStore; unset($s->offers['101']); $c=config(); unset($c['bindings']['101']); $in=input(); $in['hybrid']['lines'][0]['product_discount']=['choice'=>'other','percent'=>'50']; $in['hybrid']['invoice_discount_percent']='50'; rejects(fn()=>checkout($s,$c)->review(['id'=>'7'],$in),'50%');
+    $s=new MemoryHybridStore; unset($s->offers['101']); $c=config(); unset($c['bindings']['101']); $in=input(); $in['hybrid']['lines'][0]['product_discount']=['choice'=>'other','percent'=>'50']; $in['hybrid']['invoice_discount_percent']='50'; eq(checkout($s,$c)->review(['id'=>'7'],$in)['calculation']['combined_monetary_discount'],'400.00');
     $s->products['101']['selling_price']='100.01'; $in['hybrid']['lines'][0]['paid_quantity']='1'; unset($in['hybrid']['lines'][0]['product_discount']); rejects(fn()=>checkout($s,$c)->review(['id'=>'7'],$in),'50%');
 });
 scenario('credit permissions and configured limits retain partial-cash behavior',function () {
     $s=new MemoryHybridStore; $in=input(); $in['payment_type']='CREDIT'; $in['amount_received']='100.00'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'credit is disabled');
     $s->customers['20']['allow_credit_sales']='1'; $s->debt='500.00'; rejects(fn()=>checkout($s)->review(['id'=>'7'],$in),'limit');
-    $s->debt='400.00'; eq(checkout($s)->review(['id'=>'7'],$in)['outstanding'],'575.00');
-    $in['payment_type']='CASH'; eq(checkout($s)->review(['id'=>'7'],$in)['outstanding'],'575.00');
+    $s->debt='350.00'; eq(checkout($s)->review(['id'=>'7'],$in)['outstanding'],'650.00');
+    $in['payment_type']='CASH'; eq(checkout($s)->review(['id'=>'7'],$in)['outstanding'],'650.00');
 });
 scenario('snapshot mapping, sealing and tamper detection',function () {
     $s=new MemoryHybridStore; $n=Request::normalize(input()); $p=$s->transaction(fn()=>(new HybridInvoiceResolver($s,config()))->resolve(['id'=>'7'],$n),true); $snap=Snapshots::build($n,$p); Snapshots::reconcile($snap);
-    eq(Snapshots::legacyMapping($snap),['subtotal'=>'800.00','automatic_discount_total'=>'0.00','manual_discount_total'=>'125.00','discount_total'=>'125.00','grand_total'=>'675.00']);
+    eq(Snapshots::legacyMapping($snap),['subtotal'=>'800.00','automatic_discount_total'=>'0.00','manual_discount_total'=>'50.00','discount_total'=>'50.00','grand_total'=>'750.00']);
     foreach (['review','allocations','seal'] as $target) { $bad=$snap; if ($target==='review') { $bad['review']['calculation']['final_payable_total']='674.99'; } elseif ($target==='allocations') { $bad['allocations']['segments'][0]['runs'][0]['cents']['net']='0'; } else { $bad['seal']['counts']['runs']++; } rejects(fn()=>Snapshots::reconcile($bad)); }
     eq($snap['seal']['counts']['lines'],1); eq($snap['seal']['counts']['segments'],2);
     Snapshots::reconcile(json_decode(Request::json($snap),true,512,JSON_THROW_ON_ERROR));
@@ -124,7 +150,7 @@ scenario('snapshot mapping, sealing and tamper detection',function () {
 scenario('B1 discounted remainder first, original cents and no repeated positions',function () {
     $s=new MemoryHybridStore; $n=Request::normalize(input()); $p=$s->transaction(fn()=>(new HybridInvoiceResolver($s,config()))->resolve(['id'=>'7'],$n),true);
     $a=$p['allocations']; $first=Units::consume($a,1,1,[]); $second=Units::consume($a,1,1,$first['next_cursors']); $third=Units::consume($a,1,1,$second['next_cursors']);
-    eq($first['net_credit'],'67.50'); eq($second['net_credit'],'67.50'); eq($third['net_credit'],'90.00'); eq($first['ranges'][0]['position_start'],0); eq($second['ranges'][0]['position_start'],1);
+    eq($first['net_credit'],'75.00'); eq($second['net_credit'],'75.00'); eq($third['net_credit'],'100.00'); eq($first['ranges'][0]['position_start'],0); eq($second['ranges'][0]['position_start'],1);
     eq(Units::consumeAfter($a,1,1,[$first['ranges'],$second['ranges']]),$third);
     rejects(fn()=>Units::consumeAfter($a,1,1,[$first['ranges'],$first['ranges']]),'overlap');
     rejects(fn()=>Units::consumeAfter($a,1,1,[$second['ranges']]),'skip');
@@ -191,7 +217,7 @@ scenario('separate preview, financial, schema and existing posting holds fail cl
         elseif ($change==='database') { $c['databases']=[]; } elseif ($change==='schema') { $s->ready=false; } elseif ($change==='control') { $s->control=[]; } else { $s->held=true; }
         $before=$s->state; rejects(fn()=>checkout($s,$c)->issue(['id'=>'7'],$in)); eq($s->state,$before);
     }
-    $s=new MemoryHybridStore; $c=config(); $c['sale_posting']=false; eq(checkout($s,$c)->review(['id'=>'7'],input())['calculation']['final_payable_total'],'675.00');
+    $s=new MemoryHybridStore; $c=config(); $c['sale_posting']=false; eq(checkout($s,$c)->review(['id'=>'7'],input())['calculation']['final_payable_total'],'750.00');
     $default=require dirname(__DIR__).'/config/hybrid-promotions.php'; rejects(fn()=>HybridFeatureGate::configured($default),'disabled'); eq($default['bindings'],[]);
     rejects(fn()=>HybridFeatureGate::require(config(),'dharma_sales_hybrid_stage2b_test',['id'=>'1','enabled'=>'1','version'=>'1'],true,'custody'));
 });

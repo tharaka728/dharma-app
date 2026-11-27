@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
-require __DIR__.'/hybrid-isolation.php';require __DIR__.'/hybrid-stage5-fixtures.php';
-use App\Services\{Reports,HybridDatabaseScope};
+require __DIR__.'/hybrid-isolation.php';require __DIR__.'/hybrid-stage5-fixtures.php';require __DIR__.'/hybrid-stage5-cohort.php';
+use App\Services\{Reports,HybridDatabaseScope,HybridInvoiceReader,HybridInvoiceSnapshots};
 $m=HybridIsolationHarness::manifest($argv[1]??'');$pdo=HybridIsolationHarness::connection($m);HybridDatabaseScope::verify($pdo,$m);$data=json_decode(file_get_contents($m['directory'].'/fixtures-stage5.json'),true,512,JSON_THROW_ON_ERROR);$f=$data['fixtures'];$rep=['id'=>$f['users']['rep2']];$service=hybridTestService($pdo,$m,$f);$checks=0;
 function reportSame5($a,$b):void{global$checks;$checks++;if($a!==$b)throw new RuntimeException('Reporting mismatch '.json_encode([$a,$b]));}
 // Fresh rep2 sales always use the current policy. Loaded rep1 artifacts are separate.
-// Missing markers retain the old historical assertions; unmarked provenance is a review gate.
-$storedPolicy=$data['invoice_discount_eligibility']??null;
-if($storedPolicy!==null && $storedPolicy!=='UNPROMOTED_LINES_V1')throw new RuntimeException('Unknown Stage 5 fixture policy; review provenance before testing.');
-$currentStoredFixture=$storedPolicy==='UNPROMOTED_LINES_V1';
+// A missing marker never selects the old historical assertions by itself; the verified sealed
+// calculation outcome resolves the cohort and unknown, mismatched or ambiguous provenance blocks.
+$snapshot=(new HybridInvoiceReader($pdo))->get($data['rep'],$data['invoice'])['snapshot'];
+$provenance=stage5ResolveCohort($data['invoice_discount_eligibility']??null,HybridInvoiceSnapshots::interpretation($snapshot));$expect=stage5CohortExpectations($provenance['cohort']);
 stage5Controls($pdo,$f['users']['admin'],1);
 try{
  $in=hybridInput($f,'glucose','8','rep2');$in['payment_type']='CREDIT';$in['amount_received']='100.00';foreach([['suwada','18',['choice'=>'35']],['replacement','24',['choice'=>'0']],['ordinary','3',['choice'=>'30']],['partial','5',['choice'=>'other','percent'=>'12.50']]]as[$product,$qty,$choice]){$line=['product_id'=>$f['products'][$product],'paid_quantity'=>$qty,'product_discount'=>$choice];if($product==='replacement')$line['replace_free_entitlement']=true;$in['hybrid']['lines'][]=$line;}$in['hybrid']['replacement_discount']=['choice'=>'25'];$in['review_hash']=$service->review($rep,$in)['review_hash'];$issued=$service->issue($rep,$in);$filter=['customer_id'=>$f['customers']['rep2']];$reports=new Reports($pdo);
@@ -16,6 +16,6 @@ try{
  reportSame5((string)$benefits['original_actual_free_units'],'2');$products=$reports->report($rep,'hybridproducts',$filter);reportSame5($products['total'],5);$sum=['product_discount_lkr'=>'0.00','replacement_discount_lkr'=>'0.00','invoice_discount_lkr'=>'0.00','original_payable_lkr'=>'0.00'];foreach($products['rows']as$row)foreach($sum as$key=>$value)$sum[$key]=App\Services\PromotionCalculator::sumMoney($value,$row[$key]);foreach($sum as$key=>$value)reportSame5($value,$benefits[$key]);
  $cohort=$filter+['product_id'=>$f['products']['glucose']];reportSame5($reports->report($rep,'hybridbenefits',$cohort)['rows'][0]['original_paid_lkr'],'5800.00');$selected=$reports->report($rep,'hybridproducts',$cohort);reportSame5($selected['total'],1);reportSame5($selected['rows'][0]['original_payable_lkr'],'750.00');$activity=$reports->report($rep,'hybridactivity',$filter)['rows'][0];reportSame5($activity['original_issued_payable_lkr'],'4787.50');reportSame5($activity['replacement_discount_lkr'],'600.00');
  $service->pay($rep,$issued['invoice_id'],['request_id'=>hybridUuid(),'amount_received'=>'1.00']);reportSame5($reports->report($rep,'outstanding',$filter)['rows'][0]['outstanding_lkr'],'4686.50');reportSame5($service->outstanding($rep,$f['customers']['rep2']),'4686.50');
- $returned=$reports->report($data['rep'],'hybridreturns',['customer_id'=>$f['customers']['rep1']]);$credit='0.00';foreach($returned['rows']as$row)$credit=App\Services\PromotionCalculator::sumMoney($credit,$row['credit_lkr']);reportSame5($credit,$currentStoredFixture?'4787.50':'4308.75');reportSame5($reports->report($data['rep'],'hybridvoids',['customer_id'=>$f['customers']['rep1']])['rows'][0]['credit_lkr'],$currentStoredFixture?'4537.50':'4083.75');$stock=$reports->report($data['rep'],'hybridstock',['customer_id'=>$f['customers']['rep1']]);reportSame5($stock['total'],11);foreach($stock['rows']as$row)reportSame5((string)$row['current_ledger_quantity'],(string)$row['current_available_quantity']);
- echo 'Stage 5 reporting: '.$checks.' checks passed; original components, product cohorts, payments, linked credits, residual void and deduplicated stock movements reconcile.'.PHP_EOL;
+ $returned=$reports->report($data['rep'],'hybridreturns',['customer_id'=>$f['customers']['rep1']]);$credit='0.00';foreach($returned['rows']as$row)$credit=App\Services\PromotionCalculator::sumMoney($credit,$row['credit_lkr']);reportSame5($credit,$expect['total_credits']);reportSame5($reports->report($data['rep'],'hybridvoids',['customer_id'=>$f['customers']['rep1']])['rows'][0]['credit_lkr'],$expect['residual_void_credit']);$stock=$reports->report($data['rep'],'hybridstock',['customer_id'=>$f['customers']['rep1']]);reportSame5($stock['total'],11);foreach($stock['rows']as$row)reportSame5((string)$row['current_ledger_quantity'],(string)$row['current_available_quantity']);
+ echo 'Stage 5 reporting: '.$checks.' checks passed; original components, product cohorts, payments, linked credits, residual void and deduplicated stock movements reconcile; cohort '.$provenance['cohort'].'.'.PHP_EOL;
 }finally{stage5Controls($pdo,$f['users']['admin'],0);}

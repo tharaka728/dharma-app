@@ -74,7 +74,7 @@ $mc(substr_count($src, "/database/fresh-install/contract-v2.json") === 4, 'insta
 $mc(strpos($src, '/database/fresh-install/contract-v1.json') === false, 'installer no longer loads contract-v1.json');
 $mc(strpos($src, "private const STEP='006a_customer_locations_compat_v1.sql';") !== false, 'STEP filename unchanged');
 $mc(strpos($src, "hash_file('sha256',APP_ROOT.'/database/fresh-install/contract-v2.json')") !== false, 'contract gate hashes the raw contract file');
-$mc(strpos($src, "hash_file('sha256',$file)") !== false && strpos($src, "hash('sha256',file_get_contents") === false, 'raw-byte hashing preserved, no content normalization in installer');
+$mc(strpos($src, 'hash_file(\'sha256\',$file)') !== false && strpos($src, 'hash(\'sha256\',file_get_contents') === false, 'raw-byte hashing preserved, no content normalization in installer');
 $mig = file_get_contents(APP_ROOT.'/app/Support/Migrator.php');
 $mc(strpos($mig, "hash_file('sha256', \$file)") !== false, 'Migrator raw-byte journal check preserved');
 

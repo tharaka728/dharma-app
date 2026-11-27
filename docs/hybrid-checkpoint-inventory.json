@@ -1,0 +1,690 @@
+{
+  "schema": "HYBRID_CHECKPOINT_SOURCE_V1",
+  "branch": "hybrid-promotion-v1-stage6a-integration",
+  "base_commit": "1f6385c35eb664251322b5176a8256fa6efe40ba",
+  "remote": "https://github.com/tharaka728/dharma-app.git",
+  "target_ref": "refs/heads/hybrid-promotion-v1-stage6a-integration",
+  "selected_file_count_including_self": 133,
+  "inventory_self_excluded": true,
+  "historical_inventories_preserved": true,
+  "reconciliation": "docs/hybrid-preview-reconciliation.md",
+  "files": [
+    {
+      "path": "app/Controllers/AuthController.php",
+      "sha256": "f6384b2cd741dd4e53c407b232935f1cc6b9b91243ba925b1f04881a4efed6cb",
+      "bytes": 3757
+    },
+    {
+      "path": "app/Controllers/CustomerController.php",
+      "sha256": "e1587edf8aa0f02576dcfecffb4bf410e301aa718d1ac9a7217e11750251f6fa",
+      "bytes": 4459
+    },
+    {
+      "path": "app/Controllers/HybridReturnController.php",
+      "sha256": "c99c36f864a04eaf15b6cbe3cf15602930f0c79ea88f5e2b37ab9cad74e04a04",
+      "bytes": 3152
+    },
+    {
+      "path": "app/Controllers/InvoiceController.php",
+      "sha256": "de0e25de68c668eb388dda655d642a5b7efdae2a7ce749319d2209843e835654",
+      "bytes": 9268
+    },
+    {
+      "path": "app/Controllers/InvoiceDocumentController.php",
+      "sha256": "f45fac3d9479fd60d2d1857686c7a79cca1ed41dc5e51f33dde16a13baf0a365",
+      "bytes": 3241
+    },
+    {
+      "path": "app/Controllers/ReportController.php",
+      "sha256": "d79e580b9f391f443241e28ce15855f38b7b1d2910a9b6908d7b630c9b33bc67",
+      "bytes": 2737
+    },
+    {
+      "path": "app/Services/HybridCheckoutStore.php",
+      "sha256": "814bc6b2b401b4c5694475cb3df067106a03f9178cfd7b176383002e0b0ffcba",
+      "bytes": 1083
+    },
+    {
+      "path": "app/Services/HybridCustody.php",
+      "sha256": "eff5b18b76ab4d6e3ca634e36b8f1a23208714b786e3d731ed88942f1953c996",
+      "bytes": 731
+    },
+    {
+      "path": "app/Services/HybridCustodyLedger.php",
+      "sha256": "6c95ff833ad8b343ff684510151ace58856d483caa28e46af0cec0ccb9715bcd",
+      "bytes": 4867
+    },
+    {
+      "path": "app/Services/HybridDatabaseScope.php",
+      "sha256": "994ebedf80111c43fa6827a9f842ad4a16e1d00ed9ed366e2b022ff01caa5b70",
+      "bytes": 1834
+    },
+    {
+      "path": "app/Services/HybridDocuments.php",
+      "sha256": "92ab842d5e64dd8bbdb7fefc049bb6c8ed61b39d6946aa4a6669155d4ae845a8",
+      "bytes": 7632
+    },
+    {
+      "path": "app/Services/HybridFeatureGate.php",
+      "sha256": "d68f175a6c67646ca13e0a3776c04c39d53220634c407b32d40e08effd23da8b",
+      "bytes": 1443
+    },
+    {
+      "path": "app/Services/HybridInvoiceBalances.php",
+      "sha256": "67da48f715aa8e02efbc523d5b298136d5f2096de02f21fcced5313844db48fc",
+      "bytes": 8158
+    },
+    {
+      "path": "app/Services/HybridInvoiceCheckout.php",
+      "sha256": "073e1e704d8b170ecd377dcda64eff1be66c12349e3b1d94e5acf0631a3ea38b",
+      "bytes": 4677
+    },
+    {
+      "path": "app/Services/HybridInvoiceContext.php",
+      "sha256": "36e08668e55e1a7a9036ddb7aa1dda94cec6c67e21af818e4bd5e9196cb93cec",
+      "bytes": 921
+    },
+    {
+      "path": "app/Services/HybridInvoiceReader.php",
+      "sha256": "35a2c64a5bc6c94467c675b09b4270fac0a0d5a244b9815838ab1f213c8e9c5f",
+      "bytes": 8334
+    },
+    {
+      "path": "app/Services/HybridInvoiceReconciliation.php",
+      "sha256": "92a16bb65c0989f92fde00bdc1749523fb5cf0a9920e1409d387722f014d9272",
+      "bytes": 4115
+    },
+    {
+      "path": "app/Services/HybridInvoiceRequest.php",
+      "sha256": "34fa9382d4f2af8ae7116d752bdc9e246f3272c3c4f1c10f03ba744313c73289",
+      "bytes": 4661
+    },
+    {
+      "path": "app/Services/HybridInvoiceResolver.php",
+      "sha256": "fe3198e50a2c901908d20079a8b8cef0645f965e2c6c281db8330e3d6932febd",
+      "bytes": 9780
+    },
+    {
+      "path": "app/Services/HybridInvoiceSnapshots.php",
+      "sha256": "b9af51c2ff71515ec941f8f835bb189a36f9055e4305d0127e699ffc76807bf2",
+      "bytes": 3505
+    },
+    {
+      "path": "app/Services/HybridPromotionPolicy.php",
+      "sha256": "fd87d10779df385ad45a79935fb0f99c64d76db1f5dcfc75fce0d41ff17e7e89",
+      "bytes": 22640
+    },
+    {
+      "path": "app/Services/HybridReturnPolicy.php",
+      "sha256": "ba7bf7b1c4520e9dbc2441c1a44e14202504fdce873e9f57d8b72cd0cf56c0be",
+      "bytes": 8313
+    },
+    {
+      "path": "app/Services/HybridReturnReconciliation.php",
+      "sha256": "d09f27513a6926ed47441f9cd79c4470f36e65adf53ddfed2d6aba24715079a8",
+      "bytes": 6091
+    },
+    {
+      "path": "app/Services/HybridReturnRequest.php",
+      "sha256": "48e3696d80343968737898852216871753a5fa2af2383a39dcb8bcf292a89065",
+      "bytes": 4271
+    },
+    {
+      "path": "app/Services/HybridReturns.php",
+      "sha256": "f49dd17113e72317b85b560453581f0a59093ba401189cd179dca531f008e74a",
+      "bytes": 34557
+    },
+    {
+      "path": "app/Services/HybridUnitAllocations.php",
+      "sha256": "7a60850e73f4e71f69a896973d687a9bc6edabd63deb7938de65a0820a1ccdc9",
+      "bytes": 8824
+    },
+    {
+      "path": "app/Services/InvoiceDocuments.php",
+      "sha256": "c767ccaa49dd90f0841f53c8d935520e24673d0485b31e0607a34c8d250c9048",
+      "bytes": 2870
+    },
+    {
+      "path": "app/Services/Invoices.php",
+      "sha256": "5ad3e3c40d54cd4825907a94d847d8a653934bce9cf8e52aec248de348d6ce1e",
+      "bytes": 64329
+    },
+    {
+      "path": "app/Services/OfflineSales.php",
+      "sha256": "bf8bfa03656545fdcc618fd259abbfbfc506cbbfe6a81a3c224c36ed3052fcbd",
+      "bytes": 25502
+    },
+    {
+      "path": "app/Services/PdoHybridCheckoutStore.php",
+      "sha256": "d046531867b9f98042a86fd8297501f31c7977b3dc3fbf178f659c5dc031485f",
+      "bytes": 12743
+    },
+    {
+      "path": "app/Services/PdoHybridInvoiceContext.php",
+      "sha256": "e45cdc064d3a646ffd6f4abf18e506313466814726a4ff12dd99080e9d183862",
+      "bytes": 6074
+    },
+    {
+      "path": "app/Services/PdoHybridInvoiceSnapshots.php",
+      "sha256": "4eda3a5d8c66be337a7b08691f81dc5bacf22231054a7d7e693de1630ec4b566",
+      "bytes": 7728
+    },
+    {
+      "path": "app/Services/Reports.php",
+      "sha256": "619b7a276d16be7bda8e685720e5d3e9cda4c2d8a6050ec65c798728952980d0",
+      "bytes": 52099
+    },
+    {
+      "path": "app/Support/HybridCalculationException.php",
+      "sha256": "b9d7f836670b8875eddfe762cffc9e57a1a9d84efc5f0d7e421e5d9919c977d5",
+      "bytes": 361
+    },
+    {
+      "path": "app/Support/HybridFreshInstaller.php",
+      "sha256": "f02aca274485f46e7c4c521ea91980b1ee6a52314b596d8799be831c9cc94df0",
+      "bytes": 8250
+    },
+    {
+      "path": "app/Support/HybridIsolatedRuntime.php",
+      "sha256": "5747df06276bea0e9df9d36a981ae79e97231feca93d5393c8286b38c129ead7",
+      "bytes": 4809
+    },
+    {
+      "path": "app/Support/HybridReportText.php",
+      "sha256": "730bda15ed5a59a70b8af8c1eecbcecf5eca4cec2b8eae53adb94d24f3e69715",
+      "bytes": 638
+    },
+    {
+      "path": "app/Support/HybridWorkerClient.php",
+      "sha256": "d362b064babba7ed53b1fc197337d6aeea12c5f99364b45efcc6d1160111fcde",
+      "bytes": 3479
+    },
+    {
+      "path": "app/Support/LocalPdf.php",
+      "sha256": "c98927aa12b265b7ac889daace46f816a98976439f3a1b7eb226f1e892477c10",
+      "bytes": 2264
+    },
+    {
+      "path": "app/Views/hybrid-document-links.php",
+      "sha256": "99d3e21dcdcccc1bdb2af12773fe4b7dc0dd462592de65569f558c9ccc3b148c",
+      "bytes": 884
+    },
+    {
+      "path": "app/Views/hybrid-document.php",
+      "sha256": "165f04297188120d46b0d4a9ce5ebcc6e06dae313b332d5602970e3fa4cb2ab6",
+      "bytes": 10626
+    },
+    {
+      "path": "app/Views/hybrid-invoice.php",
+      "sha256": "e526131de85e658f02269e579014de417d667577c75d8ea577e389013fcea6ea",
+      "bytes": 7721
+    },
+    {
+      "path": "app/Views/hybrid-returns.php",
+      "sha256": "f1b37115e920bd68360f4aab84eb74444542f68b8f00faa61db85a26eb481ddd",
+      "bytes": 5717
+    },
+    {
+      "path": "app/Views/invoices.php",
+      "sha256": "676e4e1f4545339fbfef5d61d6c5967db572efc28e5517d43ddc4b1245b2e017",
+      "bytes": 27780
+    },
+    {
+      "path": "app/Views/reports.php",
+      "sha256": "c75d22c4beae03ceb72223b490f855f6df0e0697e0d6c15b97045ade422df7aa",
+      "bytes": 10979
+    },
+    {
+      "path": "app/isolated-bootstrap.php",
+      "sha256": "3519b9ebca60b00366525362f602326ef9426b9fdc903bf565a8be8961ffd65d",
+      "bytes": 492
+    },
+    {
+      "path": "bin/hybrid-fresh-install.php",
+      "sha256": "b8b0c00d4f2b5e0891293c4b238dcade996cfef5ef4276a441eb372386d7e634",
+      "bytes": 1047
+    },
+    {
+      "path": "bin/hybrid-worker.php",
+      "sha256": "caf6b622a5c734a462aa99850f183fd9d1e2e25569cd80c38917e28558d47cb0",
+      "bytes": 3995
+    },
+    {
+      "path": "config/hybrid-promotions.php",
+      "sha256": "c300b91f1ea2ee73d85f4c18e810bb740932d9643ef2d4feb10caebc36778730",
+      "bytes": 517
+    },
+    {
+      "path": "database/fresh-install/006a_customer_locations_compat_v1.sql",
+      "sha256": "1ec24563527db3162cf7630390a911389151cc765039a59df2d4880f2fd599c0",
+      "bytes": 129
+    },
+    {
+      "path": "database/fresh-install/contract-v1.json",
+      "sha256": "a9e8f370fc2719d6e4476467d9e218e6edead003f96ce5399927bb959c9eb251",
+      "bytes": 3970
+    },
+    {
+      "path": "database/migrations/025_hybrid_invoice_snapshots.sql",
+      "sha256": "662054eb3025354eff03c9da928e3b618fa433a4ca69a8b6632342924d45f2c1",
+      "bytes": 13092
+    },
+    {
+      "path": "database/migrations/026_hybrid_linked_returns.sql",
+      "sha256": "912b831ea2d3674bee50ef7b6dfd3852683fec2b00c921c5f419f5457a137d5f",
+      "bytes": 9187
+    },
+    {
+      "path": "database/migrations/027_hybrid_custody_dispositions.sql",
+      "sha256": "1e00ad4388f60c4b130d560d6cbcebb83489e8d43c9033bfc4d6e54faca24fac",
+      "bytes": 5116
+    },
+    {
+      "path": "docs/hybrid-preview-reconciliation.md",
+      "sha256": "73753677fe8eaa04794f6c6568394e8afbb22ce78f7f44ded1b21ab6e8e1482c",
+      "bytes": 10451
+    },
+    {
+      "path": "docs/hybrid-promotion-v1.md",
+      "sha256": "16ae58c7ae6baf99bbf704eea66698ce23f14fd1be51d8b7b3d7cce5f2c2a5a4",
+      "bytes": 49843
+    },
+    {
+      "path": "docs/hybrid-stage1-engine.md",
+      "sha256": "10b6b9e2c34517d1e1e2b4875c60eb76bd20a4c5c81231f33fac122e3bc9c651",
+      "bytes": 9658
+    },
+    {
+      "path": "docs/hybrid-stage2b-foundations.md",
+      "sha256": "13ecd1cddbb06adbc29a53f43a2ac13ab1282ef45cf89bdb0a46643f9ac79341",
+      "bytes": 14451
+    },
+    {
+      "path": "docs/hybrid-stage2c-integration.md",
+      "sha256": "4f01aed9a9594046ee828c2af14a070ad707036852c53bf03ec0f72f4038717d",
+      "bytes": 17978
+    },
+    {
+      "path": "docs/hybrid-stage3-ui.md",
+      "sha256": "88eb8dac9ca60f7e64f53916c45da34462d798a7ef0dfb0f4ff8a55c8a8e38b6",
+      "bytes": 15110
+    },
+    {
+      "path": "docs/hybrid-stage4-returns.md",
+      "sha256": "94f4303add6db196c7b11eb9a89c0133672e1707fdaa2201ab5735c091215428",
+      "bytes": 17075
+    },
+    {
+      "path": "docs/hybrid-stage5-readiness.md",
+      "sha256": "059bf69f33c578e9a04df2261800a9060a013dd381faf0042501aadcce13037e",
+      "bytes": 24540
+    },
+    {
+      "path": "docs/hybrid-stage6a-integration.md",
+      "sha256": "601045ef66d34d5e0d0014d187a038bb5dd557e519f6af1503a229bcad30427c",
+      "bytes": 15987
+    },
+    {
+      "path": "docs/hybrid-stage6a-inventory.json",
+      "sha256": "c0c17f3c4e8b32d75e96191d6cfedc56e496875220729402ff6c07aadbcf5783",
+      "bytes": 41692
+    },
+    {
+      "path": "docs/hybrid-stage6b-inventory.json",
+      "sha256": "4ce4f2a1001a62e99cac39bb253f338a4ab629595986f4f7eed6260e8c1ff3aa",
+      "bytes": 3495
+    },
+    {
+      "path": "docs/hybrid-stage6b-readiness.md",
+      "sha256": "642855d7339b231452ee1b6f0a9a07f9328106b8db9b5b4d49995becf0766b35",
+      "bytes": 15645
+    },
+    {
+      "path": "docs/hybrid-stage6c-acceptance.md",
+      "sha256": "7ee63a02913a8b06aaec5f3411984905a640c7334b01bdb6b9d3be86e7cb06b5",
+      "bytes": 8533
+    },
+    {
+      "path": "docs/hybrid-stage6c-inventory.json",
+      "sha256": "d4e94687919ef66e1c5beac23aa0e236a9a977b0848a2a2c75a7e23451e3edc6",
+      "bytes": 9038
+    },
+    {
+      "path": "docs/hybrid-stage6c-readiness.md",
+      "sha256": "de56abe942e256ddf55a46ff2e66d6e9fef67d6c600e72c3b2e091fdcac6cdbf",
+      "bytes": 19542
+    },
+    {
+      "path": "docs/hybrid-stage6c-runtime.md",
+      "sha256": "979fef5b7a44ac9fe4730dede168794277a83100433040a2cc266b8c24f118f7",
+      "bytes": 6817
+    },
+    {
+      "path": "public/assets/css/hybrid-invoice.css",
+      "sha256": "8dcd6cba176bbb17eea9fe17b486b0baf6c54fb0059e769767574079ff19989f",
+      "bytes": 1606
+    },
+    {
+      "path": "public/assets/css/hybrid-returns.css",
+      "sha256": "3f797c6683d661f1145f93d898f6d68eb8b2d8f76206d89eb11a338ffaa422fa",
+      "bytes": 1057
+    },
+    {
+      "path": "public/assets/i18n/hybrid-si-LK.json",
+      "sha256": "ad14d315eb2d3ef331891b6678c5592f9c995ca9bb25f32f9b9dbd1646414470",
+      "bytes": 20792
+    },
+    {
+      "path": "public/assets/js/hybrid-invoice.js",
+      "sha256": "689bfaaeb2eb63f91865b96ddc5a485f026026af034f036bebac9f02669985da",
+      "bytes": 20964
+    },
+    {
+      "path": "public/assets/js/hybrid-localization.js",
+      "sha256": "0eef72c555b63bbd78ae8c6304d4470ea70d9c2179b62f1e8b21df66fbef0951",
+      "bytes": 2424
+    },
+    {
+      "path": "public/assets/js/hybrid-returns.js",
+      "sha256": "0d74b821ccb465b15240da1d6fb5dd6cf49606c443acb155a36f98d711e75666",
+      "bytes": 9449
+    },
+    {
+      "path": "public/hybrid-isolated.php",
+      "sha256": "5b1cc126c6b53e78183fa991db2de9c5fe8854950e78f152391e0446b8ee4f37",
+      "bytes": 4208
+    },
+    {
+      "path": "tests/hybrid-bootstrap-isolated.php",
+      "sha256": "9c3d1e321afd4590a3fdcc293d9fb58c2c99772b3b16205fc0a20c71dd05d824",
+      "bytes": 2611
+    },
+    {
+      "path": "tests/hybrid-database.php",
+      "sha256": "b21299097d059b13549e2dcdd66c2570c579fbccb15c9503f8401f3e9c89f2f0",
+      "bytes": 25100
+    },
+    {
+      "path": "tests/hybrid-fixtures.php",
+      "sha256": "829d078173631d2e8cd95fab63fb5458825833fb19a8f747931fce5df77e67cd",
+      "bytes": 6546
+    },
+    {
+      "path": "tests/hybrid-invoice-foundations.php",
+      "sha256": "7b321e005f1902462ff9a0600ec0f21160eee985661b9d403aa5066317ecd0b0",
+      "bytes": 31543
+    },
+    {
+      "path": "tests/hybrid-isolation-evidence.php",
+      "sha256": "98455d26da9924ce5cfd0a8bc6acbbb334909f2e42d28feda610381f9f8034cf",
+      "bytes": 1004
+    },
+    {
+      "path": "tests/hybrid-isolation.php",
+      "sha256": "8911f9fcc5be61bc211f60f7842e61e61a30a9c101942185f08c770e4f3eeadd",
+      "bytes": 4263
+    },
+    {
+      "path": "tests/hybrid-legacy-regression.php",
+      "sha256": "8a5099d0d5079ee0faebcb82aa90db63290796a996f498e5830fb9f1fc4ae6db",
+      "bytes": 3869
+    },
+    {
+      "path": "tests/hybrid-pdf-render.ps1",
+      "sha256": "070cdaf81c5ee33d9cab99bf847f1cf6cdf31f54a4bfcdad7aa122c7e03eb8bc",
+      "bytes": 2644
+    },
+    {
+      "path": "tests/hybrid-post-worker.php",
+      "sha256": "ead60fdf9319c4293108667c977c1ea3a659f93d113ebe900d915d39787960b4",
+      "bytes": 1028
+    },
+    {
+      "path": "tests/hybrid-promotion-policy.php",
+      "sha256": "f1962840231faab2a24d2c109078d098fc716865ab156faac7731b176e30e4e0",
+      "bytes": 25422
+    },
+    {
+      "path": "tests/hybrid-return-browser.js",
+      "sha256": "f9e12d48582683cd838de2358746f5d6a18fa96868bef10a0c581c907cad2574",
+      "bytes": 9903
+    },
+    {
+      "path": "tests/hybrid-return-browser.php",
+      "sha256": "9d37385597b9a97d9baa62f49f4adc7b0a481b359999d1c00163df160c210661",
+      "bytes": 3291
+    },
+    {
+      "path": "tests/hybrid-return-domain.php",
+      "sha256": "05defae608e562ed1ee0fec4a2d163dcd6efa56dabeb0de8ad7a076d06d7fe2f",
+      "bytes": 6854
+    },
+    {
+      "path": "tests/hybrid-return-worker.php",
+      "sha256": "32c1760c4fe021cbbf495b7a2f1470878fdaad392ad3e85eb756d25e88baf616",
+      "bytes": 948
+    },
+    {
+      "path": "tests/hybrid-returns-database.php",
+      "sha256": "db24a3a3ed88620b653ad10e51e05e0d90d7c7cc60bdab7f744c66c623ffa62c",
+      "bytes": 16968
+    },
+    {
+      "path": "tests/hybrid-stage4-close.php",
+      "sha256": "43a55fb339d1b5196ebfca206ce33c5c48d7447d4a8db88c5b5e913327a42f3a",
+      "bytes": 2405
+    },
+    {
+      "path": "tests/hybrid-stage5-browser.js",
+      "sha256": "4b68e7847424e5cc112aa263c4221e4bb86c9a128436acd0aa4b5d1049aacd9a",
+      "bytes": 8517
+    },
+    {
+      "path": "tests/hybrid-stage5-browser.php",
+      "sha256": "93af141d708330b88b2a0a1f294ad07fa2625563617ac488cd0ad38766e12feb",
+      "bytes": 2055
+    },
+    {
+      "path": "tests/hybrid-stage5-documents.php",
+      "sha256": "e807ac0990b1e8a01c853150dd163fe37ce1186a837d3700acb0fd7316782cb1",
+      "bytes": 4162
+    },
+    {
+      "path": "tests/hybrid-stage5-fixtures.php",
+      "sha256": "8f4dec9a774e609e119a98858bc8d056c3bec87ce83de15e1e33ef47c28571ad",
+      "bytes": 4319
+    },
+    {
+      "path": "tests/hybrid-stage5-pdf.php",
+      "sha256": "1bb85006de222c4e5b463302b1ef367c98834ce70832ec48644b8169276b2b8a",
+      "bytes": 1025
+    },
+    {
+      "path": "tests/hybrid-stage5-reporting.php",
+      "sha256": "25ab5c66e6638e8ee9b544ca4ce2b431eadbd49ba5b2dea76b6bdc27ba0db35e",
+      "bytes": 3982
+    },
+    {
+      "path": "tests/hybrid-stage6a-browser.js",
+      "sha256": "887b09ed8d207f5192dd254ac34084a3e68a04aee90d108b7e3cfd6ac578901e",
+      "bytes": 8946
+    },
+    {
+      "path": "tests/hybrid-stage6a-browser.php",
+      "sha256": "d0132bfcbe3e5c978fb1b3ecbd0ef32dfc0d98226ae5176dce1c76a452c0eff0",
+      "bytes": 2093
+    },
+    {
+      "path": "tests/hybrid-stage6a-fixture-restore.php",
+      "sha256": "9854a40ef328cd4e2a7de89443859dcc02bae21af0dbd80efdd9e9fbe2740dc3",
+      "bytes": 4170
+    },
+    {
+      "path": "tests/hybrid-stage6a-http.js",
+      "sha256": "f2c1fc8d99f902f9ae20cb1021dc8f315658174ea7b83e434199dd28f6bc3b86",
+      "bytes": 9093
+    },
+    {
+      "path": "tests/hybrid-stage6a-http.php",
+      "sha256": "47aee1051cc4e90c9724d209ae02db1ecde0ac70edfe139afa3e1efeed56c4f7",
+      "bytes": 2985
+    },
+    {
+      "path": "tests/hybrid-stage6a-readers.php",
+      "sha256": "f5c2ddcd396496ea13bf5c070b82ceb659afd42b1cc95339a04e56f50a45383b",
+      "bytes": 3496
+    },
+    {
+      "path": "tests/hybrid-stage6b-foundation.php",
+      "sha256": "5786b76b8361f12b6169764fb4a7252f40f603f6c418ae2c9107049d47560815",
+      "bytes": 1853
+    },
+    {
+      "path": "tests/hybrid-stage6b-historical.php",
+      "sha256": "56991d80c67c4a5d0dd31b6d243cda3f60306d53f032171ade2f4057c7489fc3",
+      "bytes": 4676
+    },
+    {
+      "path": "tests/hybrid-stage6b-http-router.php",
+      "sha256": "9ecb22d39441f9e477bc943206ef6387d73075232b2d02d785113857612c6596",
+      "bytes": 4826
+    },
+    {
+      "path": "tests/hybrid-stage6b-http-worker.php",
+      "sha256": "a7093c4dacd803123e4dafd419d00875d59e69a1121cced71338e8e74fb95db9",
+      "bytes": 3164
+    },
+    {
+      "path": "tests/hybrid-stage6b-http.js",
+      "sha256": "761ecff12168a078d277658da90bade6c3aab25dfa77c70472dd608d2dea0479",
+      "bytes": 5950
+    },
+    {
+      "path": "tests/hybrid-stage6b-http.php",
+      "sha256": "5d47d4bb26b62b1219c096afc0632d744d2d09dca694c110fea71d77160a877c",
+      "bytes": 4700
+    },
+    {
+      "path": "tests/hybrid-stage6b-install-contract.json",
+      "sha256": "a9e8f370fc2719d6e4476467d9e218e6edead003f96ce5399927bb959c9eb251",
+      "bytes": 3970
+    },
+    {
+      "path": "tests/hybrid-stage6b-installer.php",
+      "sha256": "54fa4cb0d90f5ac01e4549b963cf04fbf571a12bec28414517f896fe86291956",
+      "bytes": 7420
+    },
+    {
+      "path": "tests/hybrid-stage6b-migrations.php",
+      "sha256": "fd1585cf4dab7a8d0afd6c7e9038518eb454aa25082d1a5d46defdd52b51778c",
+      "bytes": 5454
+    },
+    {
+      "path": "tests/hybrid-stage6c-http.js",
+      "sha256": "ed0499bd525ca889658c3a994f9ab0c1011526152d7ead356a4b0dc22a9e1a3b",
+      "bytes": 7662
+    },
+    {
+      "path": "tests/hybrid-stage6c-http.php",
+      "sha256": "2f1dbcdc0d3af3c975fd435fc6b99641ea8a1e367f41382a8af71f99a6e81f7e",
+      "bytes": 6106
+    },
+    {
+      "path": "tests/hybrid-stage6c-locale-browser.js",
+      "sha256": "5b3621a14d2221838842b3053fbe51c1cf846e7f238dbcd8298daac8d17c2647",
+      "bytes": 10888
+    },
+    {
+      "path": "tests/hybrid-stage6c-locale-browser.php",
+      "sha256": "36a552063e179c5c83c10a5d4407479c1e977f82d237bf78a99e72b39b14b746",
+      "bytes": 2825
+    },
+    {
+      "path": "tests/hybrid-stage6c-locale-inventory.js",
+      "sha256": "6b0ffc4d2837aa611d14081a70a2551f644e7202fe8cd8f5357835318aca1b69",
+      "bytes": 2099
+    },
+    {
+      "path": "tests/hybrid-stage6c-migrations.php",
+      "sha256": "8a3d3fd9f737ddf67739c1d46d2a7692763083cb6059f49647837b58151e3d08",
+      "bytes": 5657
+    },
+    {
+      "path": "tests/hybrid-stage6c-report-locale.php",
+      "sha256": "9ef2217c67f35431ae991579b891c2857c26fc9227c7df49fbce411e2f10ed1f",
+      "bytes": 2362
+    },
+    {
+      "path": "tests/hybrid-stage6c-router.php",
+      "sha256": "f317d6c87a9225bc7021ec43dc32e694ad31058b22a2a94fe50a91f53749cca4",
+      "bytes": 587
+    },
+    {
+      "path": "tests/hybrid-stage6c-runtime-safety.php",
+      "sha256": "5ddd61be1e94251d304188d3b765caf80fa33f1abdf1a162e9214291f1f92949",
+      "bytes": 2484
+    },
+    {
+      "path": "tests/hybrid-stop-isolated.php",
+      "sha256": "2927934815353f8baa897139f294c5ee06a26f50a0a60ff4a5c44c907d5f6eec",
+      "bytes": 319
+    },
+    {
+      "path": "tests/hybrid-ui-bridge.php",
+      "sha256": "8edcb478c8c31a73bd46cf15e42060cc85e0b15c924f635bd437e956c6a686fa",
+      "bytes": 6327
+    },
+    {
+      "path": "tests/hybrid-ui-browser.js",
+      "sha256": "28404bb404c98cf8496e9eb5a25c181c59740ada1d3618103b5fd553920c4bab",
+      "bytes": 16391
+    },
+    {
+      "path": "tests/hybrid-ui-browser.php",
+      "sha256": "d87a8f7948ea75511918e302b03006f657247aca4cb2e36fde2c887dc49d86d8",
+      "bytes": 2762
+    },
+    {
+      "path": "tests/hybrid-ui-controllers.php",
+      "sha256": "0619c13e8261a336bb2b89fafa923deec190a27b15be8c4bc434d2f2392026cd",
+      "bytes": 5928
+    },
+    {
+      "path": "tests/hybrid-ui-domain.js",
+      "sha256": "d6d94cb442220876af7116ad2b75db8e6938b625de1b1b72537150deb748daa5",
+      "bytes": 3038
+    },
+    {
+      "path": "tests/hybrid-ui-prepare.php",
+      "sha256": "a8e2862926b2f4b6454596a30b20d4084e966b2f083697877ef72e5611e8fb56",
+      "bytes": 509
+    },
+    {
+      "path": "tests/hybrid-ui-preview.ps1",
+      "sha256": "0b82ae09c318609128c42166c8db5ecba76abf45d60e38d5430eb56ec9aa446f",
+      "bytes": 5380
+    },
+    {
+      "path": "tests/hybrid-ui-router.php",
+      "sha256": "2d4b521d834660904988f70d9fc96d42b0d82eaabddb7b7b51846f8154d1055e",
+      "bytes": 5197
+    }
+  ],
+  "checkpoint_status": "AUTHORIZED_REVIEWED_PRECOMMIT",
+  "remote_authorization": {
+    "operation": "GitHub authenticated-user/repository API verification and feature-branch-only push dry run",
+    "http_status": 200,
+    "authenticated_account": "tharaka728",
+    "push_permission": true,
+    "dry_run_passed": true,
+    "remote_changed_by_dry_run": false
+  },
+  "previous_remote_authorization": {
+    "operation": "feature-branch-only dry run",
+    "http_status": 403,
+    "authenticated_account": "Hypeinsight",
+    "staged": false,
+    "committed": false,
+    "remote_changed": false
+  }
+}

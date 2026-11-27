@@ -7,6 +7,8 @@ final class InvoiceController
     public function __construct(private Invoices $invoices){}
     public static function route(string $path):?array
     {
+        if($r=HybridReturnController::route($path))return $r;
+        if($path==='/api/v1/rep/invoices/hybrid/eligibility')return ['action'=>'hybrid-eligibility','id'=>null,'api'=>true,'role'=>'SALES_REP','methods'=>['POST']];
         foreach(['/admin/invoices'=>['ADMIN',false],'/rep/invoices'=>['SALES_REP',false],'/api/v1/admin/invoices'=>['ADMIN',true],'/api/v1/rep/invoices'=>['SALES_REP',true]] as $base=>[$role,$api]){
             $action=null;$id=null;$methods=['GET'];
             if($path===$base){$action='index';if($api)$methods[]='POST';}
@@ -22,11 +24,17 @@ final class InvoiceController
     }
     public function handle(array $route,array $user):void
     {
+        if(strpos($route['action'],'hybrid-return-')===0){(new HybridReturnController($this->invoices->hybridReturns()))->handle($route,$user);return;}
+        if($route['action']==='create'&&$_SERVER['REQUEST_METHOD']==='GET'&&$route['role']==='SALES_REP'&&!\App\Services\BenefitPolicy::pilotMember($user)){if($route['api']){$this->unavailableCheckout($user);}else{$this->originalHybridForm($user);}return;}
+        if($route['action']==='hybrid-eligibility'){$this->hybridHandle($route,$user);return;}
         $action=$route['action'];$id=$route['id'];$api=$route['api'];$admin=$route['role']==='ADMIN';$base=$admin?'/admin/invoices':'/rep/invoices';$returnTestEnabled=$this->invoices->historicalReturnAllowed($user);$returnReadOnly=!$returnTestEnabled&&!$admin&&$this->invoices->historicalReturnPreviewAllowed($user);$input=[];$errors=[];$review=null;$record=null;$listing=null;$notice=$_SESSION['invoice_notice']??'';unset($_SESSION['invoice_notice']);
         try{
             $this->invoices->actor($user,$admin);
             if($_SERVER['REQUEST_METHOD']==='POST'){
                 $input=$_POST;if($api&&stripos($_SERVER['CONTENT_TYPE']??'','application/json')===0){try{$body=json_decode(file_get_contents('php://input'),false,32,JSON_THROW_ON_ERROR);}catch(\JsonException $e){throw new InventoryException(['body'=>'Invalid JSON.'],400);}if(!$body instanceof \stdClass)throw new InventoryException(['body'=>'Send a JSON object.'],400);$input=(array)$body;}
+                if(!$api&&!$admin&&!array_key_exists('historical_return',$input)&&!\App\Services\BenefitPolicy::pilotMember($user)&&in_array($action,['create','preview','index'],true)){$this->unavailableCheckout($user);return;}
+                // New online sales require Hybrid; pilot and signed OfflineSales contracts remain separate.
+                if(!$admin&&!array_key_exists('historical_return',$input)&&!\App\Services\BenefitPolicy::pilotMember($user)&&in_array($action,['create','preview','index'],true)&&(((array)($input['hybrid']??[]))['policy_version']??null)!=='HYBRID_PROMOTION_V1'){Http::json(['errors'=>['hybrid'=>'New online sales require Hybrid. No legacy fallback is permitted.']],409);return;}
                 if(array_key_exists('historical_return',$input)&&!$returnTestEnabled)throw new InventoryException(['return'=>'Historical return checkout is not yet available.'],409);
                 $token=$input['csrf_token']??($_SERVER['HTTP_X_CSRF_TOKEN']??null);if(!is_string($token)||!Csrf::valid($token,$_SESSION['csrf_token']??null))throw new InventoryException(['csrf'=>'Refresh the form and try again.'],403);
                 if($action==='customer-settings'){$result=$this->invoices->customerSettings($user,$input);if($api){Http::json($result);return;}$_SESSION['customer_notice']='Credit permission and representative assignment saved.';AuthController::redirect('/admin/customers/'.$result['customer_id']);return;}
@@ -45,5 +53,49 @@ final class InvoiceController
         $benefitModes=$this->invoices->benefitModesEnabled()&&\App\Services\BenefitPolicy::pilotMember($user);$benefitRequired=$benefitModes;
         $source=is_string($input['stock_source']??null)?$input['stock_source']:null;$selected=$action==='create'&&($_POST['catalogue_fallback']??'')!=='1'?array_column(is_array($input['items']??null)?$input['items']:[],'product_id'):null;$options=$this->invoices->options($user,$source,$action==='index',$selected);
         require APP_ROOT.'/app/Views/invoices.php';
+    }
+    /** Same original form; availability is still a guarded, authoritative server decision. */
+    private function originalHybridForm(array $user):void
+    {
+        header('Cache-Control: private, no-store');
+        try{
+            $user=$this->invoices->actor($user);
+            if($user['role']!=='SALES_REP')throw new InventoryException(['access'=>'Sales Representative access is required.'],403);
+            $hybridAvailability=$this->invoices->hybridAvailability($user);
+            if(!$hybridAvailability['enabled']){$this->unavailableCheckout($user);return;}
+            $hybridOnline=true;$action='create';$admin=false;$base='/rep/invoices';
+            $input=['payment_type'=>'CASH','amount_received'=>'0.00'];$errors=[];$notice='';$review=null;
+            $benefitModes=$benefitRequired=$returnTestEnabled=$returnReadOnly=false;
+            $options=$this->invoices->options($user,(string)$user['id']);
+            require APP_ROOT.'/app/Views/invoices.php';
+        }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}
+    }
+    /** Disabled/unavailable checkout and unsupported HTML posting never fall back to legacy. */
+    private function unavailableCheckout(array $user):void
+    {
+        header('Cache-Control: private, no-store');
+        try{
+            $this->invoices->actor($user);
+            throw new InventoryException(['hybrid'=>'New online checkout is unavailable for this request. Hybrid requires the approved original-form online runtime. No legacy fallback is permitted.'],409);
+        }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}
+    }
+    private function hybridHandle(array $route,array $user):void
+    {
+        header('Cache-Control: private, no-store');
+        try{
+            if(!in_array($_SERVER['REQUEST_METHOD'],$route['methods'],true))throw new InventoryException(['method'=>'Method not allowed.'],405);
+            $user=$this->invoices->actor($user);
+            if($user['role']!=='SALES_REP')throw new InventoryException(['access'=>'Sales Representative access is required.'],403);
+            $hybridAvailability=$this->invoices->hybridAvailability($user);
+            if(!$hybridAvailability['enabled'])throw new InventoryException(['hybrid'=>'Hybrid checkout is disabled.'],409);
+            if($route['action']==='hybrid-eligibility'){
+                $input=$_POST;
+                if(stripos($_SERVER['CONTENT_TYPE']??'','application/json')===0){try{$body=json_decode(file_get_contents('php://input'),false,32,JSON_THROW_ON_ERROR);}catch(\JsonException $e){throw new InventoryException(['body'=>'Invalid JSON.'],400);}if(!$body instanceof \stdClass)throw new InventoryException(['body'=>'Send a JSON object.'],400);$input=(array)$body;}
+                $token=$input['csrf_token']??($_SERVER['HTTP_X_CSRF_TOKEN']??null);
+                if(!is_string($token)||!Csrf::valid($token,$_SESSION['csrf_token']??null))throw new InventoryException(['csrf'=>'Refresh the form and try again.'],403);
+                Http::json($this->invoices->hybridEligibility($user,$input));return;
+            }
+            throw new InventoryException(['hybrid'=>'Unsupported Hybrid action.'],404);
+        }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}
     }
 }

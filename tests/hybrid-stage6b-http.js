@@ -1,0 +1,36 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const input=JSON.parse(fs.readFileSync(0,'utf8')),f=input.fixtures;let checks=0;
+function check(ok,label){assert.ok(ok,label);checks++;}
+const policy=value=>fs.writeFileSync(input.policy,JSON.stringify(value));
+async function client(){let cookie='',csrf='';return {async call(path,payload,token){const r=await fetch(input.base+path,{method:payload?'POST':'GET',headers:{Cookie:cookie,...(payload?{'Content-Type':'application/json','X-CSRF-Token':token??csrf}:{})},...(payload?{body:JSON.stringify(payload)}:{})});const cookies=r.headers.getSetCookie();if(cookies.length)cookie=cookies.map(s=>s.split(';')[0]).join('; ');const body=await r.json();if(body.csrf)csrf=body.csrf;return {status:r.status,body};},async login(actor){await this.call('/session');const r=await this.call('/login',input.logins[actor]);check(r.status===200,'real login '+actor);}};}
+function sale(product='glucose',qty='8',discount={choice:'25'}){return {request_id:crypto.randomUUID(),customer_id:f.customers.rep1,payment_type:'CASH',amount_received:'10000.00',hybrid:{policy_version:'HYBRID_PROMOTION_V1',lines:[{product_id:f.products[product],paid_quantity:qty,product_discount:discount}],invoice_discount_percent:'10'}};}
+const preview='/api/v1/rep/invoices/preview',issue='/api/v1/rep/invoices',ret='/api/v1/rep/invoices/hybrid/returns/';
+(async()=>{
+ const rep=await client(),other=await client(),anon=await client();await anon.call('/session');check((await anon.call(preview,sale())).status===401,'anonymous denied');await rep.login('rep1');await other.login('rep2');
+ check((await rep.call(preview,sale(),'invalid')).status===403,'CSRF denied');
+ check((await rep.call(preview,{...sale(),csrf_token:'invalid'})).status===403,'invalid body CSRF is not replaced by valid header');
+ for(const [product,qty,choice,qual,rem,free,pd]of [['glucose','6',{choice:'25'},'6','0','1','0.00'],['glucose','8',{choice:'25'},'6','2','1','50.00'],['glucose','12',{choice:'25'},'12','0','2','0.00'],['suwada','12',{choice:'25'},'12','0','1','0.00'],['glucose','8',{choice:'30'},'6','2','1','60.00'],['glucose','8',{choice:'35'},'6','2','1','70.00'],['glucose','8',{choice:'other',percent:'12.50'},'6','2','1','25.00']]){
+  const r=await rep.call(preview,sale(product,qty,choice));check(r.status===200,'preview '+product+' '+qty+' '+JSON.stringify(choice));const l=r.body.calculation.lines[0];check(l.qualifying_paid_quantity===qual&&l.discount_eligible_quantity===rem&&l.actual_free_quantity===free&&l.product_discount_amount===pd&&l.invoice_discount_amount==='0.00','authoritative quantities/components');
+ }
+ let inputSale=sale(),review=await rep.call(preview,inputSale);inputSale.review_hash=review.body.review_hash;
+ check((await rep.call(issue,inputSale)).status===403,'default posting hold enforced');policy({hold:false});
+ review=await rep.call(preview,inputSale);inputSale.review_hash=review.body.review_hash;
+ const stale=structuredClone(inputSale);stale.hybrid.lines[0].paid_quantity='9';check((await rep.call(issue,stale)).status===409,'changed review rejected');
+ check((await other.call(preview,sale())).status===403,'different representative customer scope');
+ policy({hold:false,fault:'payment'});const failed=await rep.call(issue,inputSale);check(failed.status===409,'failure after stock/payment rolled back');policy({hold:false});
+ const issued=await rep.call(issue,inputSale);check(issued.status===201,'same command succeeds after rolled-back fault');check((await rep.call(issue,inputSale)).body.replayed===true,'exact replay');
+ const changed=structuredClone(inputSale);changed.amount_received='9999.00';check((await rep.call(issue,changed)).status===409,'changed accepted command rejected');
+ policy({hold:true,disabled:true});check((await rep.call(issue,inputSale)).body.replayed===true,'accepted replay survives gate changes');check((await rep.call(preview,sale())).status===409,'disabled new preview denied');policy({hold:false});
+ const excluded=sale('ordinary','1',{choice:'other',percent:'50'});excluded.hybrid.invoice_discount_percent='1';const er=await rep.call(preview,excluded);check(er.status===200&&er.body.calculation.invoice_discount_amount==='0.00'&&er.body.calculation.final_payable_total==='50.00','product-discounted line excludes invoice discount');
+ // Replacement stock is untouched: 24 paid at 100, R=1800 at 75%, I=0 > cap 1200.
+ const cap=sale('replacement','24',{choice:'0'});cap.hybrid.lines[0].replace_free_entitlement=true;cap.hybrid.replacement_discount={choice:'custom',percent:'75'};const cr=await rep.call(preview,cap);check(cr.status===409&&Object.values(cr.body.errors||{}).join(' ').includes('Combined monetary discount'),'strict combined monetary cap');
+ const mixed=sale();mixed.hybrid.lines.push({product_id:f.products.ordinary,paid_quantity:'5',product_discount:{choice:'0'}});const mr=await rep.call(preview,mixed);check(mr.status===200&&mr.body.calculation.invoice_discount_base==='500.00'&&mr.body.calculation.invoice_discount_amount==='50.00'&&mr.body.calculation.final_payable_total==='1200.00'&&mr.body.calculation.lines[0].invoice_discount_amount==='0.00'&&mr.body.calculation.lines[0].payable_amount==='750.00'&&mr.body.calculation.lines[1].payable_amount==='450.00','owner-verified mixed basket');
+ const replacement=sale('replacement','24',{choice:'0'});replacement.hybrid.lines[0].replace_free_entitlement=true;replacement.hybrid.replacement_discount={choice:'25'};const rr=await rep.call(preview,replacement);check(rr.status===200&&rr.body.calculation.replacement_discount_total==='600.00'&&rr.body.calculation.invoice_discount_amount==='0.00'&&rr.body.calculation.final_payable_total==='1800.00','explicit complete replacement');
+ const line={line_number:'1',paid_quantity:'1',free_quantity:'0',paid_conditions:{SALEABLE:'1',QUARANTINE:'0',UNSALEABLE:'0'},free_conditions:{SALEABLE:'0',QUARANTINE:'0',UNSALEABLE:'0'},condition_reason:'Synthetic inspected goods',holding_reference:'Synthetic bin'};
+ const request={policy_version:'HYBRID_RETURN_V1',request_id:crypto.randomUUID(),invoice_id:issued.body.invoice_id,operation:'RETURN',reason:'Synthetic HTTP return',lines:[line]};
+ const rp=await rep.call(ret+'preview',request);check(rp.status===200,'HTTP return preview');request.review_hash=rp.body.review_hash;
+ policy({hold:true});check((await rep.call(ret+'post',request)).status===403,'return hold');policy({hold:false});const returned=await rep.call(ret+'post',request);check(returned.status===200,'HTTP return post');check((await rep.call(ret+'post',request)).body.replayed===true,'return idempotency');
+ check((await other.call(ret+'preview',{...request,request_id:crypto.randomUUID()})).status===403,'return invoice scope');check((await rep.call('/api/v1/rep/offline/sync',inputSale)).status===403,'unsupported route default denied');
+ fs.writeFileSync(input.result,JSON.stringify({checks,invoice:issued.body.invoice_id,command:inputSale.request_id,return_command:request.request_id,returned:returned.body},null,2));console.log(`Stage 6B authenticated HTTP/CLI prototype: ${checks} checks passed.`);
+})().catch(e=>{console.error(e.stack);process.exitCode=1;}).finally(()=>policy({hold:true,disabled:true}));

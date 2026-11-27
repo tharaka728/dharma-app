@@ -1,0 +1,172 @@
+{
+    "new_files_including_inventory":  24,
+    "inventory_self_excluded":  true,
+    "files":  [
+                  {
+                      "path":  "tests/hybrid-stage6c-http.js",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "ED0499BD525CA889658C3A994F9AB0C1011526152D7EAD356A4B0DC22A9E1A3B",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-locale-inventory.js",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "6B0FFC4D2837AA611D14081A70A2551F644E7202FE8CD8F5357835318ACA1B69",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-locale-browser.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "36A552063E179C5C83C10A5D4407479C1E977F82D237BF78A99E72B39B14B746",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "app/Support/HybridIsolatedRuntime.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "5747DF06276BEA0E9DF9D36A981AE79E97231FECA93D5393C8286B38C129EAD7",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "app/Support/HybridFreshInstaller.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "F02ACA274485F46E7C4C521EA91980B1EE6A52314B596D8799BE831C9CC94DF0",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "database/fresh-install/contract-v1.json",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "A9E8F370FC2719D6E4476467D9E218E6EDEAD003F96CE5399927BB959C9EB251",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-locale-browser.js",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "5B3621A14D2221838842B3053FBE51C1CF846E7F238DBCD8298DAAC8D17C2647",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-router.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "F317D6C87A9225BC7021EC43DC32E694AD31058B22A2A94FE50A91F53749CCA4",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-runtime-safety.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "5DDD61BE1E94251D304188D3B765CAF80FA33F1ABDF1A162E9214291F1F92949",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "public/assets/js/hybrid-localization.js",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "0EEF72C555B63BBD78AE8C6304D4470EA70D9C2179B62F1E8B21DF66FBEF0951",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-http.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "2F1DBCDC0D3AF3C975FD435FC6B99641EA8A1E367F41382A8AF71F99A6E81F7E",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-report-locale.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "9EF2217C67F35431AE991579B891C2857C26FC9227C7DF49FBCE411E2F10ED1F",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6c-migrations.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "8A3D3FD9F737DDF67739C1D46D2A7692763083CB6059F49647837B58151E3D08",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "app/Support/HybridReportText.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "730BDA15ED5A59A70B8AF8C1EECBCECF5ECA4CEC2B8EAE53ADB94D24F3E69715",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "docs/hybrid-stage6c-readiness.md",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "DE56ABE942E256DDF55A46FF2E66D6E9FEF67D6C600E72C3B2E091FDCAC6CDBF",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "docs/hybrid-stage6c-acceptance.md",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "7EE63A02913A8B06AAEC5F3411984905A640C7334B01BDB6B9D3BE86E7CB06B5",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "bin/hybrid-worker.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "CAF6B622A5C734A462AA99850F183FD9D1E2E25569CD80C38917E28558D47CB0",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "app/isolated-bootstrap.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "3519B9EBCA60B00366525362F602326EF9426B9FDC903BF565A8BE8961FFD65D",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "public/hybrid-isolated.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "5B1CC126C6B53E78183FA991DB2DE9C5FE8854950E78F152391E0446B8EE4F37",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "docs/hybrid-stage6c-runtime.md",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "979FEF5B7A44AC9FE4730DEDE168794277A83100433040A2CC266B8C24F118F7",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "bin/hybrid-fresh-install.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "B8B0C00D4F2B5E0891293C4B238DCADE996CFEF5EF4276A441EB372386D7E634",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "app/Views/reports.php",
+                      "change":  "modified in Stage 6C",
+                      "sha256":  "C75D22C4BEAE03CEB72223B490F855F6DF0E0697E0D6C15B97045ADE422DF7AA",
+                      "before_sha256":  "993581A7A59B651B93501CB8B19E8C3F6D7C79C8A6F9B193C779A812DD40E5F8"
+                  },
+                  {
+                      "path":  "public/assets/i18n/hybrid-si-LK.json",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "AD14D315EB2D3EF331891B6678C5592F9C995CA9BB25F32F9B9DBD1646414470",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "app/Support/HybridWorkerClient.php",
+                      "change":  "new in Stage 6C",
+                      "sha256":  "D362B064BABBA7ED53B1FC197337D6AEEA12C5F99364B45EFCC6D1160111FCDE",
+                      "before_sha256":  null
+                  },
+                  {
+                      "path":  "app/Controllers/ReportController.php",
+                      "change":  "modified in Stage 6C",
+                      "sha256":  "D79E580B9F391F443241E28CE15855F38B7B1D2910A9B6908D7B630C9B33BC67",
+                      "before_sha256":  "B5FCE222523AD798678D281CFAD8D6A679E7797948982221034E617DD176BC70"
+                  },
+                  {
+                      "path":  "app/Views/hybrid-returns.php",
+                      "change":  "modified in Stage 6C",
+                      "sha256":  "F1B37115E920BD68360F4AAB84EB74444542F68B8F00FAA61DB85A26EB481DDD",
+                      "before_sha256":  "EA538C1456AD175A3DCF28A40C527138FA93CC9D1B50B429792A0B7AB9A1812E"
+                  },
+                  {
+                      "path":  "app/Views/hybrid-invoice.php",
+                      "change":  "modified in Stage 6C",
+                      "sha256":  "E526131DE85E658F02269E579014DE417D667577C75D8EA577E389013FCEA6EA",
+                      "before_sha256":  "76825085FDA5EB7322AAF6C236395768D77DDB4E8685186B668D5F6225066922"
+                  }
+              ],
+    "branch":  "hybrid-promotion-v1-stage6a-integration",
+    "head":  "1f6385c",
+    "existing_files_modified":  4,
+    "worktree":  "C:\\xampp\\htdocs\\dharma chemical sales app\\storage\\hybrid-stage6a"
+}

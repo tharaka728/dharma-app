@@ -30,7 +30,7 @@ $metrics=[
         <span class="stat-body">
             <span class="stat-label"><?= Http::escape($metric['label']) ?></span>
             <strong class="stat-value"><?= $metric['value']===null?($si?'ලබාගත නොහැක':'Unavailable'):($metric['money']?'LKR ':'').Http::escape((string)$metric['value']) ?></strong>
-            <?php if($metric['chip']!==null): ?><span class="chip chip-amber"><?= \App\Support\I18n::html($metric['chip']) ?></span><?php endif; ?>
+            <?php if($metric['chip']!==null): ?><span class="chip chip-amber"><?= implode(' ',array_map(static fn($w)=>'<span class="chip-word">'.$w.'</span>',explode(' ',\App\Support\I18n::html($metric['chip'])))) ?></span><?php endif; ?>
         </span>
         <span class="stat-chevron" aria-hidden="true">›</span>
     </a>

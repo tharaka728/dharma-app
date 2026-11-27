@@ -8,7 +8,7 @@ final class ReportController
     public static function route(string $path):?array
     {
         if(!preg_match('~^/(admin|rep)/reports(?:/([a-z]+))?(?:/(csv))?$~D',$path,$m))return null;
-        $type=$m[2]??'overview';if($type!=='towns'&&!isset(Reports::TYPES[$type]))return null;
+        $type=$m[2]??'overview';if($type!=='towns'&&!isset(Reports::TYPES[$type])&&!in_array($type,['hybridbenefits','hybridproducts','hybridvoids','hybridactivity','hybridstock'],true))return null;
         return ['role'=>$m[1]==='admin'?'ADMIN':'SALES_REP','type'=>$type,'csv'=>isset($m[3]),'methods'=>['GET']];
     }
     public function handle(array $route,array $user):void
@@ -25,7 +25,7 @@ final class ReportController
             }
             if($route['csv']){
                 header('Content-Type: text/csv; charset=utf-8');header('Content-Disposition: attachment; filename="Dharma-'.$route['type'].'-'.$report['filters']['from'].'-'.$report['filters']['to'].'.csv"');
-                $out=fopen('php://output','wb');fwrite($out,"\xEF\xBB\xBF");fputcsv($out,array_map(static fn($label)=>Reports::csvCell(\App\Support\I18n::text((string)$label)),$report['columns']));foreach($report['rows'] as $row)fputcsv($out,array_map([Reports::class,'csvCell'],array_values($row)));fclose($out);return;
+                $out=fopen('php://output','wb');fwrite($out,"\xEF\xBB\xBF");fputcsv($out,array_map(static fn($label)=>Reports::csvCell($route['type']==='hybridreturns'?\App\Support\HybridReportText::text((string)$label):\App\Support\I18n::text((string)$label)),$report['columns']));foreach($report['rows'] as $row)fputcsv($out,array_map([Reports::class,'csvCell'],array_values($row)));fclose($out);return;
             }
             $admin=$route['role']==='ADMIN';$base=$admin?'/admin/reports':'/rep/reports';$options=$this->reports->options($user,$report['filters']);$reportTypes=$this->reports->availableTypes();require APP_ROOT.'/app/Views/reports.php';
         }catch(InventoryException $e){Http::json(['errors'=>$e->errors],$e->status);}

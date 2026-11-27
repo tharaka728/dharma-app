@@ -1,0 +1,166 @@
+{
+    "snapshot_version": "HYBRID_SNAPSHOT_V1",
+    "request": {
+        "policy_version": "HYBRID_PROMOTION_V1",
+        "channel": "ONLINE",
+        "lines": [
+            {
+                "product_id": "101",
+                "paid_quantity": "12",
+                "product_discount": {
+                    "choice": "0"
+                },
+                "replace_free_entitlement": true
+            }
+        ],
+        "invoice_discount_percent": "10",
+        "replacement_discount": {
+            "choice": "25"
+        }
+    },
+    "review": {
+        "policy_version": "HYBRID_PROMOTION_V1",
+        "configuration_version": "SYNTHETIC_FROZEN_V1",
+        "control_version": "1",
+        "actor": {
+            "id": "7",
+            "role": "SALES_REP",
+            "name": "Synthetic rep",
+            "version": "1"
+        },
+        "number_owner": "7",
+        "request_id": "11111111-1111-4111-8111-111111111111",
+        "customer": {
+            "id": "20",
+            "shop_name": "Synthetic frozen shop"
+        },
+        "stock_source": "7",
+        "source_location_id": "2",
+        "business_date": "2026-11-25",
+        "payment_type": "CASH",
+        "amount_received": "810.00",
+        "applied_amount": "810.00",
+        "change_amount": "0.00",
+        "outstanding": "0.00",
+        "existing_customer_outstanding": "0.00",
+        "calculation": {
+            "policy_version": "HYBRID_PROMOTION_V1",
+            "currency": "LKR",
+            "channel": "ONLINE",
+            "rounding_version": "HYBRID_CENTS_V1",
+            "invoice_allocation_policy": "INVOICE_PERCENT_V1",
+            "lines": [
+                {
+                    "line_number": 1,
+                    "product_id": "101",
+                    "price_version": "71",
+                    "promotion_id": "501",
+                    "promotion_revision_id": "901",
+                    "promotion_snapshot": {
+                        "id": "501",
+                        "revision_id": "901",
+                        "product_id": "101",
+                        "type": "BUY_X_GET_Y",
+                        "buy_quantity": "12",
+                        "free_quantity": "1"
+                    },
+                    "unit_price": "100.00",
+                    "paid_quantity": "12",
+                    "complete_groups": "1",
+                    "qualifying_paid_quantity": "12",
+                    "discount_eligible_quantity": "0",
+                    "free_entitlement": "1",
+                    "actual_free_quantity": "0",
+                    "substituted_free_quantity": "1",
+                    "replacement_reason": "NO_STOCK_AFTER_PAID_DEMAND",
+                    "required_stock": "12",
+                    "gross_amount": "1200.00",
+                    "product_discount_choice": "0",
+                    "product_discount_percent": "0.00",
+                    "product_discount_base": "0.00",
+                    "product_discount_amount": "0.00",
+                    "replacement_policy": "PROMO_CHOICE_V1",
+                    "replacement_mode": "PROMOTION_DISCOUNT_INSTEAD",
+                    "replacement_discount_choice": "25",
+                    "replacement_discount_percent": "25.00",
+                    "replacement_discount_base": "1200.00",
+                    "replacement_discount_amount": "300.00",
+                    "segments": [
+                        {
+                            "kind": "PROMOTION_QUALIFIED",
+                            "paid_quantity": "12",
+                            "gross_amount": "1200.00",
+                            "product_discount_percent": "0.00",
+                            "product_discount_amount": "0.00",
+                            "replacement_discount_amount": "300.00",
+                            "invoice_discount_amount": "90.00",
+                            "payable_amount": "810.00"
+                        }
+                    ],
+                    "post_product_replacement_subtotal": "900.00",
+                    "invoice_discount_amount": "90.00",
+                    "discount_amount": "390.00",
+                    "payable_amount": "810.00"
+                }
+            ],
+            "original_paid_subtotal": "1200.00",
+            "product_discount_total": "0.00",
+            "replacement_policy": "PROMO_CHOICE_V1",
+            "replacement_mode": "PROMOTION_DISCOUNT_INSTEAD",
+            "replacement_discount_choice": "25",
+            "replacement_discount_percent": "25.00",
+            "replacement_discount_total": "300.00",
+            "invoice_discount_percent": "10.00",
+            "invoice_discount_base": "900.00",
+            "invoice_discount_amount": "90.00",
+            "combined_monetary_discount": "390.00",
+            "monetary_cap_limit": "600.00",
+            "monetary_cap_check": "2*D_CENTS<=S_CENTS",
+            "final_payable_total": "810.00",
+            "validation_findings": [
+                {
+                    "code": "FULL_ENTITLEMENT_REPLACED",
+                    "field": "lines.0",
+                    "message": "The complete free entitlement is replaced; no actual free units are delivered."
+                }
+            ]
+        },
+        "unit_allocation_version": "HYBRID_UNITS_B1_V1",
+        "unit_allocation_digest": "cde3c339918622785fc5dd41bfaac896e34f6ac4114cf44c9ac62d9bc53e1543",
+        "review_hash": "c1c047fb2e5973688b236b5ff30fa72c96977b0958365071f8fd0f3e20f2c424"
+    },
+    "allocations": {
+        "version": "HYBRID_UNITS_B1_V1",
+        "segments": [
+            {
+                "line_number": 1,
+                "segment_number": 1,
+                "kind": "PROMOTION_QUALIFIED",
+                "return_priority": 1,
+                "paid_quantity": "12",
+                "runs": [
+                    {
+                        "position_start": 0,
+                        "position_count": 12,
+                        "cents": {
+                            "gross": "10000",
+                            "product_discount_amount": "0",
+                            "replacement_discount_amount": "2500",
+                            "invoice_discount_amount": "750",
+                            "net": "6750"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "seal": {
+        "digest": "bcbd759def8ed7c29c1bc428619cbd10eb988e32f1e48f0fa83eaa42f1b2b04d",
+        "counts": {
+            "lines": 1,
+            "segments": 1,
+            "runs": 1
+        },
+        "allocation_version": "HYBRID_UNITS_B1_V1"
+    }
+}

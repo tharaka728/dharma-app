@@ -1,0 +1,150 @@
+{
+  "stage": "6E-2 original New Invoice only",
+  "baseline": "83228b1f79694be1721101cc0b45a58e14cb5667",
+  "branch": "hybrid-promotion-v1-stage6e2-original",
+  "self_digest": "excluded to avoid circularity",
+  "files": [
+    {
+      "path": "app/Controllers/InvoiceController.php",
+      "change": "modified",
+      "sha256": "46478e03f7aa48c0459e5320d6bc3ac54825330e0e2669347e766eb8c3befaaa"
+    },
+    {
+      "path": "app/Views/invoice-discount-fields.php",
+      "change": "modified",
+      "sha256": "e989325975935834e0f75462ee17ab0591aa6594f0440f73ae24673237b32a0e"
+    },
+    {
+      "path": "app/Views/invoice-line.php",
+      "change": "modified",
+      "sha256": "150124c7b61eeb558ebe3c431a5b1e5d61685e5169c7c0247307e5c623c35024"
+    },
+    {
+      "path": "app/Views/invoices.php",
+      "change": "modified",
+      "sha256": "6312e1945d087e13bd878adaaeeabaa40e54692fe851f7ec41691619ab85c726"
+    },
+    {
+      "path": "app/Views/localization-head.php",
+      "change": "modified",
+      "sha256": "6446459c28cdec35fbb47e08afd9b0144a714e62b8e734b02f564f4fbd9994d6"
+    },
+    {
+      "path": "docs/hybrid-stage6e2-original-invoice.md",
+      "change": "new",
+      "sha256": "1e428719283c2f78a3629b68f0398951d995f473f142f6897d7e8afd6f7d2a79"
+    },
+    {
+      "path": "docs/hybrid-stage6e2-source-inventory.json",
+      "change": "new",
+      "sha256": null
+    },
+    {
+      "path": "public/assets/i18n/catalogue.js",
+      "change": "modified",
+      "sha256": "d20d76d632f1e5ee0d687d249c99e4df875745551b66e25eca6d02e213e5271e"
+    },
+    {
+      "path": "public/assets/i18n/si-LK.json",
+      "change": "modified",
+      "sha256": "da7be4959a493ef61981942436f6d3f08510e41c069bc0df33aefcc5b6823d08"
+    },
+    {
+      "path": "public/assets/js/invoice-discount.js",
+      "change": "modified",
+      "sha256": "0309d3539b27d399e7e7c781c1d6323253c6d1db24d63ae87c01c27c5a2107b6"
+    },
+    {
+      "path": "public/assets/js/invoices.js",
+      "change": "modified",
+      "sha256": "3a63e58e53790a8cad11efb6de0ee053d6729e29610982e13b6fc7148d2f5a92"
+    },
+    {
+      "path": "public/assets/js/pos.js",
+      "change": "modified",
+      "sha256": "e43eb9f19621747e9faf01053bfdf450053e60a3cbb7b8de51c42eb118a03071"
+    },
+    {
+      "path": "tests/hybrid-stage6d-routing.php",
+      "change": "modified",
+      "sha256": "8935dad3b6986b74d5a7e3cb509acf7cd3c90159e76c7a49a18a4f4976ca7785"
+    },
+    {
+      "path": "tests/hybrid-stage6d-visual-readers.php",
+      "change": "modified",
+      "sha256": "553355c77f2d0a3865d09d4659ce8c306ad9cd94feff214e1b34ec317c2ad197"
+    },
+    {
+      "path": "tests/hybrid-ui-bridge.php",
+      "change": "modified",
+      "sha256": "7aa1b6d402722acae2f07cd037967dec27c0c19b9db7422db5d8ad45ca7173e6"
+    },
+    {
+      "path": "tests/hybrid-ui-controllers.php",
+      "change": "modified",
+      "sha256": "832fc7761a34ab2c5e53a7a4f5b51e1d3b3ff6d9d00ff015c6728e33d0329e86"
+    },
+    {
+      "path": "tests/hybrid-ui-removal.php",
+      "change": "modified",
+      "sha256": "16f0c2b410b89eea28f7559abd70aa92cdbc40dbe607bd2ba48370fdeafc451c"
+    },
+    {
+      "path": "tests/hybrid-ui-router.php",
+      "change": "modified",
+      "sha256": "b577aaba01254b298e71fe43bda8a47716fc3fa2dd19cb4709f9e66722ebf05a"
+    },
+    {
+      "path": "tests/stage6e2-cart-browser.js",
+      "change": "new",
+      "sha256": "2bb47522053c3010a65a498f83437ab722199a3d8e68c0b003a6a16f9ec29ed0"
+    },
+    {
+      "path": "tests/stage6e2-confirm-backstop.php",
+      "change": "new",
+      "sha256": "7aaf18fa2997ee0ea6f58375546b003c245324433c9afbd84bd9f735680597d2"
+    },
+    {
+      "path": "tests/stage6e2-confirm-browser.js",
+      "change": "new",
+      "sha256": "447d983e795ad8c67f220c6d44bcb6941c7a6421245160299cd91bced94d2354"
+    },
+    {
+      "path": "tests/stage6e2-original-browser.js",
+      "change": "new",
+      "sha256": "f2b4119119b49b47339c88517142830fd002f674c18a51d7b751d53e303f8ab3"
+    },
+    {
+      "path": "tests/stage6e2-runtime-prepare.php",
+      "change": "new",
+      "sha256": "e3f89c42a86cc8ab732e6569d208ee00c22df026b79d43dff109338a052fb507"
+    },
+    {
+      "path": "tests/stage6e2-safety.php",
+      "change": "new",
+      "sha256": "7e52c46a8d41480cbd0fc8aa81eb68929bc0e6012c38d42e3d966bdcb06d54a2"
+    }
+  ],
+  "non_content_status_entries": [
+    {
+      "path": "database/fresh-install/006a_customer_locations_compat_v1.sql",
+      "reason": "Exact checkpoint raw bytes restored for pinned disposable packaging; Git status M, but raw bytes equal HEAD and SQL content diff is empty.",
+      "sha256": "1ec24563527db3162cf7630390a911389151cc765039a59df2d4880f2fd599c0"
+    },
+    {
+      "path": "database/migrations/025_hybrid_invoice_snapshots.sql",
+      "reason": "Exact checkpoint raw bytes restored for pinned disposable packaging; Git status M, but raw bytes equal HEAD and SQL content diff is empty.",
+      "sha256": "662054eb3025354eff03c9da928e3b618fa433a4ca69a8b6632342924d45f2c1"
+    },
+    {
+      "path": "database/migrations/026_hybrid_linked_returns.sql",
+      "reason": "Exact checkpoint raw bytes restored for pinned disposable packaging; Git status M, but raw bytes equal HEAD and SQL content diff is empty.",
+      "sha256": "912b831ea2d3674bee50ef7b6dfd3852683fec2b00c921c5f419f5457a137d5f"
+    },
+    {
+      "path": "database/migrations/027_hybrid_custody_dispositions.sql",
+      "reason": "Exact checkpoint raw bytes restored for pinned disposable packaging; Git status M, but raw bytes equal HEAD and SQL content diff is empty.",
+      "sha256": "1e00ad4388f60c4b130d560d6cbcebb83489e8d43c9033bfc4d6e54faca24fac"
+    }
+  ]
+}

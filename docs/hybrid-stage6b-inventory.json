@@ -1,0 +1,64 @@
+{
+    "existing_source_changes":  0,
+    "inventory_self_excluded":  true,
+    "files":  [
+                  {
+                      "path":  "database/fresh-install/006a_customer_locations_compat_v1.sql",
+                      "sha256":  "1EC24563527DB3162CF7630390A911389151CC765039A59DF2D4880F2FD599C0",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "docs/hybrid-stage6b-readiness.md",
+                      "sha256":  "642855D7339B231452EE1B6F0A9A07F9328106B8DB9B5B4D49995BECF0766B35",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-foundation.php",
+                      "sha256":  "5786B76B8361F12B6169764FB4A7252F40F603F6C418AE2C9107049D47560815",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-historical.php",
+                      "sha256":  "56991D80C67C4A5D0DD31B6D243CDA3F60306D53F032171ADE2F4057C7489FC3",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-http.js",
+                      "sha256":  "761ECFF12168A078D277658DA90BADE6C3AAB25DFA77C70472DD608D2DEA0479",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-http.php",
+                      "sha256":  "5D47D4BB26B62B1219C096AFC0632D744D2D09DCA694C110FEA71D77160A877C",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-http-router.php",
+                      "sha256":  "9ECB22D39441F9E477BC943206EF6387D73075232B2D02D785113857612C6596",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-http-worker.php",
+                      "sha256":  "A7093C4DACD803123E4DAFD419D00875D59E69A1121CCED71338E8E74FB95DB9",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-install-contract.json",
+                      "sha256":  "A9E8F370FC2719D6E4476467D9E218E6EDEAD003F96CE5399927BB959C9EB251",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-installer.php",
+                      "sha256":  "54FA4CB0D90F5AC01E4549B963CF04FBF571A12BEC28414517F896FE86291956",
+                      "change":  "new Stage 6B source/report; untracked"
+                  },
+                  {
+                      "path":  "tests/hybrid-stage6b-migrations.php",
+                      "sha256":  "FD1585CF4DAB7A8D0AFD6C7E9038518EB454AA25082D1A5D46DEFDD52B51778C",
+                      "change":  "new Stage 6B source/report; untracked"
+                  }
+              ],
+    "branch":  "hybrid-promotion-v1-stage6a-integration",
+    "head":  "1f6385c",
+    "worktree":  "C:\\xampp\\htdocs\\dharma chemical sales app\\storage\\hybrid-stage6a"
+}

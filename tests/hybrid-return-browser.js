@@ -1,0 +1,43 @@
+'use strict';
+const {spawn}=require('node:child_process'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const input=JSON.parse(fs.readFileSync(0,'utf8')),f=input.fixtures;
+const profile=path.join(input.directory,'browser-profile');fs.mkdirSync(profile);
+const browser=spawn('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--remote-debugging-address=127.0.0.1','--user-data-dir='+profile,'about:blank'],{windowsHide:true,stdio:['ignore','ignore','pipe']});
+browser.stderr.on('data',chunk=>fs.appendFileSync(path.join(input.directory,'edge-stderr.log'),chunk));
+let ws,seq=0,sessionId,checks=0;const waiting=new Map();
+const check=(ok,label)=>{assert.ok(ok,label);checks++;};
+async function connect(){const endpoint=await new Promise((resolve,reject)=>{let buffer='';const timer=setTimeout(()=>reject(Error('Headless Edge did not start.')),20000);browser.stderr.on('data',chunk=>{buffer+=chunk;const match=buffer.match(/DevTools listening on (ws:\/\/[^\s]+)/);if(match){clearTimeout(timer);resolve(match[1]);}});browser.on('exit',()=>reject(Error('Browser exited.')));});ws=new WebSocket(endpoint);await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});ws.onmessage=e=>{const d=JSON.parse(e.data);if(d.id){const p=waiting.get(d.id);if(p){waiting.delete(d.id);d.error?p.reject(Error(d.error.message)):p.resolve(d.result);}}};const target=await send('Target.createTarget',{url:'about:blank'},false);sessionId=(await send('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;await send('Page.enable');await send('Runtime.enable');await send('Network.enable');}
+function send(method,params={},session=true){const id=++seq;return new Promise((resolve,reject)=>{waiting.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params,...(session?{sessionId}:{})}));});}
+async function evaluate(expression){const r=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result.value;}
+async function until(expression,label,timeout=20000){const start=Date.now();while(Date.now()-start<timeout){if(await evaluate(expression))return;await new Promise(r=>setTimeout(r,80));}throw Error('Timed out: '+label+'; '+await evaluate('document.getElementById("return-message")?.textContent||document.body.textContent.slice(0,400)'));}
+async function navigate(route){await send('Page.navigate',{url:input.base+route});await until("document.readyState==='complete'",'document loaded');}
+async function login(actor='rep1',mode='enabled'){await evaluate(`fetch('/test/session',{method:'POST',headers:{'Content-Type':'application/json','X-Isolation-Test-Token':${JSON.stringify(input.key)}},body:JSON.stringify(${JSON.stringify({actor,mode})})}).then(r=>r.json())`);}
+async function set(id,value,event='change'){await evaluate(`(()=>{const e=document.getElementById(${JSON.stringify(id)});e.value=${JSON.stringify(value)};e.dispatchEvent(new Event(${JSON.stringify(event)},{bubbles:true}));})()`);}
+async function click(id){await evaluate(`document.getElementById(${JSON.stringify(id)}).click()`);}
+(async()=>{
+ await connect();await navigate('/rep/invoices/hybrid/returns');check(await evaluate('!document.getElementById("hybrid-return-form")'),'anonymous denied');
+ await login('rep1','feature-disabled');await navigate('/rep/invoices/hybrid/returns');check(await evaluate('!document.getElementById("hybrid-return-form")'),'disabled denied');
+ await login('rep1');await navigate('/rep/invoices/hybrid/returns');await until('document.getElementById("return-invoice")?.options.length>1','authorized invoices');
+ check(await evaluate('document.getElementById("return-invoice").options.length===2'),'original invoice scope');
+ await set('return-invoice',input.invoice);await until('document.querySelectorAll("#return-lines tr").length===1','original lines');
+ await evaluate(`(()=>{const q=document.querySelector('[data-kind="paid"][data-condition="QUARANTINE"]');q.value='3';q.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-evidence]').value='Synthetic inspected quarantine';document.querySelector('[data-location]').value='Synthetic controlled bin';})()`);
+ await set('return-reason','Synthetic missing free recovery','input');await click('return-preview');await until('document.getElementById("return-review").textContent.includes("225.00")','original net preview');
+ check(await evaluate('document.getElementById("return-review").textContent.includes("Receive at least 1")'),'required free finding');check(await evaluate('document.getElementById("return-post").disabled'),'blocked confirmation');
+ await click('return-receive');await until('!document.getElementById("return-supplement").disabled','pending physical receipt');check(await evaluate('document.getElementById("return-balances").textContent.includes("linked credits: LKR 0.00")'),'pending no financial credit');
+ await evaluate(`(()=>{const q=document.querySelector('[data-kind="free"][data-condition="UNSALEABLE"]');q.value='1';q.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-evidence]').value='Synthetic recovered free item';document.querySelector('[data-location]').value='Synthetic unsaleable bin';})()`);
+ await click('return-supplement');await until('document.getElementById("return-pending").textContent.includes("version 2")','supplement same identity');
+ await until('!document.getElementById("return-preview").disabled','ready after supplement');await click('return-preview');await until('!document.getElementById("return-post").disabled','eligible preview');check(await evaluate('document.getElementById("return-review").textContent.includes("225.00")'),'original net unchanged');
+ await click('return-post');await until('document.getElementById("return-balances").textContent.includes("linked credits: LKR 225.00")','accepted custody');check(await evaluate('document.getElementById("return-pending").textContent.includes("No pending")'),'pending transitioned');
+ check(await evaluate('!document.getElementById("return-manager")'),'rep manager controls absent');
+ await login('admin');await navigate('/admin/invoices/hybrid/returns');await until('document.getElementById("return-invoice")?.options.length>1','admin invoice scope');await set('return-invoice',input.invoice);await until('document.getElementById("return-custody")?.options.length===2','accepted receipt listed');
+ await evaluate(`(()=>{const s=document.getElementById('return-custody');s.value=s.options[1].value;s.dispatchEvent(new Event('change',{bubbles:true}));})()`);await until('!document.getElementById("return-manage").disabled','manager receipt loaded');
+ await set('return-manager-action','RELEASE');await set('return-manager-reason','Synthetic manager released inspected quarantine','input');await click('return-manage');await until('document.getElementById("return-message").textContent.includes("Recorded manage")','manager release');
+ check(await evaluate('document.getElementById("return-balances").textContent.includes("225.00")'),'manager release adds no credit');
+ const csrf=await evaluate('document.querySelector("[name=csrf_token]").value');const rejected=await evaluate(`fetch('/api/v1/admin/invoices/hybrid/returns/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(r=>r.status)`);check(rejected===403,'CSRF enforced');
+ const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.join(input.directory,'return-manager.png'),Buffer.from(shot.data,'base64'));
+ await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+ check(await evaluate('document.documentElement.scrollWidth<=391 && [...document.querySelectorAll("#return-lines input,#return-lines tr")].every(e=>e.getBoundingClientRect().right<=391)'),'phone has no page or received-input overflow');
+ check(await evaluate('getComputedStyle(document.querySelector("#return-lines td:nth-child(3)")).display==="block"'),'phone free recovery inputs stack visibly');
+ const mobile=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.join(input.directory,'return-phone.png'),Buffer.from(mobile.data,'base64'));
+ console.log('Stage 4 real Edge: '+checks+' checks passed.');
+})().catch(e=>{console.error(e.stack);process.exitCode=1;}).finally(async()=>{try{if(ws){await send('Browser.close',{},false);ws.close();}}catch{}browser.kill();});

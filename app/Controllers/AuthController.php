@@ -39,19 +39,19 @@ final class AuthController
         if (!is_string($token) || !Csrf::valid($token,$_SESSION['csrf_token'] ?? null)) { Http::error('CSRF_FAILED','Refresh the page and try again.',403); return; }
         Session::destroy(); self::redirect('/login');
     }
-    public function dashboard(array $user, string $role): void
+    public function dashboard(array $user, string $role, ?\PDO $pdo=null): void
     {
         $modules = $role === 'ADMIN' ? ['Products','Customers','Inventory','Sales Representatives','Promotions','Invoices','Offline Sales Review','Reports'] : ['Assigned Stock','Promotions','Customers','New Invoice','Sales History','Offline Sales','Sync Status','Reports'];
         $dashboardToday=null;$dashboardTrend=null;
         try {
-            $reports=new \App\Services\Reports(\App\Support\Database::connect());
+            $reports=new \App\Services\Reports($pdo??\App\Support\Database::connect());
             $today=new \DateTimeImmutable('today',new \DateTimeZone('Asia/Colombo'));
             $dashboardToday=$reports->report($user,'overview',['period'=>'today']);
             $dashboardTrend=$reports->report($user,'sales',['period'=>'custom','from'=>$today->modify('-6 days')->format('Y-m-d'),'to'=>$today->format('Y-m-d'),'group'=>'day']);
         } catch (\Throwable $e) {
             error_log('Dashboard reports unavailable: '.$e->getMessage());
         }
-        if($role==='SALES_REP'&&$user['role']==='SALES_REP'){$repStock=new \App\Services\RepresentativeStock(\App\Support\Database::connect());$assignedStock=$repStock->balances($user,[],true);$allocationHistory=$repStock->history($user,[],true);}
+        if($role==='SALES_REP'&&$user['role']==='SALES_REP'){$repStock=new \App\Services\RepresentativeStock($pdo??\App\Support\Database::connect());$assignedStock=$repStock->balances($user,[],true);$allocationHistory=$repStock->history($user,[],true);}
         require APP_ROOT.'/app/Views/dashboard.php';
     }
 }

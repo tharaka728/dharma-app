@@ -4,7 +4,7 @@ namespace App\Controllers;
 use App\Services\Customers;use App\Services\Locations;use App\Support\Database;use App\Support\CustomerException;use App\Support\Http;use App\Middleware\Csrf;
 final class CustomerController
 {
-    public function __construct(private Customers $customers,private ?Locations $locations=null) {}
+    public function __construct(private Customers $customers,private ?Locations $locations=null,private ?\PDO $billingPdo=null) {}
     public static function route(string $path):?array
     {
         foreach(['/admin/customers'=>false,'/api/v1/admin/customers'=>true] as $base=>$api){
@@ -34,11 +34,11 @@ final class CustomerController
             $errors=$e->errors;$duplicates=$e->duplicates;
             if($action==='index'){$listing=['customers'=>[],'total'=>0,'page'=>1,'pages'=>1];}elseif($action==='status'){$customer=$this->customers->get($user,$id);}
         }
-        if($action==='index'){$filterLocations=($this->locations??new Locations(Database::connect()))->filterForm($user,$_GET);}
-        if(in_array($action,['create','edit'],true)){$locationOptions=($this->locations??new Locations(Database::connect()))->form($user,$input);}
-        $billingRepresentatives=Database::connect()->query("SELECT id,name,is_active FROM users WHERE role='SALES_REP' ORDER BY name,id")->fetchAll();
+        if($action==='index'){$filterLocations=($this->locations??new Locations($this->billingPdo??Database::connect()))->filterForm($user,$_GET);}
+        if(in_array($action,['create','edit'],true)){$locationOptions=($this->locations??new Locations($this->billingPdo??Database::connect()))->form($user,$input);}
+        $billingPdo=$this->billingPdo??Database::connect();$billingRepresentatives=$billingPdo->query("SELECT id,name,is_active FROM users WHERE role='SALES_REP' ORDER BY name,id")->fetchAll();
         $billingCustomer=$id!==null?$this->customers->get($user,$id):null;
-        $historicalReturns=$action==='show'?(new \App\Services\Invoices(Database::connect()))->historicalReturnsForCustomer($user,$id):[];
+        $historicalReturns=$action==='show'?(new \App\Services\Invoices($billingPdo))->historicalReturnsForCustomer($user,$id):[];
         $notice=$_SESSION['customer_notice']??'';unset($_SESSION['customer_notice']);$title=$action==='index'?'Customers':($action==='create'?'Add customer':($action==='edit'?'Edit customer':'Customer details'));
         require APP_ROOT.'/app/Views/customers.php';
     }

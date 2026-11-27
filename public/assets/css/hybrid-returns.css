@@ -1,0 +1,14 @@
+#return-manager { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 1rem; }
+#return-manager > legend, #return-manager > p, #return-manager > .d-block, #return-manager > button { grid-column: 1 / -1; }
+#return-manager label { display: block; min-width: 0; }
+#return-lines label { display: block; margin-bottom: .5rem; }
+#return-custody-detail { overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+ #hybrid-return-form .table-responsive { overflow: visible; }
+ #hybrid-return-form table, #return-lines, #return-lines tr, #return-lines td { display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; overflow-wrap: anywhere; }
+ #hybrid-return-form thead { display: none; }
+ #return-lines tr { margin-bottom: 1rem; padding: .5rem; border: 1px solid #c9ded7; border-radius: .75rem; }
+ #return-lines td { border: 0; }
+ #return-lines td:nth-child(2)::before { content: 'Paid goods received'; font-weight: 600; }
+ #return-lines td:nth-child(3)::before { content: 'Free goods received'; font-weight: 600; }
+}

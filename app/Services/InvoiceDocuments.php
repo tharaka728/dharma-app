@@ -26,10 +26,16 @@ final class InvoiceDocuments
     }
     public static function filename(array $record):string
     {return 'Dharma-invoice-'.preg_replace('/[^A-Za-z0-9_-]/','-', $record['invoice_number']).'.pdf';}
-    public static function render(array $record,string $layout,string $base,bool $pdf=false,?string $locale=null,string $receiptPaper='80'):string
+    public static function render(array $record,string $layout,string $base,bool $pdf=false,?string $locale=null,string $receiptPaper='80',?string $documentNonce=null):string
     {
+        if(!empty($record['hybrid']))return HybridDocuments::render($record,$layout,$base,$pdf,$locale,$receiptPaper,null,$documentNonce);
         if(!in_array($receiptPaper,['58','80'],true))throw new \InvalidArgumentException('Unknown receipt paper.');
         if(!in_array($layout,['receipt','a4'],true))throw new \InvalidArgumentException('Unknown layout.');
         return \App\Support\I18n::with(\App\Support\I18n::valid($locale)??($record['document_locale']??'en'),static function()use($record,$layout,$base,$pdf,$receiptPaper){ob_start();try{require APP_ROOT.'/app/Views/invoice-document.php';return ob_get_clean();}catch(\Throwable $e){ob_end_clean();throw $e;}});
+    }
+    public function returnSnapshot(array $actor,string $invoice,string $return):array
+    {
+        $own=!$this->pdo->inTransaction();if($own){$this->pdo->exec('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');$this->pdo->exec('START TRANSACTION WITH CONSISTENT SNAPSHOT, READ ONLY');}
+        try{return HybridDocuments::returnRecord($this->pdo,$actor,$invoice,$return);}finally{if($own&&$this->pdo->inTransaction())$this->pdo->rollBack();}
     }
 }
